@@ -17,11 +17,11 @@ We are developping a Campus Events & Ticketing Web application meant for student
 -(An extra one we choose)
 
 # Team Members : 
--Nicolas David Chacon Pabon ; 40302889 ; Arceton500
--Alesia Kulagina; 40260096; lesyak1
--Neil Bryan Moukam-Tchuangou; 40316930; shinehiro
--Victoria Doan ; 40317044 ; V1ctoriaD
--Hiba Maifi ; 40289223 ; hibamai
--Basma Ennajimi ; 40314332 ; BasmaEnnajimi
--Daniel Ganchev ; 40315755 ; (TODO)
--Adrian Charbonneau ; 40310777 ; Alphabot54
+- Nicolas David Chacon Pabon ; 40302889 ; Arceton500
+- Alesia Kulagina; 40260096; lesyak1
+- Neil Bryan Moukam-Tchuangou; 40316930; shinehiro
+- Victoria Doan ; 40317044 ; V1ctoriaD
+- Hiba Maifi ; 40289223 ; hibamai
+- Basma Ennajimi ; 40314332 ; BasmaEnnajimi
+- Daniel Ganchev ; 40315755 ; (TODO)
+- Adrian Charbonneau ; 40310777 ; Alphabot54
