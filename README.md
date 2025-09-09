@@ -23,5 +23,5 @@ We are developping a Campus Events & Ticketing Web application meant for student
 - Victoria Doan ; 40317044 ; V1ctoriaD
 - Hiba Maifi ; 40289223 ; hibamai
 - Basma Ennajimi ; 40314332 ; BasmaEnnajimi
-- Daniel Ganchev ; 40315755 ; (TODO)
+- Daniel Ganchev ; 40315755 ; dan-gan
 - Adrian Charbonneau ; 40310777 ; Alphabot54
