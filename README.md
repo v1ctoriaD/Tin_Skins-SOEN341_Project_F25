@@ -15,7 +15,7 @@ We identify three primary users: Students, Organizers, and Administrators.
      - Save events to a personal calendar.
      - Claim tickets (free or mock paid).
      - Receive a digital ticket with a unique QR code.
-2. Organizer Event Management
+2. Organizer Event Management 
    - Event Creation
      - Enter event details: title, description, date/time, location, ticket capacity, ticket type (free or paid).
    - Event Analytics
@@ -43,7 +43,7 @@ We identify three primary users: Students, Organizers, and Administrators.
 - Alesia Kulagina; 40260096; lesyak1
 - Neil Bryan Moukam-Tchuangou; 40316930; shinehiro
 - Victoria Doan ; 40317044 ; v1ctoriaD
-- Hiba Maifi ; 40289223 ; hibamai
 - Basma Ennajimi ; 40314332 ; BasmaEnnajimi
+- Hiba Maifi ; 40289223 ; hibamai
 - Daniel Ganchev ; 40315755 ; dan-gan
 - Adrian Charbonneau ; 40310777 ; Alphabot54
