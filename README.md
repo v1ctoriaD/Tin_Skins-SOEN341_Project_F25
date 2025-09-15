@@ -1,7 +1,8 @@
 # SOEN-341-Project
 Tin Skins' version of the SOEN 341 Project
 
-We are developping a Campus Events & Ticketing Web application meant for students to involve and participate in campus activies and the student life
+We are developping a Campus Events & Ticketing Web application meant for students to involve and participate in campus activies and the student life.
+
 We plan on coding using JavaScript as the main language and React as the Framework.
 
 
