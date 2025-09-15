@@ -1,13 +1,13 @@
 # SOEN-341-Project
-Tin Skins' version of the SOEN 341 Project
+Tin Skins' version of the SOEN 341 Project.
 
-We are developping a Campus Events & Ticketing Web application meant for students to involve and participate in campus activies and the student life.
+We are developping a Campus Events & Ticketing Web application meant for students to be involved and participate in campus activies and the student life.
 
 We plan on coding using JavaScript as the main language and React as the Framework.
 
 
 # Objectives/Core Features
-Technologies to be used : React or Node.js, JavaScript, CSS, HTML, Database TBD
+Technologies to be used: React or Node.js, JavaScript, CSS, HTML, Database TBD
 
 We identify three primary users: Students, Organizers, and Administrators.
 1. Student Event Experience
@@ -35,7 +35,7 @@ We identify three primary users: Students, Organizers, and Administrators.
      - Manage organizations and assign roles.
 4. Geographical Event Visualization
    - Event Waypoints
-     - Enter event location and it be displayed as a waypoint on an interactive map.
+     - Enter the event location and it will be displayed as a waypoint on an interactive map.
    - Map Based Discovery
      - View events around an area, and their details.
 
