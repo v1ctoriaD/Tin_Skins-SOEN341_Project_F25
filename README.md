@@ -7,6 +7,8 @@ We plan on coding using JavaScript as the main language and React as the Framewo
 
 
 # Objectives/Core Features
+Technologies to be used : React or Node.js, JavaScript, CSS, HTML, Database TBD
+
 We identify three primary users: Students, Organizers, and Administrators.
 1. Student Event Experience
    - Event Discovery
