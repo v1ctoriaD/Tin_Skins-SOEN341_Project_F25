@@ -49,3 +49,12 @@ We identify three primary users: Students, Organizers, and Administrators.
 - Hiba Maifi ; 40289223 ; hibamai
 - Daniel Ganchev ; 40315755 ; dan-gan
 - Adrian Charbonneau ; 40310777 ; Alphabot54
+
+# Responsibilities :
+- Alesia: Event Browsing, CSV exporting, Map feature
+- Hiba: Event Browsing, CSV exporting, Map feature
+- Neil: Saving to Calendar, LogIn/LogOut, Account Moderation
+- Victoria: UI design, Creating/editing events, QR codes
+- Basma: UI design, Creating/editing events, QR codes
+- Daniel: Event signup, moc pay, Event Analytics
+- Adrian: PM, Database, Creating/editing events, Account Moderation
