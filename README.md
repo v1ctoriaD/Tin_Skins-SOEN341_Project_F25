@@ -7,6 +7,7 @@ We plan on coding using JavaScript as the main language and React as the Framewo
 
 
 # How to run
+In the root folder run:
 ```bash
 npm start
 ```
