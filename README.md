@@ -6,6 +6,11 @@ We are developping a Campus Events & Ticketing Web application meant for student
 We plan on coding using JavaScript as the main language and React as the Framework.
 
 
+# How to run
+```bash
+npm start
+```
+
 # Objectives/Core Features
 Technologies to be used: React or Node.js, JavaScript, CSS, HTML, Database TBD
 
