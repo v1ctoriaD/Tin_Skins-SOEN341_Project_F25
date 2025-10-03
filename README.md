@@ -13,7 +13,7 @@ npm start
 ```
 
 # Objectives/Core Features
-Technologies to be used: React or Node.js, JavaScript, CSS, HTML, Database TBD
+Technologies to be used: React or Node.js, JavaScript, CSS, HTML, PostgreSQL(Supabase + Prisma)
 
 We identify three primary users: Students, Organizers, and Administrators.
 1. Student Event Experience
