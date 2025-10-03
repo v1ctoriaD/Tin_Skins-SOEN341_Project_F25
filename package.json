@@ -4,7 +4,7 @@
   "description": "Tin Skins' version of the SOEN 341 Project.",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "concurrently -k --success=first --raw \"npm run server\" \"npm run client\"",
     "server": "npm --prefix backend run dev",
     "client": "npm --prefix frontend start"
   },
