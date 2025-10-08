@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Banner from "./components/Banner";   // or Hero, depending on your file
+import Banner from "./components/Banner";
+import Discover from "./components/Discover"; // or wherever you save it
 import "./styles/tokens.css";
 import "./App.css";
 
@@ -16,13 +18,48 @@ function App() {
 
   return (
     <div className="App">
-      <Navbar />
-      <Banner />
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Banner />} />
+          <Route path="/discover" element={<Discover />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
 
 export default App;
+
+
+
+
+
+// import React, { useEffect, useState } from "react";
+// import Navbar from "./components/Navbar";
+// import Banner from "./components/Banner";   // or Hero, depending on your file
+// import "./styles/tokens.css";
+// import "./App.css";
+
+// function App() {
+//   const [message, setMessage] = useState("");
+
+//   useEffect(() => {
+//     fetch("/api/hello")
+//       .then((res) => res.json())
+//       .then((data) => setMessage(data.message))
+//       .catch((err) => console.error("Error fetching backend:", err));
+//   }, []);
+
+//   return (
+//     <div className="App">
+//       <Navbar />
+//       <Banner />
+//     </div>
+//   );
+// }
+
+// export default App;
 
 /**
  * import logo from './logo.svg';
