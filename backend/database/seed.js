@@ -1,19 +1,21 @@
+//Seeding file - DON'T RUN!
+
 import { faker } from '@faker-js/faker';
 import Decimal from 'decimal.js';
 import prisma from './prisma.js';
-import { getAllTags, createUser, createOrganization } from './database.js';
+import { getAllTags, createUser, createOrganization, signIn} from './database.js';
 import supabase from './supabase.js';
 import fs from 'fs';
 
-async function main() {
+export async function main() {
   console.log("Starting database seed...");
 
   console.log("Uploading default image to Supabase storage...");
-  const imageBuffer = fs.readFileSync('./defaultImage.png');
+  const imageBuffer = fs.readFileSync('./database/EventPlaceholder.png');
   const fileName = `seed_default_${Date.now()}.png`;
 
   const { data: uploadData, error: uploadError } = await supabase.storage
-    .from('user-images')
+    .from('event-images')
     .upload(fileName, imageBuffer, {
       contentType: 'image/png',
       upsert: true,
@@ -25,8 +27,8 @@ async function main() {
   }
 
   const { data: publicUrlData } = supabase.storage
-    .from('user-images')
-    .getPublicUrl(fileName);
+    .from('event-images')
+    .getPublicUrl('default_event_image.png');
 
   const defaultImageUrl = publicUrlData.publicUrl;
   console.log("Default image uploaded:", defaultImageUrl);
@@ -62,6 +64,20 @@ async function main() {
     organizations.push({ ...org, session });
   }
   console.log(`Created ${organizations.length} organizations`);
+  /**const organizations = [];
+  for (let i = 0; i < 7; i++) {
+    const email = `org${i + 1}@example.com`;
+    const password = "Password123!";
+
+    const session = await signIn(email, password);
+    if (!session) {
+      console.warn(`Organization ${email} already exists or failed.`);
+      continue;
+    }
+    const org = await prisma.organization.findUnique({ where: { email } });
+    organizations.push({ ...org, session });
+  }
+  console.log(`Created ${organizations.length} organizations`);*/
 
   // --- 3. Create 10 random users ---
   console.log("Creating users...");
@@ -81,6 +97,21 @@ async function main() {
     users.push({ ...user, session });
   }
   console.log(`Created ${users.length} users`);
+  /**const users = [];
+  for (let i = 0; i < 10; i++) {
+    const email = `user${i + 1}@example.com`;
+    const password = "Password123!";
+
+    const session = await signIn(email, password);
+    if (!session) {
+      console.warn(`User ${email} already exists or failed.`);
+      continue;
+    }
+    const user = await prisma.user.findUnique({ where: { email } });
+    users.push({ ...user, session });
+  }
+  console.log(users)
+  console.log(`Created ${users.length} users`); */
 
   // --- 4. Create 30 random events ---
   console.log("Creating events...");
@@ -124,11 +155,31 @@ async function main() {
     }
   }
 
+  // --- 5. Registering users to events ---
+  
+  console.log("Registering users to events...");
+
+  const allEvents = await prisma.event.findMany();
+  let successfulRegistrations = 0;
+
+  for (const user of users) {
+    // Each user registers to between 2–5 random events
+    const numRegistrations = faker.number.int({ min: 2, max: 5 });
+    const selectedEvents = faker.helpers.arrayElements(allEvents, numRegistrations);
+
+    for (const event of selectedEvents) {
+      const success = await db.registerToEvent(user.session, event.id);
+      if (success) successfulRegistrations++;
+    }
+  }
+
+  console.log(`Successfully registered users to ${successfulRegistrations} events total.`);
+
   console.log("Seeding complete!");
 }
 
 // Run the seeding script
-main()
+seed.main()
   .then(async () => {
     await prisma.$disconnect();
   })
