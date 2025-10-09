@@ -4,7 +4,7 @@
   "description": "Tin Skins' version of the SOEN 341 Project.",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "concurrently -k --success=first --raw \"npm run server\" \"npm run client\"",
     "server": "npm --prefix backend run dev",
     "client": "npm --prefix frontend start"
   },
@@ -21,5 +21,9 @@
   "homepage": "https://github.com/v1ctoriaD/Tin_Skins-SOEN341_Project_F25#readme",
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "react-datepicker": "^8.7.0"
   }
 }

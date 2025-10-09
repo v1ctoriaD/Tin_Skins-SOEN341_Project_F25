@@ -1,0 +1,165 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+//Note: If you change this, run "npx prisma generate" in terminal
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  authId    String   @unique
+  email     String   @unique
+  firstName String
+  lastName  String
+  role      Role     @default(USER)
+  eventsRegistered Event[] @relation("EventAttendees")
+  createdAt DateTime @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([authId])
+  @@index([email])
+}
+
+model Organization {
+  id      Int       @id @default(autoincrement())
+  authId  String    @unique
+  email   String    @unique
+  orgName String
+  isApproved Boolean @default(false)
+  eventsOwned  Event[]   @relation("EventOwner")
+  createdAt DateTime @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([authId])
+  @@index([email])
+}
+
+model Event {
+  id        Int      @id @default(autoincrement())
+  title     String
+  description String
+  cost      Decimal @db.Decimal(10,2) @default(0)
+  maxAttendees Int
+  date      DateTime
+  tags      EventTag[]
+  locationName String?
+  latitude  Float?
+  longitude Float?
+  imageUrl  String?
+  eventOwnerId   Int
+  eventOwner     Organization    @relation("EventOwner", fields: [eventOwnerId], references: [id], onDelete: Cascade)
+  eventAttendees User[]  @relation("EventAttendees")
+  createdAt DateTime @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum EventTag {
+  WORKSHOP
+  SEMINAR
+  LECTURE
+  STUDY_SESSION
+  HACKATHON
+  BOOTCAMP
+  RESEARCH_SYMPOSIUM
+  COMPETITION
+  EXAM_PREP
+  TUTORING
+
+  CAREER_FAIR
+  INFO_SESSION
+  NETWORKING
+  RESUME_CLINIC
+  INTERVIEW_PREP
+  INTERNSHIP_FAIR
+  COMPANY_VISIT
+  PANEL_DISCUSSION
+  ALUMNI_MEETUP
+  ENTREPRENEURSHIP
+
+  PARTY
+  MIXER
+  CLUB_FAIR
+  GAME_NIGHT
+  MOVIE_NIGHT
+  CULTURAL_FESTIVAL
+  CONCERT
+  TALENT_SHOW
+  STUDENT_GALA
+  SPORTS_GAME
+
+  FUNDRAISER
+  CHARITY_EVENT
+  CLEANUP_DRIVE
+  BLOOD_DRIVE
+  VOLUNTEERING
+  AWARENESS_CAMPAIGN
+  DONATION_DRIVE
+  MENTORSHIP
+
+  MEDITATION
+  YOGA
+  FITNESS_CLASS
+  MENTAL_HEALTH
+  SELF_DEVELOPMENT
+  MINDFULNESS
+  NUTRITION_TALK
+  COUNSELING_SESSION
+
+  CODING_CHALLENGE
+  TECH_TALK
+  AI_ML_WORKSHOP
+  STARTUP_PITCH
+  ROBOTICS_DEMO
+  CYBERSECURITY
+  PRODUCT_SHOWCASE
+
+  CULTURAL_NIGHT
+  LANGUAGE_EXCHANGE
+  INTERNATIONAL_MEETUP
+  PRIDE_EVENT
+  HERITAGE_CELEBRATION
+  INCLUSION_WORKSHOP
+
+  ART_EXHIBIT
+  PHOTOGRAPHY_CONTEST
+  FILM_SCREENING
+  THEATER_PLAY
+  OPEN_MIC
+  DANCE_PERFORMANCE
+  MUSIC_JAM
+
+  ECO_WORKSHOP
+  RECYCLING_DRIVE
+  CLIMATE_TALK
+  GREEN_TECH
+  TREE_PLANTING
+  SUSTAINABILITY
+
+  FREE_ENTRY
+  PAID_EVENT
+  ON_CAMPUS
+  OFF_CAMPUS
+  VIRTUAL
+  HYBRID
+  FOOD_PROVIDED
+  CERTIFICATE_AVAILABLE
+  TEAM_EVENT
+  SOLO_EVENT
+}

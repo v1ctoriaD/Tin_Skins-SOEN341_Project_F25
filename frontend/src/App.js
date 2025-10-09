@@ -70,6 +70,36 @@ function App() {
 
 export default App;
 
+
+
+
+
+// import React, { useEffect, useState } from "react";
+// import Navbar from "./components/Navbar";
+// import Banner from "./components/Banner";   // or Hero, depending on your file
+// import "./styles/tokens.css";
+// import "./App.css";
+
+// function App() {
+//   const [message, setMessage] = useState("");
+
+//   useEffect(() => {
+//     fetch("/api/hello")
+//       .then((res) => res.json())
+//       .then((data) => setMessage(data.message))
+//       .catch((err) => console.error("Error fetching backend:", err));
+//   }, []);
+
+//   return (
+//     <div className="App">
+//       <Navbar />
+//       <Banner />
+//     </div>
+//   );
+// }
+
+// export default App;
+
 /**
  * import logo from './logo.svg';
 import './App.css';
