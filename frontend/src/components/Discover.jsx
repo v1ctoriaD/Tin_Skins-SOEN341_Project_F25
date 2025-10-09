@@ -2,8 +2,23 @@ import React, { useState } from "react";
 import EventCard from "./EventCard";
 import events from "../data/events";
 import "./Discover.css"; // create this CSS file
+import Filters from "./Filters";
+
+const categories = ["Wellness", "Art", "Food"]; // mock categories, actual categories TBD
+
 
 function Discover() {
+
+  const handleCategoryChange = (category) => {
+    console.log("Selected category:", category);
+    // connect API here
+  };
+
+  const handleDateChange = (date) => {
+    console.log("Selected date:", date);
+    // connect API here
+  };
+
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const handleCardClick = (event) => setSelectedEvent(event);
@@ -16,6 +31,11 @@ function Discover() {
   return (
     <div className="discover-page">
       <h1>Discover Events</h1>
+      <Filters
+        categories={categories}
+        onCategoryChange={handleCategoryChange}
+        onDateChange={handleDateChange}
+      />
       <div className="event-grid">
         {events.map(event => (
           <EventCard key={event.id} event={event} onClick={handleCardClick} />

@@ -131,3 +131,21 @@
   background-color: #ADBBDA;
 }
 
+.filters-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center; 
+  align-items: center;
+}
+
+.filters-container select,
+.filters-container input {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  color: #3D52A0;
+  background-color: #EDE8F5;
+}
+
