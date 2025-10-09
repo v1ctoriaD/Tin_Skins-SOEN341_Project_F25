@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/tokens.css";
 import { FaTwitter, FaFacebook, FaInstagram, FaLinkedin, FaSearch, FaUser } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
@@ -25,7 +26,7 @@ export default function Navbar() {
 
           {/* Links (just below) */}
           <div>
-            <a href="/discover" className="nav-logo"><FaSearch /></a>
+            <Link to="/discover" className="nav-logo"><FaSearch /></Link>
             <a href="/login" className="nav-logo"><FaUser /></a>
         </div>
         </div>
