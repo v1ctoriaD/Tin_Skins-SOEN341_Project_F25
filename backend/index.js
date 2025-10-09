@@ -1,4 +1,8 @@
+const express = require("express");
+const app = express();
+const PORT = 5000;
 
+app.use(express.json());
 import prisma from "./database/prisma.js";
 let sessions = {};
 
