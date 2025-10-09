@@ -32,6 +32,11 @@ export async function createUser(email, password, firstName, lastName, role='USE
         email,
         password,
     });
+    /**const { data, error } = await supabase.auth.admin.createUser({
+        email: email,
+        password,
+        email_confirm: true
+    }); */ //Only used for seeding - unsafe
 
     if(error) {
         console.error("Sign-up error:", error.message);
@@ -70,6 +75,11 @@ export async function createOrganization(email, password, orgName, isApproved=fa
         email,
         password,
     });
+    /**const { data, error } = await supabase.auth.admin.createUser({
+        email: email,
+        password,
+        email_confirm: true
+    });*/ //Only used for seeding - unsafe
 
     if(error) {
         console.error("Sign-up error:", error.message);
