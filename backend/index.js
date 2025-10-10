@@ -1,6 +1,5 @@
 import 'dotenv/config';
-import express from express;
-const express = require("express");
+import express from "express";
 const app = express();
 const PORT = 5000;
 
