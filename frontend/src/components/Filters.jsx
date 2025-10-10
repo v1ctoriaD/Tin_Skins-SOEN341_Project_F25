@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 
-function Filters({ categories, onCategoryChange, onDateChange }) {
+function Filters({ categories, organizations, onCategoryChange, onDateChange, onOrganizationChange }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [selectedOrganization, setSelectedOrganization] = useState("");
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
@@ -12,6 +13,11 @@ function Filters({ categories, onCategoryChange, onDateChange }) {
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
     if (onDateChange) onDateChange(e.target.value);
+  };
+
+  const handleOrganizationChange = (e) => {
+    setSelectedOrganization(e.target.value);
+    if (onOrganizationChange) onOrganizationChange(e.target.value);
   };
 
   return (
@@ -28,6 +34,13 @@ function Filters({ categories, onCategoryChange, onDateChange }) {
         value={selectedDate}
         onChange={handleDateChange}
       />
+
+      <select value={selectedOrganization} onChange={handleOrganizationChange}>
+        <option value="">All Organizations</option>
+        {organizations.map((org) => (
+          <option key={org} value={org}>{org}</option>
+        ))}
+      </select>
     </div>
   );
 }
