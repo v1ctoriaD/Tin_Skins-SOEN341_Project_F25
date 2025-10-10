@@ -1,4 +1,3 @@
-import React from "react";
 import "../styles/tokens.css";
 import { FaTwitter, FaFacebook, FaInstagram, FaLinkedin, FaSearch, FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -20,26 +19,29 @@ export default function Navbar() {
         {/* Right: Site name and links */}
         <div style={{ textAlign: "right" }}>
           {/* Site name (on top) */}
-          <div style={{ fontWeight: "bold", fontSize: "20px", marginBottom: "4px" }}>
-            NAME+LOGO
-          </div>
+          <Link to="/">
+            <div style={{ fontWeight: "bold", fontSize: "20px", marginBottom: "4px" }}>
+              NAME+LOGO
+            </div>
+          </Link>
+          
 
           {/* Links (just below) */}
           <div>
             <Link to="/discover" className="nav-logo"><FaSearch /></Link>
-            <a href="/login" className="nav-logo"><FaUser /></a>
+            <Link to="/account" className="nav-logo"><FaUser /></Link>
         </div>
         </div>
       </div>
 
       {/* Center options row */}
-      <nav style={{ marginTop: "8px", textAlign: "center"}}>
-        <a href="#" className="nav-option">Option1</a>
-        <a href="#" className="nav-option">Option2</a>
-        <a href="#" className="nav-option">Option3</a>
-        <a href="#" className="nav-option">Option4</a>
-        <a href="#" className="nav-option">Option5</a>
-        <a href="#" className="nav-option">About Us</a>
+      <nav style={{ marginTop: "8px", textAlign: "center" }}>
+        <Link to="/" className="nav-option">Option1</Link>
+        <Link to="/" className="nav-option">Option2</Link>
+        <Link to="/" className="nav-option">Option3</Link>
+        <Link to="/" className="nav-option">Option4</Link>
+        <Link to="/" className="nav-option">Option5</Link>
+        <Link to="/" className="nav-option">About Us</Link>
       </nav>
     </header>
   );

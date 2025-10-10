@@ -1,11 +1,8 @@
-import React from "react";
-
-const Logout = ({ token, onLogout }) => {
+const Logout = ({ onLogout }) => {
   const handleLogout = async () => {
     const res = await fetch("/api/logout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
     });
     const data = await res.json();
     if (res.ok) {

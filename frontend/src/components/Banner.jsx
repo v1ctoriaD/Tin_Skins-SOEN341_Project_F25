@@ -1,5 +1,5 @@
 // src/components/Banner.jsx
-import React from "react";
+import { Link } from "react-router-dom";
 import "../styles/tokens.css";
 
 export default function Banner() {
@@ -16,8 +16,10 @@ export default function Banner() {
           Find clubs, shows, workshops and more across campus
         </p>
         <div style={{ marginTop:"16px" }}>
-          <a className="button" href="/discover">See events</a>
-          <a className="button" style={{ marginLeft:"12px", background:"var(--color-accent)" }}>
+          <Link className="button" to="/discover">
+            See events
+          </Link>
+          <a className="button" href="#" tyle={{ marginLeft:"12px", background:"var(--color-accent)" }}>
             Create an event
           </a>
         </div>

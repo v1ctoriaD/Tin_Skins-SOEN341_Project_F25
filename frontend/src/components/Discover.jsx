@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import EventCard from "./EventCard";
 import events from "../data/events";
 import "./Discover.css"; // create this CSS file

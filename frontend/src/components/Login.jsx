@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
@@ -10,12 +10,12 @@ const Login = ({ onLogin }) => {
     const res = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
     if (res.ok) {
       setMessage("Login successful!");
-      onLogin && onLogin(data.token);
+      onLogin && onLogin(data.session);
     } else {
       setMessage(data.error);
     }
@@ -27,9 +27,9 @@ const Login = ({ onLogin }) => {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Username"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
+          placeholder="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
         />
         <input
           type="password"
