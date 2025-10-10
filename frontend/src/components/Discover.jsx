@@ -5,7 +5,7 @@ import "./Discover.css"; // create this CSS file
 import Filters from "./Filters";
 
 const categories = ["Wellness", "Art", "Food"]; // mock categories, actual categories TBD
-
+const organizations = ["Org A", "Org B", "Org C"]; // mock list
 
 function Discover() {
 
@@ -16,6 +16,11 @@ function Discover() {
 
   const handleDateChange = (date) => {
     console.log("Selected date:", date);
+    // connect API here
+  };
+
+    const handleOrganizationChange = (org) => {
+    console.log("Selected organization:", org);
     // connect API here
   };
 
@@ -33,8 +38,10 @@ function Discover() {
       <h1>Discover Events</h1>
       <Filters
         categories={categories}
+        organizations={organizations}
         onCategoryChange={handleCategoryChange}
         onDateChange={handleDateChange}
+        onOrganizationChange={handleOrganizationChange}
       />
       <div className="event-grid">
         {events.map(event => (
