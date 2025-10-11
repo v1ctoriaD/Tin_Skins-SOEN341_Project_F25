@@ -6,6 +6,15 @@ const PORT = 5000;
 
 app.use(express.json());
 
+// Get all Events endpoint
+app.get("/api/getEvents", async (req, res) => {
+  const events = await database.getAllEvents();
+  if(!events) {
+    return res.status(500).json({ error: "Either no events or database error" });
+  }
+  res.json({ events });
+});
+
 // Signup endpoint
 app.post("/api/signup", async (req, res) => {
   const { email, password, firstName = "", lastName = "" } = req.body;

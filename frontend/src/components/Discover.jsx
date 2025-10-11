@@ -7,7 +7,7 @@ import Filters from "./Filters";
 const categories = ["Wellness", "Art", "Food"]; // mock categories, actual categories TBD
 
 
-function Discover() {
+function Discover(/*{ events }*/) {
 
   const handleCategoryChange = (category) => {
     console.log("Selected category:", category);
