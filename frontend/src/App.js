@@ -1,39 +1,56 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// Core components
 import Navbar from "./components/Navbar";
 import Banner from "./components/Banner";
-import Discover from "./components/Discover"; // or wherever you save it
+import Discover from "./components/Discover";
 
-//qr code tester component
+// QR pages
 import QrGenerate from "./components/QrCode/QrGenerate";
 import QrScan from "./components/QrCode/QrScan";
 
-//styles
+// Auth pages
+import Signup from "./components/Signup";
+import Login from "./components/Login";
+import Logout from "./components/Logout";
+
+// Styles
 import "./styles/tokens.css";
 import "./App.css";
 import "./styles/qrcodeMenu.css";
 
 function App() {
-  const [message, setMessage] = useState("");
+  const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    fetch("/api/hello")
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch((err) => console.error("Error fetching backend:", err));
-  }, []);
+  const handleLogin = (t) => {
+    setToken(t);
+  };
+
+  const handleLogout = () => {
+    setToken(null);
+  };
 
   return (
     <div className="App">
       <BrowserRouter>
-        <Navbar />
+        {/* Navbar stays at the top */}
+        <Navbar token={token} onLogout={handleLogout} />
+
+        {/* All routed pages */}
         <Routes>
+          {/* Home & Discover */}
           <Route path="/" element={<Banner />} />
           <Route path="/discover" element={<Discover />} />
 
-          {/*qr code routes*/}
+          {/* QR Code pages */}
           <Route path="/qr/generate" element={<QrGenerate />} />
-          <Route path="/qr/scan" element={<QrScan/>} />
+          <Route path="/qr/scan" element={<QrScan />} />
+
+          {/* Auth pages */}
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/logout" element={<Logout token={token} onLogout={handleLogout} />} />
         </Routes>
       </BrowserRouter>
     </div>
