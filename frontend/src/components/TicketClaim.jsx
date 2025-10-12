@@ -16,8 +16,11 @@ export default function TicketClaim({ events = null }) {
   const VISIBLE_COUNT = 3;
   const visibleEvents = events && events.length ? events.slice(0, VISIBLE_COUNT) : null;
   const defaultEventId = visibleEvents && visibleEvents.length ? visibleEvents[0].id : null;
+  // form state (declared before effects that reference it)
+  const [form, setForm] = useState({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId });
+
   // currently selected event object (from the visible events slice)
-  const [selectedEvent, setSelectedEvent] = useState(visibleEvents && visibleEvents.find((ev) => ev.id === defaultEventId) || null);
+  const [selectedEvent, setSelectedEvent] = useState((visibleEvents && visibleEvents.find((ev) => ev.id === defaultEventId)) || null);
 
   useEffect(() => {
     // update selectedEvent when form.eventId or visibleEvents change
@@ -25,7 +28,6 @@ export default function TicketClaim({ events = null }) {
     const ev = visibleEvents.find((x) => Number(x.id) === Number(form.eventId));
     setSelectedEvent(ev || null);
   }, [form.eventId, visibleEvents]);
-  const [form, setForm] = useState({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId });
   const [errors, setErrors] = useState([]);
   const [stage, setStage] = useState("form"); // form, payment, processing, done
 
