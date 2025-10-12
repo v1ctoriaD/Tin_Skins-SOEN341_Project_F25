@@ -3,8 +3,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Banner from "./components/Banner";
 import Discover from "./components/Discover"; // or wherever you save it
+
+//qr code tester component
+import QrGenerate from "./components/QrCode/QrGenerate";
+import QrScan from "./components/QrCode/QrScan";
+
+//styles
 import "./styles/tokens.css";
 import "./App.css";
+import "./styles/qrcodeMenu.css";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -23,6 +30,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Banner />} />
           <Route path="/discover" element={<Discover />} />
+
+          {/*qr code routes*/}
+          <Route path="/qr/generate" element={<QrGenerate />} />
+          <Route path="/qr/scan" element={<QrScan/>} />
         </Routes>
       </BrowserRouter>
     </div>
@@ -30,8 +41,6 @@ function App() {
 }
 
 export default App;
-
-
 
 
 
