@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import EventCard from "./EventCard";
 import events from "../data/events";
 import "./Discover.css"; // create this CSS file
@@ -7,7 +7,7 @@ import Filters from "./Filters";
 const categories = ["Wellness", "Art", "Food"]; // mock categories, actual categories TBD
 const organizations = ["Org A", "Org B", "Org C"]; // mock list
 
-function Discover() {
+function Discover(/*{ events }*/) {
 
   const handleCategoryChange = (category) => {
     console.log("Selected category:", category);

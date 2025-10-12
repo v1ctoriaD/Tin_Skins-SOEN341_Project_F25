@@ -1,4 +1,3 @@
-import React from "react";
 import "../styles/tokens.css";
 import {
   FaTwitter, FaFacebook, FaInstagram, FaLinkedin,
