@@ -364,6 +364,65 @@ export async function getAllEvents() {
 }
 
 /**
+ * get all events that a user is registered to
+ * @param {*} session 
+ * @returns array with all events that a user is registered to or []
+ */
+export async function getUserRegisteredEvents(session) {
+  const user = await getUser(session);
+  if (!user) return [];
+
+  const userWithEvents = await prisma.user.findUnique({
+    where: { id: user.id },
+    include: {
+      eventsRegistered: {
+        include: {
+          eventOwner: { select: { orgName: true } }, 
+        },
+      },
+    },
+  });
+
+  return userWithEvents?.eventsRegistered ?? [];
+}
+
+/**
+ * Gets all events owned by an organization
+ * @param {*} session 
+ * @returns array with all events owned by the organization or []
+ */
+export async function getAllEventsOwned(session) {
+  const { user } = session;
+  if (!user) return [];
+
+  const org = await prisma.organization.findUnique({
+    where: { authId: user.id },
+    include: {
+      eventsOwned: true, 
+    },
+  });
+
+  return org?.eventsOwned ?? [];
+}
+
+/**
+ * Gets all the users registered to an event through the eventId
+ * @param {Number} eventId 
+ * @returns array with all users registered to the event or []
+ */
+export async function getAllUsersRegisteredTo(eventId) {
+    const events = await prisma.event.findUnique({
+        where: {
+            id: eventId,
+        },
+        include: {
+            eventAttendees: true
+        }
+    });
+    return events?.eventAttendees ?? [];
+}
+
+/**
  * Refreshes the session since the session expires every hour
  * @param {*} session 
  * @returns refreshed session
