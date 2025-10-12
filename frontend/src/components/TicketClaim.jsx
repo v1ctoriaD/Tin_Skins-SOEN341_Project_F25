@@ -9,11 +9,14 @@ const INITIAL_STOCK = {
   vip: 5,
 };
 
-export default function TicketClaim() {
+export default function TicketClaim({ events = null }) {
   const navigate = useNavigate();
   const [stock, setStock] = useState(INITIAL_STOCK);
-
-  const [form, setForm] = useState({ name: "", email: "", type: "free", qty: 1 });
+  // For testing, only show a small subset of events (first 3)
+  const VISIBLE_COUNT = 3;
+  const visibleEvents = events && events.length ? events.slice(0, VISIBLE_COUNT) : null;
+  const defaultEventId = visibleEvents && visibleEvents.length ? visibleEvents[0].id : null;
+  const [form, setForm] = useState({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId });
   const [errors, setErrors] = useState([]);
   const [stage, setStage] = useState("form"); // form, payment, processing, done
 
@@ -25,6 +28,7 @@ export default function TicketClaim() {
     if (form.qty > 10) e.push("You can claim up to 10 tickets at once");
     const available = stock[form.type] ?? 0;
     if (form.qty > available) e.push(`Only ${available} ${form.type} tickets left`);
+    if (!form.eventId) e.push('Please select an event');
     return e;
   }
 
@@ -40,110 +44,150 @@ export default function TicketClaim() {
       return;
     }
 
-    // For free tickets, process immediately
-    processClaim();
+    // For free tickets, call backend endpoint to create tickets
+    if (form.type === "free") {
+      await submitToBackend();
+      return;
+    }
   }
-
-  function processClaim() {
-    setStage("processing");
-    // simulate server call
-    setTimeout(() => {
-      // decrement stock
-      setStock((s) => ({ ...s, [form.type]: s[form.type] - form.qty }));
-      setStage("done");
-    }, 900);
-  }
-
   function onPay() {
     setStage("processing");
     setTimeout(() => {
-      setStock((s) => ({ ...s, [form.type]: s[form.type] - form.qty }));
-      setStage("done");
+      // after mock payment, call backend
+      submitToBackend();
     }, 1200);
   }
 
+  async function submitToBackend() {
+    setStage('processing');
+    try {
+      const res = await fetch(`/api/events/${form.eventId}/tickets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: form.name, email: form.email, ticketType: form.type, qty: form.qty }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrors([data.error || 'Failed to create tickets']);
+        setStage('form');
+        return;
+      }
+      // update local stock if applicable
+      setStock((s) => ({ ...s, [form.type]: (s[form.type] ?? 0) - form.qty }));
+      setStage('done');
+    } catch (err) {
+      setErrors([err.message || 'Network error']);
+      setStage('form');
+    }
+  }
+
   if (stage === "done") {
+    const selectedEvent = events && events.find((ev) => ev.id === form.eventId);
     return (
-      <div className="page">
-        <h2>Tickets claimed ✅</h2>
-        <p>Thanks {form.name}. Your {form.qty} {form.type} ticket(s) are reserved.</p>
-        <button onClick={() => navigate("/discover")}>Back to events</button>
+      <div className="page" style={{ display: 'flex', justifyContent: 'center', paddingTop: 40 }}>
+        <div style={{ width: 560, padding: 24, borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', background: '#fff' }}>
+          <h2 style={{ marginTop: 0 }}>Tickets claimed ✅</h2>
+          <p>Thanks <strong>{form.name}</strong>. Your <strong>{form.qty}</strong> {form.type} ticket(s) for <strong>{selectedEvent ? selectedEvent.title : 'selected event'}</strong> are reserved.</p>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <button onClick={() => navigate("/discover")}>Back to events</button>
+            <button onClick={() => { setForm({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId }); setStage('form'); }}>Claim more</button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="page">
-      <h2>Claim Tickets</h2>
-      <p>Simple ticket claim form. Select ticket type and quantity.</p>
+    <div className="page" style={{ display: 'flex', justifyContent: 'center', paddingTop: 32 }}>
+      <div style={{ width: 560, padding: 24, borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.08)', background: '#fff' }}>
+        <h2 style={{ marginTop: 0 }}>Claim Tickets</h2>
+        <p style={{ color: '#555' }}>Fill the form below to claim tickets. Select an event and ticket type.</p>
 
-      <div style={{ marginBottom: 12 }}>
-        <strong>Availability:</strong>
-        <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
-          <span>Free: {stock.free}</span>
-          <span>Paid: {stock.paid}</span>
-          <span>VIP: {stock.vip}</span>
+        <div style={{ marginTop: 12, marginBottom: 12, display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ color: '#333' }}>
+            <strong>Availability:</strong>
+            <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
+              <span>Free: {stock.free}</span>
+              <span>Paid: {stock.paid}</span>
+              <span>VIP: {stock.vip}</span>
+            </div>
+          </div>
+          <div style={{ textAlign: 'right', color: '#666' }}>
+            <small>Events: {events ? events.length : '—'}</small>
+          </div>
         </div>
+
+        {errors.length > 0 && (
+          <div style={{ color: '#a33', marginBottom: 12 }}>
+            {errors.map((err, i) => (
+              <div key={i}>{err}</div>
+            ))}
+          </div>
+        )}
+
+        {stage === 'form' && (
+          <form onSubmit={onSubmit} style={{ display: 'grid', gap: 12 }}>
+            <div>
+              <label htmlFor="event-select" style={{ display: 'block', marginBottom: 6 }}>Event</label>
+                <select id="event-select" value={form.eventId ?? ''} onChange={(e) => setForm({ ...form, eventId: e.target.value ? Number(e.target.value) : null })} style={{ width: '100%', padding: 8 }}>
+                  <option value="" disabled>{visibleEvents && visibleEvents.length ? 'Select an event' : 'No events available'}</option>
+                  {visibleEvents && visibleEvents.map((ev) => (
+                    <option key={ev.id} value={ev.id}>{ev.title}</option>
+                  ))}
+                </select>
+            </div>
+
+            <div>
+              <label htmlFor="name" style={{ display: 'block', marginBottom: 6 }}>Name</label>
+              <input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} style={{ width: '100%', padding: 8 }} />
+            </div>
+
+            <div>
+              <label htmlFor="email" style={{ display: 'block', marginBottom: 6 }}>Email</label>
+              <input id="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} style={{ width: '100%', padding: 8 }} />
+            </div>
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              <div style={{ flex: 1 }}>
+                <label htmlFor="type" style={{ display: 'block', marginBottom: 6 }}>Ticket Type</label>
+                <select id="type" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} style={{ width: '100%', padding: 8 }}>
+                  <option value="free">Free</option>
+                  <option value="paid">Paid</option>
+                  <option value="vip">VIP (paid)</option>
+                </select>
+              </div>
+
+              <div style={{ width: 120 }}>
+                <label htmlFor="qty" style={{ display: 'block', marginBottom: 6 }}>Quantity</label>
+                <input id="qty" type="number" min={1} max={10} value={form.qty} onChange={(e) => setForm({ ...form, qty: Number(e.target.value) })} style={{ width: '100%', padding: 8 }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 6 }}>
+              <button type="button" onClick={() => { setForm({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId }); setErrors([]); }}>Reset</button>
+              <button type="submit">Continue</button>
+            </div>
+          </form>
+        )}
+
+        {stage === 'payment' && (
+          <div>
+            <h3>Mock Payment</h3>
+            <p>You're about to pay for {form.qty} {form.type} ticket(s).</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={onPay}>Pay (mock)</button>
+              <button onClick={() => setStage('form')}>Back</button>
+            </div>
+          </div>
+        )}
+
+        {stage === 'processing' && (
+          <div>
+            <h3>Processing...</h3>
+            <p>Please wait while we reserve your tickets.</p>
+          </div>
+        )}
       </div>
-
-      {errors.length > 0 && (
-        <div style={{ color: "#a33", marginBottom: 12 }}>
-          {errors.map((err, i) => (
-            <div key={i}>{err}</div>
-          ))}
-        </div>
-      )}
-
-      {stage === "form" && (
-        <form onSubmit={onSubmit} style={{ maxWidth: 480 }}>
-          <div style={{ marginBottom: 8 }}>
-            <label>Name</label>
-            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          </div>
-
-          <div style={{ marginBottom: 8 }}>
-            <label>Email</label>
-            <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-          </div>
-
-          <div style={{ marginBottom: 8 }}>
-            <label>Ticket Type</label>
-            <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
-              <option value="free">Free</option>
-              <option value="paid">Paid</option>
-              <option value="vip">VIP (paid)</option>
-            </select>
-          </div>
-
-          <div style={{ marginBottom: 8 }}>
-            <label>Quantity</label>
-            <input type="number" min={1} max={10} value={form.qty} onChange={(e) => setForm({ ...form, qty: Number(e.target.value) })} />
-          </div>
-
-          <div style={{ display: "flex", gap: 8 }}>
-            <button type="submit">Continue</button>
-            <button type="button" onClick={() => { setForm({ name: "", email: "", type: "free", qty: 1 }); setErrors([]); }}>Reset</button>
-          </div>
-        </form>
-      )}
-
-      {stage === "payment" && (
-        <div>
-          <h3>Mock Payment</h3>
-          <p>You're about to pay for {form.qty} {form.type} ticket(s).</p>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={onPay}>Pay (mock)</button>
-            <button onClick={() => setStage("form")}>Back</button>
-          </div>
-        </div>
-      )}
-
-      {stage === "processing" && (
-        <div>
-          <h3>Processing...</h3>
-          <p>Please wait while we reserve your tickets.</p>
-        </div>
-      )}
     </div>
   );
 }
