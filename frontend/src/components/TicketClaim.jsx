@@ -20,7 +20,7 @@ export default function TicketClaim({ events = null }) {
   const [form, setForm] = useState({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId });
 
   // currently selected event object (from the visible events slice)
-  const [selectedEvent, setSelectedEvent] = useState((visibleEvents && visibleEvents.find((ev) => ev.id === defaultEventId)) || null);
+  const [selectedEvent, setSelectedEvent] = useState(visibleEvents ? visibleEvents.find((ev) => ev.id === defaultEventId) : null);
 
   useEffect(() => {
     // update selectedEvent when form.eventId or visibleEvents change
