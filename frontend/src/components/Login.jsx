@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
@@ -40,6 +41,12 @@ const Login = ({ onLogin }) => {
         <button type="submit">Login</button>
       </form>
       <div>{message}</div>
+      <p>
+        Don’t have an account?{" "}
+        <Link to="/signup" style={{ color: "blue", textDecoration: "underline" }}>
+          Sign up
+        </Link>
+      </p>
     </div>
   );
 };
