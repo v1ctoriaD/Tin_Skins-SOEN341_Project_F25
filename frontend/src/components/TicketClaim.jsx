@@ -14,18 +14,14 @@ export default function TicketClaim({ events = null }) {
   const [stock, setStock] = useState(INITIAL_STOCK);
   // For testing, only show a small subset of events (first 3)
   const VISIBLE_COUNT = 3;
-  // eslint-disable-next-line no-mixed-operators
-  const visibleEvents = events && events.length ? events.slice(0, VISIBLE_COUNT) : null;
-  const defaultEventId = visibleEvents && visibleEvents.length ? visibleEvents[0].id : null;
-    const visibleEvents = (events && events.length) ? events.slice(0, VISIBLE_COUNT) : null;
-    const defaultEventId = (visibleEvents && visibleEvents.length) ? visibleEvents[0].id : null;
+  const visibleEvents = (events && events.length) ? events.slice(0, VISIBLE_COUNT) : null;
+  const defaultEventId = (visibleEvents && visibleEvents.length) ? visibleEvents[0].id : null;
   // form state (declared before effects that reference it)
   const [form, setForm] = useState({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId });
 
   // currently selected event object (from the visible events slice)
   const [selectedEvent, setSelectedEvent] = useState(visibleEvents ? visibleEvents.find((ev) => ev.id === defaultEventId) : null);
 
-  // eslint-disable-next-line no-use-before-define
   useEffect(() => {
     // update selectedEvent when form.eventId or visibleEvents change
       if (!visibleEvents) {
@@ -45,7 +41,6 @@ export default function TicketClaim({ events = null }) {
     if (form.qty < 1) e.push("Quantity must be at least 1");
     if (form.qty > 10) e.push("You can claim up to 10 tickets at once");
   // Determine available count from selected event availability if present, otherwise from local stock
-  const perEventAvail = selectedEvent && selectedEvent.availability ? (selectedEvent.availability[form.type] ?? 0) : null;
   const perEventAvail = (selectedEvent && selectedEvent.availability) ? (selectedEvent.availability[form.type] ?? 0) : null;
     const available = perEventAvail !== null ? perEventAvail : (stock[form.type] ?? 0);
       if (form.qty > available) e.push(`Only ${available} ${form.type} tickets left`);
