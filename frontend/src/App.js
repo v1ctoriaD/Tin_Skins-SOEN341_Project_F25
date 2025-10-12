@@ -5,12 +5,12 @@ import Discover from "./components/Discover";
 import "./styles/tokens.css";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [ session, setSession ] = useState(null); //user session
   const [ events, setEvents ] = useState(null);
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
 
   //on load, get all events from backend
   useEffect(() => {
