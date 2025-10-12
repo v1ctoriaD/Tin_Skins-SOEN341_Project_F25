@@ -52,7 +52,7 @@ function App() {
           <Route path="/account" element={<Account session={session} setSession={onSetSessionHandler} />} />
           <Route path="/qr/generate" element={<QrGenerate />} />
           <Route path="/qr/scan" element={<QrScan />} />
-          <Route path="/tickets/claim" element={<TicketClaim />} />
+          <Route path="/tickets/claim" element={<TicketClaim events={events} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/logout" element={<Logout token={token} onLogout={handleLogout} />} />

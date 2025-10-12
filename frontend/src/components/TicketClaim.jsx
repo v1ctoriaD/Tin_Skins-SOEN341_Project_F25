@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/tokens.css";
 
@@ -14,23 +14,41 @@ export default function TicketClaim({ events = null }) {
   const [stock, setStock] = useState(INITIAL_STOCK);
   // For testing, only show a small subset of events (first 3)
   const VISIBLE_COUNT = 3;
-  const visibleEvents = (events && events.length) ? events.slice(0, VISIBLE_COUNT) : null;
-  const defaultEventId = (visibleEvents && visibleEvents.length) ? visibleEvents[0].id : null;
+  // normalize to an array so consumers don't have to null-check
+  const visibleEvents = useMemo(() => (events && events.length) ? events.slice(0, VISIBLE_COUNT) : [], [events]);
+  const defaultEventId = (visibleEvents.length) ? visibleEvents[0].id : null;
+  // maintain a local mutable copy of the visible events so the UI can reflect immediate changes
+  const [localEvents, setLocalEvents] = useState(visibleEvents);
+  useEffect(() => {
+    setLocalEvents(visibleEvents);
+  }, [visibleEvents]);
+
+  // compute aggregated availability across local events (used when no single event selected)
+  const aggregated = localEvents.reduce(
+    (acc, ev) => {
+      const avail = ev.availability || {};
+      acc.free += Number(avail.free ?? 0);
+      acc.paid += Number(avail.paid ?? 0);
+      acc.vip += Number(avail.vip ?? 0);
+      return acc;
+    },
+    { free: 0, paid: 0, vip: 0 }
+  );
   // form state (declared before effects that reference it)
   const [form, setForm] = useState({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId });
 
   // currently selected event object (from the visible events slice)
-  const [selectedEvent, setSelectedEvent] = useState(visibleEvents ? visibleEvents.find((ev) => ev.id === defaultEventId) : null);
+  const [selectedEvent, setSelectedEvent] = useState(localEvents ? localEvents.find((ev) => ev.id === defaultEventId) : null);
 
   useEffect(() => {
-    // update selectedEvent when form.eventId or visibleEvents change
-      if (!visibleEvents) {
-        setSelectedEvent(null);
-        return;
-      }
-    const ev = visibleEvents.find((x) => Number(x.id) === Number(form.eventId));
+    // update selectedEvent when form.eventId or localEvents change
+    if (!localEvents || localEvents.length === 0) {
+      setSelectedEvent(null);
+      return;
+    }
+    const ev = localEvents.find((x) => Number(x.id) === Number(form.eventId));
     setSelectedEvent(ev || null);
-  }, [form.eventId, visibleEvents]);
+  }, [form.eventId, localEvents]);
   const [errors, setErrors] = useState([]);
   const [stage, setStage] = useState("form"); // form, payment, processing, done
 
@@ -40,10 +58,12 @@ export default function TicketClaim({ events = null }) {
     if (!form.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) e.push("Valid email is required");
     if (form.qty < 1) e.push("Quantity must be at least 1");
     if (form.qty > 10) e.push("You can claim up to 10 tickets at once");
-  // Determine available count from selected event availability if present, otherwise from local stock
+  // Determine available count from selected event availability if present, otherwise from aggregated availability across visible events or local stock
   const perEventAvail = (selectedEvent && selectedEvent.availability) ? (selectedEvent.availability[form.type] ?? 0) : null;
-    const available = perEventAvail !== null ? perEventAvail : (stock[form.type] ?? 0);
-      if (form.qty > available) e.push(`Only ${available} ${form.type} tickets left`);
+  const available = perEventAvail !== null
+    ? perEventAvail
+    : (aggregated && aggregated[form.type] !== undefined ? aggregated[form.type] : (stock[form.type] ?? 0));
+  if (form.qty > available) e.push(`Only ${available} ${form.type} tickets left`);
     if (!form.eventId) e.push('Please select an event');
     return e;
   }
@@ -90,6 +110,15 @@ export default function TicketClaim({ events = null }) {
       }
       // update local stock if applicable
       setStock((s) => ({ ...s, [form.type]: (s[form.type] ?? 0) - form.qty }));
+      // also update localEvents availability for immediate UI feedback
+      setLocalEvents((list) => {
+        return list.map((ev) => {
+          if (Number(ev.id) !== Number(form.eventId)) return ev;
+          const newAvail = { ...(ev.availability || {}) };
+          newAvail[form.type] = (Number(newAvail[form.type] ?? 0) - Number(form.qty));
+          return { ...ev, availability: newAvail };
+        });
+      });
       setStage('done');
     } catch (err) {
       setErrors([err.message || 'Network error']);
@@ -117,19 +146,19 @@ export default function TicketClaim({ events = null }) {
     <div className="page" style={{ display: 'flex', justifyContent: 'center', paddingTop: 32 }}>
       <div style={{ width: 560, padding: 24, borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.08)', background: '#fff' }}>
         <h2 style={{ marginTop: 0 }}>Claim Tickets</h2>
-        <p style={{ color: '#555' }}>Fill the form below to claim tickets. Select an event and ticket type.</p>
+  <p style={{ color: '#555' }}>Fill the form below to claim tickets. Select an event and ticket type.</p>
 
         <div style={{ marginTop: 12, marginBottom: 12, display: 'flex', justifyContent: 'space-between', gap: 12 }}>
           <div style={{ color: '#333' }}>
             <strong>Availability:</strong>
             <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
-              <span>Free: {(selectedEvent && selectedEvent.availability) ? selectedEvent.availability.free : stock.free}</span>
-              <span>Paid: {(selectedEvent && selectedEvent.availability) ? selectedEvent.availability.paid : stock.paid}</span>
-              <span>VIP: {(selectedEvent && selectedEvent.availability) ? selectedEvent.availability.vip : stock.vip}</span>
+              <span>Free: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.free : (aggregated ? aggregated.free : stock.free)}</span>
+              <span>Paid: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.paid : (aggregated ? aggregated.paid : stock.paid)}</span>
+              <span>VIP: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.vip : (aggregated ? aggregated.vip : stock.vip)}</span>
             </div>
           </div>
           <div style={{ textAlign: 'right', color: '#666' }}>
-            <small>Events: {events ? events.length : '—'}</small>
+            <small>Events: {visibleEvents ? visibleEvents.length : (events ? events.length : '—')}</small>
           </div>
         </div>
 

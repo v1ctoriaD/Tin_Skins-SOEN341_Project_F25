@@ -440,12 +440,12 @@ export async function refreshSession(session) {
  * @param {String} buyerEmail
  * @param {Number} eventId
  * @param {String} ticketType // 'free' | 'paid'
- * @param {Number} qty
+ * @param {Number} quantity
  * @returns {Object} { success: boolean, error?: string, tickets?: Array }
  */
-export async function createTicketsForEvent(buyerName, buyerEmail, eventId, ticketType = 'free', qty = 1) {
+export async function createTicketsForEvent(buyerName, buyerEmail, eventId, ticketType = 'free', quantity = 1) {
   // Basic validation
-  if (!buyerEmail || !eventId || qty < 1) {
+  if (!buyerEmail || !eventId || quantity < 1) {
     return { success: false, error: 'Invalid input' };
   }
 
@@ -456,7 +456,7 @@ export async function createTicketsForEvent(buyerName, buyerEmail, eventId, tick
   // Calculate existing tickets count (issued and checked_in)
   const existingTicketsCount = await prisma.ticket.count({ where: { eventId: event.id } });
 
-  if (existingTicketsCount + qty > event.maxAttendees) {
+  if (existingTicketsCount + quantity > event.maxAttendees) {
     return { success: false, error: 'Sold out or not enough capacity' };
   }
 
@@ -474,7 +474,7 @@ export async function createTicketsForEvent(buyerName, buyerEmail, eventId, tick
   }
 
   const createdTickets = [];
-  for (let i = 0; i < qty; i++) {
+  for (let i = 0; i < quantity; i++) {
     const ticket = await prisma.ticket.create({ data: { eventId: event.id, userId: user.id } });
     createdTickets.push(ticket);
   }
