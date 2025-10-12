@@ -64,6 +64,27 @@ app.get("/api/hello", (req, res) => {
 app.post("/api/tickets/:ticketId/qr", generateQr);
 app.post("/api/checkin", validateQr);
 
+// Create tickets for an event (enforce capacity, support mock-paid)
+app.post('/api/events/:eventId/tickets', async (req, res) => {
+  const { eventId } = req.params;
+  const { name, email, ticketType = 'free', qty = 1 } = req.body;
+
+  if (!email || !eventId) {
+    return res.status(400).json({ error: 'Event ID and buyer email are required' });
+  }
+
+  try {
+    const result = await database.createTicketsForEvent(name, email, Number(eventId), ticketType, Number(qty));
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+    return res.status(201).json({ message: 'Tickets created', tickets: result.tickets });
+  } catch (err) {
+    console.error('Ticket creation error:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

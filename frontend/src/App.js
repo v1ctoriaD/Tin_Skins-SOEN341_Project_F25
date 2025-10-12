@@ -8,6 +8,7 @@ import Account from "./components/Account";
 
 import QrGenerate from "./components/QrCode/QrGenerate";
 import QrScan from "./components/QrCode/QrScan";
+import TicketClaim from "./components/TicketClaim";
 
 import Signup from "./components/Signup";
 import Login from "./components/Login";
@@ -51,6 +52,7 @@ function App() {
           <Route path="/account" element={<Account session={session} setSession={onSetSessionHandler} />} />
           <Route path="/qr/generate" element={<QrGenerate />} />
           <Route path="/qr/scan" element={<QrScan />} />
+          <Route path="/tickets/claim" element={<TicketClaim />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/logout" element={<Logout token={token} onLogout={handleLogout} />} />

@@ -53,6 +53,7 @@ export default function Navbar({ token = null, onLogout = () => {} }) {
       <nav style={{ marginTop: "8px", textAlign: "center" }}>
         <Link to="/" className="nav-option">Home</Link>
         <Link to="/discover" className="nav-option">Discover</Link>
+  <Link to="/tickets/claim" className="nav-option">Claim Tickets</Link>
         <a href="/map" className="nav-option">Map</a>
         <a href="#" className="nav-option">Option</a>
         <a href="#" className="nav-option">Option</a>

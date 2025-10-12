@@ -431,3 +431,53 @@ export async function refreshSession(session) {
     const { data: refreshedSession } = await supabase.auth.refreshSession(session.refresh_token);
     return refreshedSession.session;
 }
+
+/**
+ * Create tickets for an event after enforcing capacity
+ * Supports "free" and "paid" (mock) ticket types
+ * Creates or finds a user by email and creates `qty` Ticket records
+ * @param {String} buyerName
+ * @param {String} buyerEmail
+ * @param {Number} eventId
+ * @param {String} ticketType // 'free' | 'paid'
+ * @param {Number} qty
+ * @returns {Object} { success: boolean, error?: string, tickets?: Array }
+ */
+export async function createTicketsForEvent(buyerName, buyerEmail, eventId, ticketType = 'free', qty = 1) {
+  // Basic validation
+  if (!buyerEmail || !eventId || qty < 1) {
+    return { success: false, error: 'Invalid input' };
+  }
+
+  // Find event
+  const event = await prisma.event.findUnique({ where: { id: Number(eventId) }, include: { tickets: true } });
+  if (!event) return { success: false, error: 'Event not found' };
+
+  // Calculate existing tickets count (issued and checked_in)
+  const existingTicketsCount = await prisma.ticket.count({ where: { eventId: event.id } });
+
+  if (existingTicketsCount + qty > event.maxAttendees) {
+    return { success: false, error: 'Sold out or not enough capacity' };
+  }
+
+  // Mock payment flow for paid tickets
+  if (ticketType === 'paid') {
+    // In a real app we'd call a payment provider. Here we mock success.
+    const paymentSuccess = true;
+    if (!paymentSuccess) return { success: false, error: 'Payment failed' };
+  }
+
+  // Find or create user by email
+  let user = await prisma.user.findUnique({ where: { email: buyerEmail } });
+  if (!user) {
+    user = await prisma.user.create({ data: { authId: `guest_${Date.now()}`, email: buyerEmail, firstName: buyerName || '', lastName: '' } });
+  }
+
+  const createdTickets = [];
+  for (let i = 0; i < qty; i++) {
+    const ticket = await prisma.ticket.create({ data: { eventId: event.id, userId: user.id } });
+    createdTickets.push(ticket);
+  }
+
+  return { success: true, tickets: createdTickets };
+}
