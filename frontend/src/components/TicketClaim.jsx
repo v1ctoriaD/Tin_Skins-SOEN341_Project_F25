@@ -17,6 +17,8 @@ export default function TicketClaim({ events = null }) {
   // eslint-disable-next-line no-mixed-operators
   const visibleEvents = events && events.length ? events.slice(0, VISIBLE_COUNT) : null;
   const defaultEventId = visibleEvents && visibleEvents.length ? visibleEvents[0].id : null;
+    const visibleEvents = (events && events.length) ? events.slice(0, VISIBLE_COUNT) : null;
+    const defaultEventId = (visibleEvents && visibleEvents.length) ? visibleEvents[0].id : null;
   // form state (declared before effects that reference it)
   const [form, setForm] = useState({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId });
 
@@ -26,7 +28,10 @@ export default function TicketClaim({ events = null }) {
   // eslint-disable-next-line no-use-before-define
   useEffect(() => {
     // update selectedEvent when form.eventId or visibleEvents change
-    if (!visibleEvents) return setSelectedEvent(null);
+      if (!visibleEvents) {
+        setSelectedEvent(null);
+        return;
+      }
     const ev = visibleEvents.find((x) => Number(x.id) === Number(form.eventId));
     setSelectedEvent(ev || null);
   }, [form.eventId, visibleEvents]);
@@ -41,6 +46,7 @@ export default function TicketClaim({ events = null }) {
     if (form.qty > 10) e.push("You can claim up to 10 tickets at once");
   // Determine available count from selected event availability if present, otherwise from local stock
   const perEventAvail = selectedEvent && selectedEvent.availability ? (selectedEvent.availability[form.type] ?? 0) : null;
+  const perEventAvail = (selectedEvent && selectedEvent.availability) ? (selectedEvent.availability[form.type] ?? 0) : null;
     const available = perEventAvail !== null ? perEventAvail : (stock[form.type] ?? 0);
       if (form.qty > available) e.push(`Only ${available} ${form.type} tickets left`);
     if (!form.eventId) e.push('Please select an event');
@@ -122,9 +128,9 @@ export default function TicketClaim({ events = null }) {
           <div style={{ color: '#333' }}>
             <strong>Availability:</strong>
             <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
-              <span>Free: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.free : stock.free}</span>
-              <span>Paid: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.paid : stock.paid}</span>
-              <span>VIP: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.vip : stock.vip}</span>
+              <span>Free: {(selectedEvent && selectedEvent.availability) ? selectedEvent.availability.free : stock.free}</span>
+              <span>Paid: {(selectedEvent && selectedEvent.availability) ? selectedEvent.availability.paid : stock.paid}</span>
+              <span>VIP: {(selectedEvent && selectedEvent.availability) ? selectedEvent.availability.vip : stock.vip}</span>
             </div>
           </div>
           <div style={{ textAlign: 'right', color: '#666' }}>
@@ -145,7 +151,7 @@ export default function TicketClaim({ events = null }) {
             <div>
               <label htmlFor="event-select" style={{ display: 'block', marginBottom: 6 }}>Event</label>
                 <select id="event-select" value={form.eventId ?? ''} onChange={(e) => setForm({ ...form, eventId: e.target.value ? Number(e.target.value) : null })} style={{ width: '100%', padding: 8 }}>
-                  <option value="" disabled>{visibleEvents && visibleEvents.length ? 'Select an event' : 'No events available'}</option>
+                  <option value="" disabled>{(visibleEvents && visibleEvents.length) ? 'Select an event' : 'No events available'}</option>
                   {visibleEvents && visibleEvents.map((ev) => (
                     <option key={ev.id} value={ev.id}>{ev.title}</option>
                   ))}
