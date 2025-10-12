@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/tokens.css";
 
@@ -16,6 +16,15 @@ export default function TicketClaim({ events = null }) {
   const VISIBLE_COUNT = 3;
   const visibleEvents = events && events.length ? events.slice(0, VISIBLE_COUNT) : null;
   const defaultEventId = visibleEvents && visibleEvents.length ? visibleEvents[0].id : null;
+  // currently selected event object (from the visible events slice)
+  const [selectedEvent, setSelectedEvent] = useState(visibleEvents && visibleEvents.find((ev) => ev.id === defaultEventId) || null);
+
+  useEffect(() => {
+    // update selectedEvent when form.eventId or visibleEvents change
+    if (!visibleEvents) return setSelectedEvent(null);
+    const ev = visibleEvents.find((x) => Number(x.id) === Number(form.eventId));
+    setSelectedEvent(ev || null);
+  }, [form.eventId, visibleEvents]);
   const [form, setForm] = useState({ name: "", email: "", type: "free", qty: 1, eventId: defaultEventId });
   const [errors, setErrors] = useState([]);
   const [stage, setStage] = useState("form"); // form, payment, processing, done
@@ -26,9 +35,8 @@ export default function TicketClaim({ events = null }) {
     if (!form.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) e.push("Valid email is required");
     if (form.qty < 1) e.push("Quantity must be at least 1");
     if (form.qty > 10) e.push("You can claim up to 10 tickets at once");
-    // Determine available count from selected event availability if present, otherwise from local stock
-    const selectedEvent = visibleEvents && visibleEvents.find((ev) => ev.id === form.eventId);
-    const perEventAvail = selectedEvent && selectedEvent.availability ? (selectedEvent.availability[form.type] ?? 0) : null;
+  // Determine available count from selected event availability if present, otherwise from local stock
+  const perEventAvail = selectedEvent && selectedEvent.availability ? (selectedEvent.availability[form.type] ?? 0) : null;
     const available = perEventAvail !== null ? perEventAvail : (stock[form.type] ?? 0);
       if (form.qty > available) e.push(`Only ${available} ${form.type} tickets left`);
     if (!form.eventId) e.push('Please select an event');
