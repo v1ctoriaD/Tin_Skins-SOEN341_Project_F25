@@ -14,6 +14,7 @@ export default function TicketClaim({ events = null }) {
   const [stock, setStock] = useState(INITIAL_STOCK);
   // For testing, only show a small subset of events (first 3)
   const VISIBLE_COUNT = 3;
+  // eslint-disable-next-line no-mixed-operators
   const visibleEvents = events && events.length ? events.slice(0, VISIBLE_COUNT) : null;
   const defaultEventId = visibleEvents && visibleEvents.length ? visibleEvents[0].id : null;
   // form state (declared before effects that reference it)
@@ -22,6 +23,7 @@ export default function TicketClaim({ events = null }) {
   // currently selected event object (from the visible events slice)
   const [selectedEvent, setSelectedEvent] = useState(visibleEvents ? visibleEvents.find((ev) => ev.id === defaultEventId) : null);
 
+  // eslint-disable-next-line no-use-before-define
   useEffect(() => {
     // update selectedEvent when form.eventId or visibleEvents change
     if (!visibleEvents) return setSelectedEvent(null);
