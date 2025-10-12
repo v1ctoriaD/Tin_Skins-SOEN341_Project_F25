@@ -26,8 +26,11 @@ export default function TicketClaim({ events = null }) {
     if (!form.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) e.push("Valid email is required");
     if (form.qty < 1) e.push("Quantity must be at least 1");
     if (form.qty > 10) e.push("You can claim up to 10 tickets at once");
-    const available = stock[form.type] ?? 0;
-    if (form.qty > available) e.push(`Only ${available} ${form.type} tickets left`);
+    // Determine available count from selected event availability if present, otherwise from local stock
+    const selectedEvent = visibleEvents && visibleEvents.find((ev) => ev.id === form.eventId);
+    const perEventAvail = selectedEvent && selectedEvent.availability ? (selectedEvent.availability[form.type] ?? 0) : null;
+    const available = perEventAvail !== null ? perEventAvail : (stock[form.type] ?? 0);
+      if (form.qty > available) e.push(`Only ${available} ${form.type} tickets left`);
     if (!form.eventId) e.push('Please select an event');
     return e;
   }
@@ -107,9 +110,9 @@ export default function TicketClaim({ events = null }) {
           <div style={{ color: '#333' }}>
             <strong>Availability:</strong>
             <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
-              <span>Free: {stock.free}</span>
-              <span>Paid: {stock.paid}</span>
-              <span>VIP: {stock.vip}</span>
+              <span>Free: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.free : stock.free}</span>
+              <span>Paid: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.paid : stock.paid}</span>
+              <span>VIP: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.vip : stock.vip}</span>
             </div>
           </div>
           <div style={{ textAlign: 'right', color: '#666' }}>

@@ -8,8 +8,26 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
+// Lightweight mock mode: if DATABASE_URL is not set, serve mock events/tickets
+const useMock = !process.env.DATABASE_URL;
+let mockEvents = [];
+let mockTickets = [];
+if (useMock) {
+  // create a few sample events
+  mockEvents = [
+    // For testing keep just three events and give each its own availability by ticket type
+    { id: 1, title: 'Campus Concert', description: 'Live music night', cost: 0, maxAttendees: 50, availability: { free: 40, paid: 5, vip: 2 } },
+    { id: 2, title: 'Tech Workshop', description: 'Intro to React', cost: 10.0, maxAttendees: 30, availability: { free: 10, paid: 15, vip: 1 } },
+    { id: 3, title: 'Career Fair', description: 'Meet employers', cost: 0, maxAttendees: 100, availability: { free: 80, paid: 0, vip: 0 } },
+  ];
+}
+
 // Get all Events endpoint
 app.get("/api/getEvents", async (req, res) => {
+  if (useMock) {
+    return res.json({ events: mockEvents });
+  }
+
   const events = await database.getAllEvents();
   if (!events) {
     return res.status(500).json({ error: "Either no events or database error" });
@@ -71,6 +89,29 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
 
   if (!email || !eventId) {
     return res.status(400).json({ error: 'Event ID and buyer email are required' });
+  }
+
+  if (useMock) {
+    const ev = mockEvents.find((e) => Number(e.id) === Number(eventId));
+    if (!ev) return res.status(404).json({ error: 'Event not found' });
+    // validate availability by ticket type if provided
+    const type = ticketType || 'free';
+    if (!ev.availability || typeof ev.availability[type] !== 'number') {
+      return res.status(400).json({ error: 'Ticket type not supported for this event' });
+    }
+    const avail = ev.availability[type];
+    if (Number(qty) > avail) {
+      return res.status(400).json({ error: 'Not enough tickets available for this type' });
+    }
+    // decrement availability and create mock tickets
+    ev.availability[type] = avail - Number(qty);
+    const created = [];
+    for (let i = 0; i < Number(qty); i++) {
+      const ticket = { id: mockTickets.length + 1, eventId: Number(eventId), name, email, ticketType: type, status: 'ISSUED', createdAt: new Date() };
+      mockTickets.push(ticket);
+      created.push(ticket);
+    }
+    return res.status(201).json({ message: 'Tickets created (mock)', tickets: created });
   }
 
   try {
