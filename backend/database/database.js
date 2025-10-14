@@ -431,3 +431,54 @@ export async function refreshSession(session) {
     const { data: refreshedSession } = await supabase.auth.refreshSession(session.refresh_token);
     return refreshedSession.session;
 }
+
+/**
+ * Create tickets for an event after enforcing capacity
+ * Supports "free" and "paid" (mock) ticket types
+ * Creates or finds a user by email and creates `qty` Ticket records
+ * @param {String} buyerName
+ * @param {String} buyerEmail
+ * @param {Number} eventId
+ * @param {String} ticketType // 'free' | 'paid'
+ * @param {Number} quantity
+ * @param {Number|null} buyerId - DB user id of the authenticated buyer (required)
+ * @returns {Object} { success: boolean, error?: string, tickets?: Array }
+ */
+export async function createTicketsForEvent(buyerName, buyerEmail, eventId, ticketType = 'free', quantity = 1, buyerId = null) {
+  // Basic validation: require buyerId (authenticated user) and event
+  if (!eventId || quantity < 1 || !buyerId) {
+    return { success: false, error: 'Invalid input: buyerId (authenticated user) and eventId are required' };
+  }
+
+  // Find event
+  const event = await prisma.event.findUnique({ where: { id: Number(eventId) }, include: { tickets: true } });
+  if (!event) return { success: false, error: 'Event not found' };
+
+  // Calculate existing tickets count (issued and checked_in)
+  const existingTicketsCount = await prisma.ticket.count({ where: { eventId: event.id } });
+
+  if (existingTicketsCount + quantity > event.maxAttendees) {
+    return { success: false, error: 'Sold out or not enough capacity' };
+  }
+
+  // Mock payment flow for paid tickets
+  if (ticketType === 'paid') {
+    // In a real app we'd call a payment provider. Here we mock success.
+    const paymentSuccess = true;
+    if (!paymentSuccess) return { success: false, error: 'Payment failed' };
+  }
+
+  // Find user by id (authenticated). Do NOT auto-create guest users here.
+  const user = await prisma.user.findUnique({ where: { id: Number(buyerId) } });
+  if (!user) {
+    return { success: false, error: 'Authenticated user not found; cannot create tickets' };
+  }
+
+  const createdTickets = [];
+  for (let i = 0; i < quantity; i++) {
+    const ticket = await prisma.ticket.create({ data: { eventId: event.id, userId: user.id } });
+    createdTickets.push(ticket);
+  }
+
+  return { success: true, tickets: createdTickets };
+}
