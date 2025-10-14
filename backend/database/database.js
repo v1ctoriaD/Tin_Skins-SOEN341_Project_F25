@@ -441,12 +441,13 @@ export async function refreshSession(session) {
  * @param {Number} eventId
  * @param {String} ticketType // 'free' | 'paid'
  * @param {Number} quantity
+ * @param {Number|null} buyerId - DB user id of the authenticated buyer (required)
  * @returns {Object} { success: boolean, error?: string, tickets?: Array }
  */
 export async function createTicketsForEvent(buyerName, buyerEmail, eventId, ticketType = 'free', quantity = 1, buyerId = null) {
-  // Basic validation
-  if (!buyerEmail || !eventId || quantity < 1) {
-    return { success: false, error: 'Invalid input' };
+  // Basic validation: require buyerId (authenticated user) and event
+  if (!eventId || quantity < 1 || !buyerId) {
+    return { success: false, error: 'Invalid input: buyerId (authenticated user) and eventId are required' };
   }
 
   // Find event
@@ -467,16 +468,10 @@ export async function createTicketsForEvent(buyerName, buyerEmail, eventId, tick
     if (!paymentSuccess) return { success: false, error: 'Payment failed' };
   }
 
-  // Find user by id if provided (faster), otherwise find/create by email
-  let user = null;
-  if (buyerId) {
-    user = await prisma.user.findUnique({ where: { id: Number(buyerId) } });
-  }
+  // Find user by id (authenticated). Do NOT auto-create guest users here.
+  const user = await prisma.user.findUnique({ where: { id: Number(buyerId) } });
   if (!user) {
-    user = await prisma.user.findUnique({ where: { email: buyerEmail } });
-    if (!user) {
-      user = await prisma.user.create({ data: { authId: `guest_${Date.now()}`, email: buyerEmail, firstName: buyerName || '', lastName: '' } });
-    }
+    return { success: false, error: 'Authenticated user not found; cannot create tickets' };
   }
 
   const createdTickets = [];
