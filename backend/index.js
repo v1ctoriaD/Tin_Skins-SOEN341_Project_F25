@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import 'dotenv/config';
 import * as database from './database/database.js';
 import { generateQr, validateQr } from './database/qr.js';
@@ -6,7 +7,10 @@ import { generateQr, validateQr } from './database/qr.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
+app.use(cors({
+  origin: true, 
+  credentials: true
+}));
 
 // Lightweight mock mode: if DATABASE_URL is not set, serve mock events/tickets
 const useMock = !process.env.DATABASE_URL;
