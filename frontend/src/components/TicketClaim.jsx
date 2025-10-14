@@ -9,7 +9,7 @@ const INITIAL_STOCK = {
   vip: 5,
 };
 
-export default function TicketClaim({ events = null }) {
+export default function TicketClaim({ events = null, session = null, token = null }) {
   const navigate = useNavigate();
   const [stock, setStock] = useState(INITIAL_STOCK);
   // For testing, only show a small subset of events (first 3)
@@ -107,11 +107,19 @@ export default function TicketClaim({ events = null }) {
   async function submitToBackend() {
     setStage('processing');
     try {
-      const res = await fetch(`/api/events/${form.eventId}/tickets`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: form.name, email: form.email, ticketType: form.type, qty: form.qty }),
-      });
+        // include buyerAuthId when session is present (supabase user id) to let backend resolve the DB user
+        const buyerAuthId = session && session.user ? session.user.id : null;
+        const payload = { name: form.name, email: form.email, ticketType: form.type, qty: form.qty };
+        if (buyerAuthId) payload.buyerAuthId = buyerAuthId;
+        // include token if available for server-side verification (optional)
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch(`/api/events/${form.eventId}/tickets`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload),
+        });
       const data = await res.json();
       if (!res.ok) {
         setErrors([data.error || 'Failed to create tickets']);
