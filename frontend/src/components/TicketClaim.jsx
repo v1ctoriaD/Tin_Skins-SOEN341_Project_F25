@@ -13,7 +13,7 @@ export default function TicketClaim({ events = null }) {
   const navigate = useNavigate();
   const [stock, setStock] = useState(INITIAL_STOCK);
   // For testing, only show a small subset of events (first 3)
-  const VISIBLE_COUNT = 3;
+  const VISIBLE_COUNT = 100;
   // normalize to an array so consumers don't have to null-check
   const visibleEvents = useMemo(() => (events && events.length) ? events.slice(0, VISIBLE_COUNT) : [], [events]);
   const defaultEventId = (visibleEvents.length) ? visibleEvents[0].id : null;
@@ -86,12 +86,22 @@ export default function TicketClaim({ events = null }) {
       return;
     }
   }
-  function onPay() {
-    setStage("processing");
-    setTimeout(() => {
+  // Small helper to simulate async delay
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function onPay() {
+    try {
+      setStage("processing");
+      // simulate payment processing delay
+      await sleep(1200);
       // after mock payment, call backend
-      submitToBackend();
-    }, 1200);
+      await submitToBackend();
+    } catch (err) {
+      setErrors([err?.message || 'Payment failed']);
+      setStage('form');
+    }
   }
 
   async function submitToBackend() {

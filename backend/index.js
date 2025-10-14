@@ -85,7 +85,8 @@ app.post("/api/checkin", validateQr);
 // Create tickets for an event (enforce capacity, support mock-paid)
 app.post('/api/events/:eventId/tickets', async (req, res) => {
   const { eventId } = req.params;
-  const { name, email, ticketType = 'free', qty = 1 } = req.body;
+  const { name, email, ticketType = 'free', qty: quantity = 1 } = req.body;
+  const { buyerId = null } = req.body;
 
   if (!email || !eventId) {
     return res.status(400).json({ error: 'Event ID and buyer email are required' });
@@ -100,14 +101,14 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
       return res.status(400).json({ error: 'Ticket type not supported for this event' });
     }
     const avail = ev.availability[type];
-    if (Number(qty) > avail) {
+    if (Number(quantity) > avail) {
       return res.status(400).json({ error: 'Not enough tickets available for this type' });
     }
     // decrement availability and create mock tickets
-    ev.availability[type] = avail - Number(qty);
+    ev.availability[type] = avail - Number(quantity);
     const created = [];
-    for (let i = 0; i < Number(qty); i++) {
-      const ticket = { id: mockTickets.length + 1, eventId: Number(eventId), name, email, ticketType: type, status: 'ISSUED', createdAt: new Date() };
+    for (let i = 0; i < Number(quantity); i++) {
+      const ticket = { id: mockTickets.length + 1, eventId: Number(eventId), buyerId: buyerId ? Number(buyerId) : null, name, email, ticketType: type, status: 'ISSUED', createdAt: new Date() };
       mockTickets.push(ticket);
       created.push(ticket);
     }
@@ -115,7 +116,7 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
   }
 
   try {
-    const result = await database.createTicketsForEvent(name, email, Number(eventId), ticketType, Number(qty));
+  const result = await database.createTicketsForEvent(name, email, Number(eventId), ticketType, Number(quantity), buyerId ? Number(buyerId) : null);
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }

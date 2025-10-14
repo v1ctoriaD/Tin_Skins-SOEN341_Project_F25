@@ -443,7 +443,7 @@ export async function refreshSession(session) {
  * @param {Number} quantity
  * @returns {Object} { success: boolean, error?: string, tickets?: Array }
  */
-export async function createTicketsForEvent(buyerName, buyerEmail, eventId, ticketType = 'free', quantity = 1) {
+export async function createTicketsForEvent(buyerName, buyerEmail, eventId, ticketType = 'free', quantity = 1, buyerId = null) {
   // Basic validation
   if (!buyerEmail || !eventId || quantity < 1) {
     return { success: false, error: 'Invalid input' };
@@ -467,10 +467,16 @@ export async function createTicketsForEvent(buyerName, buyerEmail, eventId, tick
     if (!paymentSuccess) return { success: false, error: 'Payment failed' };
   }
 
-  // Find or create user by email
-  let user = await prisma.user.findUnique({ where: { email: buyerEmail } });
+  // Find user by id if provided (faster), otherwise find/create by email
+  let user = null;
+  if (buyerId) {
+    user = await prisma.user.findUnique({ where: { id: Number(buyerId) } });
+  }
   if (!user) {
-    user = await prisma.user.create({ data: { authId: `guest_${Date.now()}`, email: buyerEmail, firstName: buyerName || '', lastName: '' } });
+    user = await prisma.user.findUnique({ where: { email: buyerEmail } });
+    if (!user) {
+      user = await prisma.user.create({ data: { authId: `guest_${Date.now()}`, email: buyerEmail, firstName: buyerName || '', lastName: '' } });
+    }
   }
 
   const createdTickets = [];
