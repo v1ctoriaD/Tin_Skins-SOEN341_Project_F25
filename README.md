@@ -77,8 +77,8 @@ We identify three primary users: Students, Organizers, and Administrators.
 # Responsibilities :
 - Alesia: Event Browsing, CSV exporting, Map feature
 - Hiba: Event Browsing, CSV exporting, Map feature
-- Neil: Saving to Calendar, LogIn/LogOut, Account Moderation
+- Neil: Saving to Calendar, LogIn/LogOut
 - Victoria: UI design, Creating/editing events, QR codes
 - Basma: UI design, Creating/editing events, QR codes
 - Daniel: Event signup, moc pay, Event Analytics
-- Adrian: PM, Database, Creating/editing events, Account Moderation
+- Adrian: PM, Database, Account Moderation / Creation
