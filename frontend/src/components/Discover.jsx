@@ -1,11 +1,9 @@
 import { useState } from "react";
 import EventCard from "./EventCard";
-//import events from "../data/events";
-import "./Discover.css"; // create this CSS file
-//import Filters from "./Filters";
 
-//const categories = ["Wellness", "Art", "Food"]; // mock categories, actual categories TBD
-//const organizations = ["Org A", "Org B", "Org C"]; // mock list
+import "./Discover.css"; // create this CSS file
+import Filters from "./Filters";
+
 
 function Discover({ events }) {
 
@@ -61,13 +59,13 @@ function Discover({ events }) {
   return (
     <div className="discover-page">
       <h1>Discover Events ({safeEvents.length} events)</h1>
-      {/* <Filters
+      <Filters
         tags={tags}
         organizations={organizations}
         onTagChange={handleTagChange}
         onDateChange={handleDateChange}
         onOrganizationChange={handleOrganizationChange}
-      /> */}
+      /> 
       <div className="event-grid">
         {/* FIX: Use safeEvents instead of events */}
         {safeEvents.map(event => (
