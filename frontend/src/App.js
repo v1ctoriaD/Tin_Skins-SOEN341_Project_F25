@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Banner from "./components/Banner";
 import Discover from "./components/Discover";
-import Account from "./components/Account/Account";
 
 import QrGenerate from "./components/QrCode/QrGenerate";
 import QrScan from "./components/QrCode/QrScan";
@@ -46,12 +45,12 @@ function App() {
         <Navbar token={token} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<Banner />} />
-          <Route path="/discover" element={<Discover events={events} />} />
+          <Route path="/discover" element={<Discover events={events} user={user}/>} />
           {/*<Route path="/account" element={<Account session={session} setSession={onSetSessionHandler} />} />*/}
           <Route path="/qr/generate" element={<QrGenerate />} />
           <Route path="/qr/scan" element={<QrScan />} />
           <Route path="/tickets/claim" element={<TicketClaim events={events} session={session} token={token} />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} setOrg={setOrg} setSession={setSession} />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} org={org} setOrg={setOrg} setSession={setSession} />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/logout" element={<Logout token={token} onLogout={handleLogout} setUser={setUser} setOrg={setOrg} setSession={setSession} />} />
         </Routes>

@@ -60,6 +60,7 @@ const Signup = () => {
         confirmPassword: "",
       });
       setIsAccountCreated(true);
+      setMessage("");
     } else {
       setMessage(data.error);
     }

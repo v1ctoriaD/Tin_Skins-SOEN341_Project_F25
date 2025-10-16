@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/account.css";
 import "../../styles/Banner.css";
-import { PiCheckCircle  } from "react-icons/pi";
+import { PiCheckCircle, PiClockUser } from "react-icons/pi";
 
-const Login = ({ onLogin, setUser, setOrg, setSession }) => {
+const Login = ({ onLogin, setUser, org, setOrg, setSession }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -106,7 +106,23 @@ const Login = ({ onLogin, setUser, setOrg, setSession }) => {
           </Link>
         </p>
         </>
-        ): (
+        ) : ((accountType !== "user" && (org && !org.isApproved)) ? ( //check if this line is good...
+          <>
+            <PiClockUser className="warn-icon" />
+            <h1 className="warn-text">You're in!</h1>
+            <p className="login-subtext-dark">
+              Waiting for an <b>admin</b> to approve your account...
+            </p>
+            <div className="banner-buttons">
+              <Link className="button create-btn" to="/discover">
+                Browse Events While Waiting...
+              </Link>
+            </div>
+            <p className="login-subtext-dark">
+              <i>Note: This may take up to 24 hours</i>
+            </p>
+          </>
+        ) : (
           <>
             <PiCheckCircle className="check-icon" />
             <h1 className="success-text">You're in!</h1>
@@ -126,6 +142,7 @@ const Login = ({ onLogin, setUser, setOrg, setSession }) => {
               )} 
             </div>
           </>
+        )
         )}
       </div>
     </section>
