@@ -11,7 +11,7 @@
     top: 100%;
     left: 50%;
     transform: translateX(-50%);
-    min-width: 200px;
+    min-width: 150px;
     background: #E5E7EB;
     border: 1px solid #cacaca;
     box-shadow: 0 9px 18px rgba(0, 0, 0, 0.08);
@@ -36,12 +36,18 @@
   /*links inside dropdown */
   .dropdown-link {
     display: block;
+    width: 100%;
     padding: 10px 14px;
     text-decoration: none;
     color: var(--color-secondary);
     font-size: 14px;
+    border-radius: 0;
+    border: none;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
   }
-  
+
   .dropdown-link:hover {
     background: #dfdfdf;
     transition: all 0.4s ease;
@@ -69,10 +75,4 @@
   .user-dropdown.has-dropdown:hover .dropdown {
     transform: translateY(0);
   }
-  
-
-  
-
-
-
   

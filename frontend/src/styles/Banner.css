@@ -45,16 +45,6 @@
     color: #e5e5e5;
     margin-bottom: 24px;
   }
-  
-  .banner-buttons .button {
-    font-size: 16px;
-    padding: 12px 20px;
-    margin: 0 8px;
-  }
-  
-  .create-btn {
-    background: var(--color-accent);
-  }
 
   /*button inside banner */
 .banner-buttons .button {
@@ -70,12 +60,13 @@
   /*lift button up*/
   .banner-buttons .button:hover {
     transform: translateY(-4px); /* 👈 lift up a bit */
+    background: #3D52A0;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25); /* deeper shadow when hovered */
   }
   
-  .create-btn {
+  .banner-buttons .create-btn {
     background: var(--color-accent);
   }
-  .create-btn:hover {
+  .banner-buttons .create-btn:hover {
     background: #7c8ec9; 
   }

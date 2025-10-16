@@ -1,7 +1,7 @@
 import { useState } from "react";
 import EventCard from "./EventCard";
 import events from "../data/events";
-import "./Discover.css"; // create this CSS file
+import "../styles/Discover.css";
 import Filters from "./Filters";
 
 const categories = ["Wellness", "Art", "Food"]; // mock categories, actual categories TBD

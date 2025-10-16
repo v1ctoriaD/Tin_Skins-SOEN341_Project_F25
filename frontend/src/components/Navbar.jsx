@@ -53,11 +53,9 @@ export default function Navbar({ token = null, onLogout = () => {} }) {
       <nav style={{ marginTop: "8px", textAlign: "center" }}>
         <Link to="/" className="nav-option">Home</Link>
         <Link to="/discover" className="nav-option">Discover</Link>
-  <Link to="/tickets/claim" className="nav-option">Claim Tickets</Link>
-        <a href="/map" className="nav-option">Map</a>
-        <a href="#" className="nav-option">Option</a>
-        <a href="#" className="nav-option">Option</a>
-        <a href="#" className="nav-option">Option</a>
+        <Link to="/tickets/claim" className="nav-option">Claim Tickets</Link>
+        <Link to="/map" className="nav-option">Map</Link>
+        <Link to="/" className="nav-option">Option</Link>
 
         <div className="nav-item has-dropdown">
           <span className="nav-option">QR Code Test ▾</span>
@@ -67,7 +65,7 @@ export default function Navbar({ token = null, onLogout = () => {} }) {
           </div>
         </div>
 
-        <a href="#" className="nav-option">About Us</a>
+        <Link to="/about" className="nav-option">About Us</Link>
       </nav>
     </header>
   );

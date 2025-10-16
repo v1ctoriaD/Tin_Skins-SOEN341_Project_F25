@@ -18,13 +18,7 @@ export function getAllTags () {
  * @param {String} firstName 
  * @param {String} lastName 
  * @param {String} role default: 'USER' //please don't change unless for 'ADMIN'
- * @returns user session: { 
-    access_token: "...",  
-    refresh_token: "...",
-    expires_in: 3600,
-    user: { id: "...", email: "..." }
-   } 
-    or null id user already exists
+ * @returns user email or null id user already exists
  */
 export async function createUser(email, password, firstName, lastName, role='USER') {
     //register user to auth from supabase
@@ -51,8 +45,8 @@ export async function createUser(email, password, firstName, lastName, role='USE
             firstName: firstName,
             lastName: lastName,
         }
-    })
-    return data.session;
+    });
+    return data.user.email;
 }
 
 /**
@@ -61,13 +55,7 @@ export async function createUser(email, password, firstName, lastName, role='USE
  * @param {String} password 
  * @param {String} orgName 
  * @param {Boolean} isApproved default=false. please don't change
- * @returns user session: { 
-    access_token: "...",  
-    refresh_token: "...",
-    expires_in: 3600,
-    user: { id: "...", email: "..." }
-   } 
-    or null id organization already exists
+ * @returns user email or null id organization already exists
  */
 export async function createOrganization(email, password, orgName, isApproved=false) {
     //register user/organization to auth from supabase
@@ -95,7 +83,7 @@ export async function createOrganization(email, password, orgName, isApproved=fa
             isApproved: isApproved
         }
     })
-    return data.session;
+    return data.user.email;
 }
 
 /**
@@ -119,6 +107,30 @@ export async function signIn(email, password) {
         return null;
     }
     return data.session;
+}
+
+/**
+ * 
+ * @param {string} email 
+ * @returns true if successful and false if fails
+ */
+export async function resendConfirmationEmail(email) {
+  try {
+    const { data, error } = await supabase.auth.admin.generateLink({ //watch out for this: potentially unsafe
+      type: 'signup', //this will send the email
+      email
+    });
+
+    if (error) {
+      console.error("Error resending confirmation:", error.message);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    return false;
+  }
 }
 
 /**
@@ -328,12 +340,13 @@ export async function deregisterFromEvent(session, eventId) {
  * @returns the user data or null
  */
 export async function getUser(session) {
+  if(!session) return null;
   const { user } = session;
   if (!user) return null;
-
-  return await prisma.user.findUnique({
+  const userData =  await prisma.user.findUnique({
     where: { authId: user.id },
   });
+  return userData;
 }
 
 /**
@@ -342,12 +355,13 @@ export async function getUser(session) {
  * @returns organization data or null
  */
 export async function getOrganization(session) {
-    const { user } = session;
-    if(!user) return null;
-
-    return await prisma.organization.findUnique({
-        where: { authId: user.id }
-    });
+  if(!session) return null;
+  const { user } = session;
+  if(!user) return null;
+  const orgData = await prisma.organization.findUnique({
+    where: { authId: user.id }
+  });
+  return orgData;
 }
 
 /**
