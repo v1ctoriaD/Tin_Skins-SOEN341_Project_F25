@@ -62,7 +62,7 @@ function Discover({ events }) {
     });
   };
 
-  // FIXED: Use notNullEvents instead of events
+  
   const filteredEvents = notNullEvents.filter(event => {
     // filter by category/tag
     if (selectedTag && (!event.tags || !event.tags.includes(selectedTag))) {
