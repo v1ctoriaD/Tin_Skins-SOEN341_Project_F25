@@ -33,7 +33,7 @@ function App() {
           "Cache-Control": "no-cache",
           "Pragma": "no-cache"
         },
-        cache: "no-store" // Force fresh request
+        cache: "no-store" 
       });
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
