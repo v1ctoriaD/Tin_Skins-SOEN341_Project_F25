@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 
-function Filters({ categories, organizations, onCategoryChange, onDateChange, onOrganizationChange }) {
-  const [selectedCategory, setSelectedCategory] = useState("");
+function Filters({ tags, organizations, onTagChange, onDateChange, onOrganizationChange }) {
+  const [selectedTag, setSelectedTag] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedOrganization, setSelectedOrganization] = useState("");
 
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-    if (onCategoryChange) onCategoryChange(e.target.value);
+
+  const handleTagChange = (e) => {
+    setSelectedTag(e.target.value);
+    if (onTagChange) onTagChange(e.target.value);
   };
 
   const handleDateChange = (e) => {
@@ -22,10 +23,10 @@ function Filters({ categories, organizations, onCategoryChange, onDateChange, on
 
   return (
     <div className="filters-container">
-      <select value={selectedCategory} onChange={handleCategoryChange}>
+      <select value={selectedTag} onChange={handleTagChange}>
         <option value="">All Categories</option>
-        {categories.map((cat) => (
-          <option key={cat} value={cat}>{cat}</option>
+        {tags.map((tag) => (
+          <option key={tag} value={tag}>{tag}</option>
         ))}
       </select>
 
@@ -37,8 +38,8 @@ function Filters({ categories, organizations, onCategoryChange, onDateChange, on
 
       <select value={selectedOrganization} onChange={handleOrganizationChange}>
         <option value="">All Organizations</option>
-        {organizations.map((org) => (
-          <option key={org} value={org}>{org}</option>
+        {organizations.map((orgName) => (
+          <option key={orgName} value={orgName}>{orgName}</option>
         ))}
       </select>
     </div>

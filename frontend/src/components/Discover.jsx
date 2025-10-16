@@ -6,34 +6,49 @@ import Filters from "./Filters";
 
 
 function Discover({ events }) {
+  const notNullEvents = events || [];
 
-  const safeEvents = events || [];
-
-  //extract tags and organizations from events
-  const tags = safeEvents.length > 0 
-    ? [...new Set(safeEvents.flatMap(event => event.tags || []))] 
-    : [];
-    
-  const organizations = safeEvents.length > 0 
-    ? [...new Set(safeEvents.map(event => event.eventOwner?.orgName || event.orgName || "Unknown"))] 
-    : [];
-
+  const [selectedTag, setSelectedTag] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedOrganization, setSelectedOrganization] = useState("");
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  // fetch tags and organizations from events
+  const tags = notNullEvents.length > 0
+    ? [...new Set(notNullEvents.flatMap(event => event.tags || []))]
+    : [];
+
+  const organizations = notNullEvents.length > 0
+    ? [...new Set(notNullEvents.map(event => event.eventOwner?.orgName || event.orgName || "Unknown"))]
+    : [];
 
   const handleCardClick = (event) => setSelectedEvent(event);
 
-  const handleRegister = (eventId) => {
-    alert(`Registered for event ID: ${eventId}`);
-    // later: send POST request to backend
+  const handleTagChange = (tag) => {
+    setSelectedTag(tag);
+    setSelectedEvent(null);
   };
 
-   //format cost 
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    setSelectedEvent(null);
+  };
+
+  const handleOrganizationChange = (orgName) => {
+    setSelectedOrganization(orgName);
+    setSelectedEvent(null);
+  };
+
+  const handleRegister = (eventId) => {
+    alert(`Registered for event ID: ${eventId}`);
+  };
+
+  // format functions
   const formattedCost = (cost) => {
     if (cost === 0 || !cost) return "FREE";
     return `$${cost}`;
   };
 
-  //format date and times
   const formattedDate = (date) => {
     const eventDate = new Date(date);
     return eventDate.toLocaleDateString();
@@ -47,18 +62,48 @@ function Discover({ events }) {
     });
   };
 
-  // ADD LOADING STATE
-  if (events === null || events === undefined) {
-    return (
-      <div className="discover-page">
-        <h1>Loading events...</h1>
-      </div>
-    );
-  }
+  // FIXED: Use notNullEvents instead of events
+  const filteredEvents = notNullEvents.filter(event => {
+    // filter by category/tag
+    if (selectedTag && (!event.tags || !event.tags.includes(selectedTag))) {
+      return false;
+    }
+
+    // filter by org name
+    if (selectedOrganization) {
+      const eventOrg = event.eventOwner?.orgName || event.orgName || "Unknown";
+      if (eventOrg !== selectedOrganization) {
+        return false;
+      }
+    }
+
+    // filter by date
+    if (selectedDate) {
+      const eventDate = new Date(event.date);
+      const filterDate = new Date(selectedDate + 'T00:00:00'); 
+      
+      console.log({
+        selectedDate,
+        eventDate: eventDate.toDateString(),
+        filterDate: filterDate.toDateString(),
+        eventTitle: event.title
+      });
+      
+      if (eventDate.toDateString() !== filterDate.toDateString()) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
   
+
   return (
     <div className="discover-page">
-      <h1>Discover Events ({safeEvents.length} events)</h1>
+      
+      <h1>Discover Events ({filteredEvents.length} events)</h1>
+      
       <Filters
         tags={tags}
         organizations={organizations}
@@ -66,15 +111,13 @@ function Discover({ events }) {
         onDateChange={handleDateChange}
         onOrganizationChange={handleOrganizationChange}
       /> 
+      
       <div className="event-grid">
-        {/* FIX: Use safeEvents instead of events */}
-        {safeEvents.map(event => (
+        
+        {filteredEvents.map(event => (
           <EventCard key={event.id} event={event} onClick={handleCardClick} />
         ))}
       </div>
-
-      
- 
 
       {selectedEvent && (
         <div className="event-details-modal">
