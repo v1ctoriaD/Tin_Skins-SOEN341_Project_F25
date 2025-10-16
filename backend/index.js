@@ -39,25 +39,21 @@ app.post("/api/signup", async (req, res) => {
   const { formData, accountType } = req.body;
   if(accountType === "user") {
     try {
-      const session = await database.createUser(formData.email, formData.password, formData.firstName, formData.lastName);
-      if (!session) {
+      const email = await database.createUser(formData.email, formData.password, formData.firstName, formData.lastName);
+      if (!email) {
         return res.status(409).json({ error: "User already exists" });
       }
-      const user = await database.getUser(session);
-      const org = null;
-      res.json({ message: "Signup successful", session, user, org });
+      res.json({ message: "Signup successful", email});
     } catch (err) {
       res.status(500).json({ error: "Database error" });
     }
   } else {
     try {
-      const session = await database.createOrganization(formData.email, formData.password, formData.organizationName, false);
-      if (!session) {
+      const email = await database.createOrganization(formData.email, formData.password, formData.organizationName, false);
+      if (!email) {
         return res.status(409).json({ error: "Organization already exists" });
       }
-      const user = null;
-      const org = await database.getOrganization(session);
-      res.json({ message: "Signup successful", session, user, org });
+      res.json({ message: "Signup successful", email });
     } catch (err) {
       res.status(500).json({ error: "Database error" });
     }
@@ -75,8 +71,8 @@ app.post("/api/login", async (req, res) => {
     if (!session) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    const user = null;
-    const org = null;
+    let user = null;
+    let org = null;
     if(accountType === "user") {
       user = await database.getUser(session);
     } else {
@@ -92,6 +88,18 @@ app.post("/api/login", async (req, res) => {
 app.post("/api/logout", (req, res) => {
   database.signOut();
   return res.json({ message: "Logout successful" });
+});
+
+// Resend Email Verification
+app.post("/api/resendEmail", async (req, res) => {
+  const { email } = req.body;
+  const success = await database.resendConfirmationEmail(email);
+
+  if (success) {
+    return res.json({ message: "Email sent" });
+  } else {
+    return res.status(500).json({ error: "Failed to resend email" });
+  }
 });
 
 app.post("/api/tickets/:ticketId/qr", generateQr);

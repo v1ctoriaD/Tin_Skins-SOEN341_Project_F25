@@ -30,8 +30,22 @@
   margin-top: 0;
 }
 
+.login-container .success-text {
+  color: #43A047;
+}
+
+.login-container .warn-text {
+  color: #F4B400;
+}
+
 .login-subtext {
   color: #8697C4;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.login-subtext-dark {
+  color: #3D52A0;
   margin-bottom: 20px;
   font-size: 16px;
 }
@@ -81,6 +95,12 @@
   font-weight: 600;
 }
 
+.signup-message {
+  margin-top: 15px;
+  color: #F4B400;
+  font-weight: 600;
+}
+
 .account-type-toggle {
   display: flex;
   justify-content: center;
@@ -111,7 +131,6 @@
   background-color: #dfe3f3;
 }
 
-
 .signup-text {
   margin-top: 25px;
   color: #3D52A0;
@@ -125,4 +144,23 @@
 
 .signup-link:hover {
   color: #3D52A0;
+}
+
+.check-icon {
+  font-size: 128px;
+  color: #43A047;
+  display: block;
+  margin: 0 auto auto;
+}
+
+.warn-icon {
+  font-size: 128px;
+  color: #F4B400;
+  display: block;
+  margin: 0 auto auto;
+}
+
+.spacer {
+  width: 100%;
+  height: 15px;
 }

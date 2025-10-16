@@ -16,7 +16,7 @@ import Logout from "./components/Account/Logout";
 
 import "./styles/tokens.css";
 import "./App.css";
-import "./styles/qrcodeMenu.css";
+import "./styles/dropdown.css";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -39,7 +39,6 @@ function App() {
 
   const handleLogin = (t) => setToken(t);
   const handleLogout = () => setToken(null);
-  function onSetSessionHandler(s) { setSession(s); }
 
   return (
     <div className="App">
@@ -53,7 +52,7 @@ function App() {
           <Route path="/qr/scan" element={<QrScan />} />
           <Route path="/tickets/claim" element={<TicketClaim events={events} session={session} token={token} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} setOrg={setOrg} setSession={setSession} />} />
-          <Route path="/signup" element={<Signup onLogin={handleLogin} setUser={setUser} setOrg={setOrg} setSession={setSession} />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/logout" element={<Logout token={token} onLogout={handleLogout} setUser={setUser} setOrg={setOrg} setSession={setSession} />} />
         </Routes>
       </BrowserRouter>

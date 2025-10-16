@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../../styles/account.css";
+import "../../styles/Banner.css";
+import { PiWarning  } from "react-icons/pi";
 
-const Signup = ({ onSignup, setUser, setOrg, setSession }) => {
+const Signup = () => {
   const [message, setMessage] = useState("");
   const [accountType, setAccountType] = useState("user");
   const [formData, setFormData] = useState({
@@ -13,7 +15,7 @@ const Signup = ({ onSignup, setUser, setOrg, setSession }) => {
     password: "",
     confirmPassword: "",
   });
-  const navigate = useNavigate();
+  const [isAccountCreated, setIsAccountCreated] = useState(false);
 
   function resetPassword() { setFormData({...formData, password:"", confirmPassword:""}); }
 
@@ -49,14 +51,33 @@ const Signup = ({ onSignup, setUser, setOrg, setSession }) => {
     });
     const data = await res.json();
     if (res.ok) {
-      setMessage("Signup successful!");
-      onSignup();
-      setSession(data.session);
-      setUser(data.user);
-      setOrg(data.org);
-      navigate("/");
+      setFormData({
+        firstName: "",
+        lastName: "",
+        organizationName: "",
+        email: data.email,
+        password: "",
+        confirmPassword: "",
+      });
+      setIsAccountCreated(true);
     } else {
       setMessage(data.error);
+    }
+  };
+
+  const handleResendEmail = async () => {
+    setMessage("Resent email");
+    const email = formData.email;
+    const res = await fetch("/api/resendEmail", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({email}),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setMessage(data.message);
+    } else {
+      setMessage(data.error || "Failed to resend email");
     }
   };
 
@@ -67,95 +88,117 @@ const Signup = ({ onSignup, setUser, setOrg, setSession }) => {
   return (
     <section className="login-page">
       <div className="login-container">
-        <h1>New Account</h1>
-        <p className="login-subtext">
-          {accountType === "user" ? <>Join as a <b>student</b> to <u>explore</u> amazing events</> : <>Join as an <b>organization</b> to <u>host</u> amazing events</>}
-        </p>
+        {!isAccountCreated ? (
+          <>
+            <h1>New Account</h1>
+            <p className="login-subtext">
+              {accountType === "user" ? <>Join as a <b>student</b> to <u>explore</u> amazing events</> : <>Join as an <b>organization</b> to <u>host</u> amazing events</>}
+            </p>
 
-        <div className="account-type-toggle">
-          <button
-            className={`toggle-btn ${accountType === "user" ? "active" : ""}`}
-            onClick={() => setAccountType("user")}
-          >
-            Student
-          </button>
-          <button
-            className={`toggle-btn ${accountType === "organization" ? "active" : ""}`}
-            onClick={() => setAccountType("organization")}
-          >
-            Organization
-          </button>
-        </div>
+            <div className="account-type-toggle">
+              <button
+                className={`toggle-btn ${accountType === "user" ? "active" : ""}`}
+                onClick={() => setAccountType("user")}
+              >
+                Student
+              </button>
+              <button
+                className={`toggle-btn ${accountType === "organization" ? "active" : ""}`}
+                onClick={() => setAccountType("organization")}
+              >
+                Organization
+              </button>
+            </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
-          {accountType === "user" ? (
-            <>
+            <form onSubmit={handleSubmit} className="login-form">
+              {accountType === "user" ? (
+                <>
+                  <input
+                    type="text"
+                    name="firstName"
+                    placeholder="First Name"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="lastName"
+                    placeholder="Last Name"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                  />
+                </>
+              ) : (
+                <input
+                  type="text"
+                  name="organizationName"
+                  placeholder="Organization Name"
+                  value={formData.organizationName}
+                  onChange={handleChange}
+                  required
+                />
+              )}
+
               <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
                 onChange={handleChange}
                 required
               />
               <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
                 onChange={handleChange}
                 required
               />
-            </>
-          ) : (
-            <input
-              type="text"
-              name="organizationName"
-              placeholder="Organization Name"
-              value={formData.organizationName}
-              onChange={handleChange}
-              required
-            />
-          )}
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
+              <div className="login-buttons">
+                <button type="submit" className="button">Sign Up</button>
+              </div>
+            </form>
 
-          <div className="login-buttons">
-            <button type="submit" className="button">Sign Up</button>
-          </div>
-        </form>
+            {message && <div className="login-message">{message}</div>}
 
-        {message && <div className="login-message">{message}</div>}
-
-        <p className="signup-text">
-          Already have an account?{" "}
-          <Link to="/login" className="signup-link">
-            Log in
-          </Link>
-        </p>
+            <p className="signup-text">
+              Already have an account?{" "}
+              <Link to="/login" className="signup-link">
+                Log in
+              </Link>
+            </p>
+          </>
+        ):(
+          <>
+            <PiWarning className="warn-icon" />
+            <h1 className="warn-text">Verify Email</h1>
+            <p className="login-subtext-dark">
+              Make sure to verify your email before logging in!
+            </p>
+            <div className="banner-buttons">
+              <button className="button" onClick={handleResendEmail}>
+                Resend Email
+              </button>
+              <Link className="button create-btn" to="/login">
+                Log In
+              </Link>
+            </div>
+            {message && <div className="signup-message">{message}</div>}
+          </>
+        )}
+        
       </div>
     </section>
   );

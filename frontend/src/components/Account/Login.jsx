@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../../styles/account.css";
+import "../../styles/Banner.css";
+import { PiCheckCircle  } from "react-icons/pi";
 
 const Login = ({ onLogin, setUser, setOrg, setSession }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [accountType, setAccountType] = useState("user");
-  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   function resetPassword() { setPassword(""); }
 
@@ -39,12 +41,12 @@ const Login = ({ onLogin, setUser, setOrg, setSession }) => {
     });
     const data = await res.json();
     if (res.ok) {
-      setMessage("Login successful!");
+      setMessage("");
       onLogin(data.session);
       setSession(data.session);
       setUser(data.user);
       setOrg(data.org);
-      navigate("/");
+      setIsLoggedIn(true);
     } else {
       setMessage(data.error);
     }
@@ -53,6 +55,7 @@ const Login = ({ onLogin, setUser, setOrg, setSession }) => {
   return (
     <section className="login-page">
       <div className="login-container">
+        {(!isLoggedIn) ? ( <>
         <h1>Welcome Back</h1>
         <p className="login-subtext">
           {accountType === "user" ? <>Log in as a <b>student</b> to <u>explore</u> amazing events</> : <>Log in as an <b>organization</b> to <u>host</u> amazing events</>}
@@ -102,6 +105,28 @@ const Login = ({ onLogin, setUser, setOrg, setSession }) => {
             Sign up
           </Link>
         </p>
+        </>
+        ): (
+          <>
+            <PiCheckCircle className="check-icon" />
+            <h1 className="success-text">You're in!</h1>
+            <div className="spacer" />
+            <div className="banner-buttons">
+              <Link className="button" to="/">
+                Home
+              </Link>
+              {accountType === "user" ? (
+                <Link className="button create-btn" to="/discover">
+                  View Events
+                </Link>
+              ): (
+                <Link className="button create-btn" to="/create">
+                  Host Events
+                </Link>
+              )} 
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

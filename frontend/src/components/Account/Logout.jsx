@@ -1,4 +1,4 @@
-const Logout = ({ onLogout }) => {
+const Logout = ({ onLogout, setUser, setOrg, setSession }) => {
   const handleLogout = async () => {
     const res = await fetch("/api/logout", {
       method: "POST",
@@ -7,6 +7,9 @@ const Logout = ({ onLogout }) => {
     const data = await res.json();
     if (res.ok) {
       onLogout && onLogout();
+      setUser(null);
+      setOrg(null);
+      setSession(null);
       alert("Logout successful!");
     } else {
       alert(data.error);
