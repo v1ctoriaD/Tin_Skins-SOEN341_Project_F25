@@ -46,7 +46,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Banner />} />
           <Route path="/discover" element={<Discover events={events} user={user}/>} />
-          {/*<Route path="/account" element={<Account session={session} setSession={onSetSessionHandler} />} />*/}
           <Route path="/qr/generate" element={<QrGenerate />} />
           <Route path="/qr/scan" element={<QrScan />} />
           <Route path="/tickets/claim" element={<TicketClaim events={events} session={session} token={token} />} />
