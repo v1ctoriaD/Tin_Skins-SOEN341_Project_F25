@@ -1,16 +1,30 @@
 import React from "react";
 
 function EventCard({ event, onClick }) {
+  //format date
+  const eventDate = new Date(event.date);
+  const formattedDate = eventDate.toLocaleDateString();
+  const formattedTime = eventDate.toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
+  
   return (
     <div className="event-card" onClick={() => onClick(event)}>
-      <img src={event.image} alt={event.title} className="event-image" />
+      <img src={event.imageUrl} alt={event.title} className="event-image" />
       <div className="event-info">
         <h3>{event.title}</h3>
-        <p>{event.date} • {event.time}</p>
-        <p>{event.location}</p>
-        <span className={`category-badge ${event.category.toLowerCase()}`}>
-          {event.category}
-        </span>
+        <p>{formattedDate} • {formattedTime}</p>
+        <p>{event.locationName}</p>
+        {event.tags && event.tags.length > 0 && (
+          <div className="tags">
+            {event.tags.map((tag, index) => (
+              <span key={index} className={`category-badge ${tag.toLowerCase()}`}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
