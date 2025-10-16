@@ -169,9 +169,9 @@ export default function TicketClaim({ events = null, session = null, token = nul
           <div style={{ color: '#333' }}>
             <strong>Availability:</strong>
             <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
-              <span>Free: {stock.free}</span>
-              <span>Paid: {stock.paid}</span>
-              <span>VIP: {stock.vip}</span>
+              <span>Free: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.free : stock.free}</span>
+              <span>Paid: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.paid : stock.paid}</span>
+              <span>VIP: {selectedEvent && selectedEvent.availability ? selectedEvent.availability.vip : stock.vip}</span>
             </div>
           </div>
           <div style={{ textAlign: 'right', color: '#666' }}>
