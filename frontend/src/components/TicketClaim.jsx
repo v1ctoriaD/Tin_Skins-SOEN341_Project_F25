@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/tokens.css";
+import usePageTitle from "../hooks/usePageTitle";
 
 // Simple in-memory mock of ticket availability per type
 const INITIAL_STOCK = {
@@ -10,6 +11,7 @@ const INITIAL_STOCK = {
 };
 
 export default function TicketClaim({ events = null, session = null, token = null }) {
+  usePageTitle();
   const navigate = useNavigate();
   const [stock, setStock] = useState(INITIAL_STOCK);
   // For testing, only show a small subset of events (first 3)

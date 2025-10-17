@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import "../../styles/account.css";
 import "../../styles/Banner.css";
 import { PiWarning  } from "react-icons/pi";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const Signup = () => {
+  usePageTitle();
+
   const [message, setMessage] = useState("");
   const [accountType, setAccountType] = useState("user");
   const [formData, setFormData] = useState({

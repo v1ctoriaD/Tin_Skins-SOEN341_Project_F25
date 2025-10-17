@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-const usePageTitle = () => {
+export default function usePageTitle() {
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -9,7 +9,7 @@ const usePageTitle = () => {
       case "/":
         document.title = "Home | Campus Connect";
         break;
-      case "/moderation/user":
+      case "/moderate/users":
         document.title = "User Moderation | Campus Connect";
         break;
       case "/discover":
@@ -38,5 +38,3 @@ const usePageTitle = () => {
     }
   }, [pathname]);
 };
-
-export default usePageTitle;

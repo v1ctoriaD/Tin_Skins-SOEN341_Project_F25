@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import QRCode from "react-qr-code";
 import "../../styles/tokens.css";
 import "../../styles/qr.css";
+import usePageTitle from "../../hooks/usePageTitle";
 
 export default function QrGenerate() {
+  usePageTitle();
+
   const [ticketId, setTicketId] = useState("");
   const [token, setToken] = useState("");
   const [result, setResult] = useState("");

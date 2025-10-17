@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import usePageTitle from "./hooks/usePageTitle";
 
 import Navbar from "./components/Navbar";
 import Banner from "./components/Banner";
@@ -20,8 +19,6 @@ import "./App.css";
 import "./styles/dropdown.css";
 
 function App() {
-  usePageTitle();
-
   const [events, setEvents] = useState(null); //all events
   const [organizations, setOrganizations] = useState(null); //all organizations
   const [users, setUsers] = useState(null); //all users

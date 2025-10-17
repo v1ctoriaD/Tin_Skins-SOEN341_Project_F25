@@ -1,8 +1,10 @@
 import "../../styles/Moderation.css";
 import { FaTrashAlt, FaUser, FaUserSecret } from "react-icons/fa";
 import { FaBuildingCircleExclamation, FaBuildingCircleCheck, FaBuildingCircleXmark } from "react-icons/fa6";
+import usePageTitle from "../../hooks/usePageTitle";
 
 export default function UserModerations({ organizations, users, user }) {
+  usePageTitle();
 
   const handleChangeAdminStatus = async (e, userId, role) => {
     e.preventDefault();

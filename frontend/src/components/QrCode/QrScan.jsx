@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import jsQR from "jsqr";
 import "../../styles/tokens.css";
 import "../../styles/qr.css";
+import usePageTitle from "../../hooks/usePageTitle";
 
 export default function QrScan() {
+  usePageTitle();
+
   const [scanResult, setScanResult] = useState("");
   const [status, setStatus] = useState("");
 

@@ -3,11 +3,13 @@ import EventCard from "./EventCard";
 import events from "../data/events";
 import "../styles/Discover.css";
 import Filters from "./Filters";
+import usePageTitle from "../hooks/usePageTitle";
 
 const categories = ["Wellness", "Art", "Food"]; // mock categories, actual categories TBD
 const organizations = ["Org A", "Org B", "Org C"]; // mock list
 
 function Discover(/*{ events }*/) {
+  usePageTitle();
 
   const handleCategoryChange = (category) => {
     console.log("Selected category:", category);
