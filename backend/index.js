@@ -34,6 +34,24 @@ app.get("/api/getEvents", async (req, res) => {
   res.json({ events });
 });
 
+// Get all Organizations endpoint
+app.get("/api/getOrganizations", async (req, res) => {
+  const organizations = await database.getAllOrganizations();
+  if (!organizations) {
+    return res.status(500).json({ error: "Either no organizations or database error" });
+  }
+  res.json({ organizations });
+});
+
+// Get all Users endpoint
+app.get("/api/getUsers", async (req, res) => {
+  const users = await database.getAllUsers();
+  if (!users) {
+    return res.status(500).json({ error: "Either no users or database error" });
+  }
+  res.json({ users });
+});
+
 // Signup endpoint
 app.post("/api/signup", async (req, res) => {
   const { formData, accountType } = req.body;
@@ -147,6 +165,36 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
   } catch (err) {
     console.error('Ticket creation error:', err);
     return res.status(500).json({ error: 'Server error' });
+  }
+});
+
+//Admin Moderation
+app.post('/api/moderate/user', async (req, res) => {
+  const { reqType, userId, role, orgId, authId } = req.body;
+  let wasSuccess = false;
+  switch (reqType) {
+    case "ChangeAdminStatus":
+      changed = await database.updateUser(userId, {role: role});
+      break;
+    case "ApproveOrganization":
+      changed = await database.updateOrganization(orgId, {isApproved: true});
+      break;
+    case "UnapproveOrganization":
+      changed = await database.updateOrganization(orgId, {isApproved: false});
+      break;
+    case "DeleteUser":
+      changed = await database.deleteUser(authId);
+      break;
+    case "DeleteOrganization":
+      changed = await database.deleteOrganization(authId);
+      break;
+    default:
+      return res.status(400).json({ message: "Invalid moderation request"});
+  }
+  if(wasSuccess) {
+    return res.status(201).json({ message: "Moderation request processed successfully"});
+  } else {
+    return res.status(401).json({ message: "Moderation request failed to process" });
   }
 });
 

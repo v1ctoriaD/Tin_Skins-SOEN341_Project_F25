@@ -283,6 +283,50 @@ export async function updateEvent(eventId, updatedFields) {
 }
 
 /**
+ * Updates a user depending on given input fields
+ * @param {String} userId 
+ * @param {*} updatedFields 
+ * @returns true if success and false if fail
+ */
+export async function updateUser(userId, updatedFields) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...updatedFields,
+        updatedAt: new Date(),
+      },
+    });
+    return true;
+  } catch (error) {
+    console.error("Failed to update user:", error.message);
+    return false;
+  }
+}
+
+/**
+ * Updates an organization depending on given input fields
+ * @param {String} orgId 
+ * @param {*} updatedFields 
+ * @returns true if success and false if fail
+ */
+export async function updateOrganization(orgId, updatedFields) {
+  try {
+    await prisma.organization.update({
+      where: { id: orgId },
+      data: {
+        ...updatedFields,
+        updatedAt: new Date(),
+      },
+    });
+    return true;
+  } catch (error) {
+    console.error("Failed to update organization:", error.message);
+    return false;
+  }
+}
+
+/**
  * Registers a user to an event
  * @param {*} session 
  * @param {String} eventId 
@@ -376,6 +420,25 @@ export async function getAllEvents() {
         }
     });
 }
+
+/**
+ * Gets all the organizations from the database
+ * @returns list of all the organizations
+ */
+export async function getAllOrganizations() {
+  const organizations = await prisma.organization.findMany();
+  return organizations;
+}
+
+/**
+ * Gets all the users from the database
+ * @returns list of all the users
+ */
+export async function getAllUsers() {
+  const users = await prisma.user.findMany();
+  return users;
+}
+
 
 /**
  * get all events that a user is registered to

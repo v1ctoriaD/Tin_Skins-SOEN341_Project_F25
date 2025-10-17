@@ -31,11 +31,11 @@
 }
 
 .login-container .success-text {
-  color: #43A047;
+  color: var(--color-extra-green);
 }
 
 .login-container .warn-text {
-  color: #F4B400;
+  color: var(--color-extra-yellow);
 }
 
 .login-subtext {
@@ -91,13 +91,13 @@
 
 .login-message {
   margin-top: 15px;
-  color: #f44336;
+  color: var(--color-extra-red);
   font-weight: 600;
 }
 
 .signup-message {
   margin-top: 15px;
-  color: #F4B400;
+  color: var(--color-extra-yellow);
   font-weight: 600;
 }
 
@@ -148,14 +148,14 @@
 
 .check-icon {
   font-size: 128px;
-  color: #43A047;
+  color: var(--color-extra-green);
   display: block;
   margin: 0 auto auto;
 }
 
 .warn-icon {
   font-size: 128px;
-  color: #F4B400;
+  color: var(--color-extra-yellow);
   display: block;
   margin: 0 auto auto;
 }

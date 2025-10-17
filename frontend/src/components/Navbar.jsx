@@ -7,7 +7,11 @@ import { Link } from "react-router-dom";
 import logo from "../assets/Logo.png";
 
 // Accept token/onLogout from App (backward compatible if not passed)
-export default function Navbar({ token = null, onLogout = () => {} }) {
+export default function Navbar({ token = null, onLogout = () => {}, user = null, org = null}) {
+  user = {
+    role: "ADMIN"
+  }; //For testing only TOREMOVE
+
   return (
     <header className="navbar-header" style={{ borderBottom: "1px solid #ccc", padding: "8px 16px", position: "relative" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -55,7 +59,6 @@ export default function Navbar({ token = null, onLogout = () => {} }) {
         <Link to="/discover" className="nav-option">Discover</Link>
         <Link to="/tickets/claim" className="nav-option">Claim Tickets</Link>
         <Link to="/map" className="nav-option">Map</Link>
-        <Link to="/" className="nav-option">Option</Link>
 
         <div className="nav-item has-dropdown">
           <span className="nav-option">QR Code Test ▾</span>
@@ -64,7 +67,9 @@ export default function Navbar({ token = null, onLogout = () => {} }) {
             <Link className="dropdown-link" to="/qr/scan">Scan from Image</Link>
           </div>
         </div>
-
+        
+        {(org && <Link to="create" className="nav-options">Create Event</Link>)}
+        {(user && user.role === "ADMIN") && <Link to="/moderate/users" className="nav-option">Moderate Users</Link>}
         <Link to="/about" className="nav-option">About Us</Link>
       </nav>
     </header>

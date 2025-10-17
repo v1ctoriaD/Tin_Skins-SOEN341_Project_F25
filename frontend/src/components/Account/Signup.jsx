@@ -66,7 +66,8 @@ const Signup = () => {
     }
   };
 
-  const handleResendEmail = async () => {
+  const handleResendEmail = async (e) => {
+    e.preventDefault();
     setMessage("Resent email");
     const email = formData.email;
     const res = await fetch("/api/resendEmail", {
