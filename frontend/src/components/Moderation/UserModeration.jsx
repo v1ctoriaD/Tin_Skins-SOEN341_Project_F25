@@ -1,9 +1,9 @@
 import "../../styles/Moderation.css";
 import { FaTrashAlt, FaUser, FaUserSecret } from "react-icons/fa";
-import { FaBuildingCircleExclamation, FaBuildingCircleCheck, FaBuildingCircleXmark } from "react-icons/fa6";
+import { FaBuildingCircleExclamation, FaBuildingCircleCheck/*, FaBuildingCircleXmark*/ } from "react-icons/fa6";
 import usePageTitle from "../../hooks/usePageTitle";
 
-export default function UserModerations({ organizations, users, user }) {
+export default function UserModerations({ organizations, setOrganizations, users, setUsers, user }) {
   usePageTitle();
 
   const handleChangeAdminStatus = async (e, userId, role) => {
@@ -13,11 +13,11 @@ export default function UserModerations({ organizations, users, user }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: userId, role: role, reqType: "ChangeAdminStatus" }),
     });
-    const data = await res.json();
+    await res.json();
     if (res.ok) {
-      
-    } else {
-      
+      //updates local copy
+      const updatedUsers = users.map(user => user.id === userId ? { ...user, role: role } : user);
+      setUsers(updatedUsers);
     }
   };
 
@@ -28,13 +28,13 @@ export default function UserModerations({ organizations, users, user }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ orgId: orgId, reqType: "ApproveOrganization" }),
     });
-    const data = await res.json();
+    await res.json();
     if (res.ok) {
-      
-    } else {
-      
+      //updates local copy
+      const updatedOrganizations = organizations.map(org => org.id === orgId ? { ...org, isApproved: true } : org);
+      setOrganizations(updatedOrganizations);
     }
-  }; 
+  };
 
   const handleUnapproveOrganization = async (e, orgId) => {
     e.preventDefault();
@@ -43,11 +43,11 @@ export default function UserModerations({ organizations, users, user }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ orgId: orgId, reqType: "UnapproveOrganization" }),
     });
-    const data = await res.json();
+    await res.json();
     if (res.ok) {
-      
-    } else {
-      
+      //updates local copy
+      const updatedOrganizations = organizations.map(org => org.id === orgId ? { ...org, isApproved: false } : org);
+      setOrganizations(updatedOrganizations);
     }
   };
 
@@ -58,11 +58,10 @@ export default function UserModerations({ organizations, users, user }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ authId: authId , reqType: "DeleteUser" }),
     });
-    const data = await res.json();
+    await res.json();
     if (res.ok) {
-      
-    } else {
-      
+      const updatedUsers = users.filter(user => user.authId !== authId);
+      setUsers(updatedUsers);
     }
   };
 
@@ -73,17 +72,15 @@ export default function UserModerations({ organizations, users, user }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ authId: authId , reqType: "DeleteOrganization" }),
     });
-    const data = await res.json();
+    await res.json();
     if (res.ok) {
-      
-    } else {
-      
+     const updatedOrganizations = organizations.filter(org => org.authId !== authId);
+     setOrganizations(updatedOrganizations); 
     }
   };
  
-  const orgRequests = [{ id: 1, name: "Tech Society" }];
-  users = [{ id: 1, firstName: "John", lastName: "Doe", role: "ADMIN" }, { id: 2, firstName: "Jane", lastName: "Doe", role: "USER" }];
-  organizations = [{ id: 1, name: "Student Club" }, { id: 2, name: "Another Club", disabled: true }];
+  const orgRequests = organizations.filter(org => org.isApproved === false);
+  const orgApproved = organizations.filter(org => org.isApproved === true);
 
   return (
     <div className="moderation-page">
@@ -95,12 +92,11 @@ export default function UserModerations({ organizations, users, user }) {
             <div key={org.id} className="moderation-card">
               <div className="card-left">
                 <FaBuildingCircleExclamation className="card-icon-yellow" />
-                <span className="card-name">{org.name}</span>
+                <span className="card-name">{org.orgName}</span>
               </div>
               <div className="card-actions">
-                <button className="approve-btn">Approve</button>
-                <button className="reject-btn">Reject</button>
-                <FaTrashAlt className="trash-icon" />
+                <button className="approve-btn" onClick={(e) => handleApproveOrganization(e, org.id)} >Approve</button>
+                <button className="reject-btn" onClick={(e) => handleDeleteOrganization(e, org.authId)}>Reject</button>
               </div>
             </div>
           ))}
@@ -110,6 +106,25 @@ export default function UserModerations({ organizations, users, user }) {
       {/* Users & Organizations Moderation */}
       <div className="moderation-container">
         <h2>Manage Students and Organization</h2>
+
+        {/* Organizations Section */}
+        <div className="moderation-subsection">
+          <h3>Organizations</h3>
+          {orgApproved.map((org) => (
+            <div key={org.id} className="moderation-card">
+              <div className="card-left">
+                <FaBuildingCircleCheck className="card-icon" />
+                <span className="card-name">{org.orgName}</span>
+              </div>
+              <div className="card-actions">
+                <button className="reject-btn" onClick={(e) => handleUnapproveOrganization(e, org.id)}>
+                  Disable
+                </button>
+                <FaTrashAlt className="trash-icon" onClick={(e) => handleDeleteOrganization(e, org.authId)} />
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Users Section */}
         <div className="moderation-subsection">
@@ -127,33 +142,16 @@ export default function UserModerations({ organizations, users, user }) {
                 </span>
               </div>
               <div className="card-actions">
-                <button className={user.role === "ADMIN" ? "reject-btn" : "approve-btn"}>
-                  {user.role === "ADMIN" ? "Remove Admin" : "Make Admin"}
-                </button>
-                <FaTrashAlt className="trash-icon" />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Organizations Section */}
-        <div className="moderation-subsection">
-          <h3>Organizations</h3>
-          {organizations.map((org) => (
-            <div key={org.id} className="moderation-card">
-              <div className="card-left">
-                {org.disabled ? (
-                  <FaBuildingCircleXmark className="card-icon-red" />
+                {user.role === "USER" ? (
+                  <button className="approve-btn" onClick={(e) => handleChangeAdminStatus(e, user.id, "ADMIN")}>
+                    Make Admin
+                  </button>
                 ) : (
-                  <FaBuildingCircleCheck className="card-icon-green" />
+                  <button className="reject-btn" onClick={(e) => handleChangeAdminStatus(e, user.id, "USER")}>
+                    Remove Admin
+                  </button>
                 )}
-                <span className="card-name">{org.name}</span>
-              </div>
-              <div className="card-actions">
-                <button className={org.disabled ? "approve-btn" : "reject-btn"}>
-                  {org.disabled ? "Enable" : "Disable"}
-                </button>
-                <FaTrashAlt className="trash-icon" />
+                <FaTrashAlt className="trash-icon" onClick={(e) => handleDeleteUser(e, user.authId)}/>
               </div>
             </div>
           ))}

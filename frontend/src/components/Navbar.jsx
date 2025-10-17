@@ -3,14 +3,17 @@ import {
   FaTwitter, FaFacebook, FaInstagram, FaLinkedin,
   FaSearch, FaUser, FaBars
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/Logo.png";
+import Logout from "./Account/Logout";
 
 // Accept token/onLogout from App (backward compatible if not passed)
-export default function Navbar({ token = null, onLogout = () => {}, user = null, org = null}) {
-  user = {
-    role: "ADMIN"
-  }; //For testing only TOREMOVE
+export default function Navbar({ token = null, onLogout = () => {}, user = null, org = null, setUser, setOrg, setSession }) {
+  const navigate = useNavigate();
+  function handleLogOut() {
+    navigate("/");
+    onLogout();
+  }
 
   return (
     <header className="navbar-header" style={{ borderBottom: "1px solid #ccc", padding: "8px 16px", position: "relative" }}>
@@ -36,7 +39,7 @@ export default function Navbar({ token = null, onLogout = () => {}, user = null,
 
           {/* User popover on hover (unique class) */}
           <div className="nav-user has-dropdown user-dropdown">
-            <span className="nav-logo"><FaUser /></span>
+            <span className="nav-logo"><FaUser onClick={() => (!token && navigate("/login"))} /></span>
             <div className="dropdown">
               {!token ? (
                 <>
@@ -44,7 +47,7 @@ export default function Navbar({ token = null, onLogout = () => {}, user = null,
                   <Link className="dropdown-link" to="/signup">Signup</Link>
                 </>
               ) : (
-                <button className="dropdown-link" onClick={onLogout}>Logout</button>
+                <Logout onLogout={handleLogOut} setOrg={setOrg} setUser={setUser} setSession={setSession} className="dropdown-link" />
               )}
             </div>
           </div>

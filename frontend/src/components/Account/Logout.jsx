@@ -1,4 +1,4 @@
-const Logout = ({ onLogout, setUser, setOrg, setSession }) => {
+const Logout = ({ onLogout, setUser, setOrg, setSession, className }) => {
   const handleLogout = async () => {
     const res = await fetch("/api/logout", {
       method: "POST",
@@ -17,7 +17,7 @@ const Logout = ({ onLogout, setUser, setOrg, setSession }) => {
   };
 
   return (
-    <button onClick={handleLogout}>Logout</button>
+    <button className={className} onClick={handleLogout}>Logout</button>
   );
 };
 

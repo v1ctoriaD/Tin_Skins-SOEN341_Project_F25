@@ -12,7 +12,6 @@ import UserModerations from "./components/Moderation/UserModeration";
 
 import Signup from "./components/Account/Signup";
 import Login from "./components/Account/Login";
-import Logout from "./components/Account/Logout";
 
 import "./styles/tokens.css";
 import "./App.css";
@@ -65,17 +64,16 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Navbar token={token} onLogout={handleLogout} user={user} org={org} />
+        <Navbar token={token} onLogout={handleLogout} user={user} org={org} setUser={setUser} setOrg={setOrg} setSession={setSession} />
         <Routes>
           <Route path="/" element={<Banner />} />
           <Route path="/discover" element={<Discover events={events} user={user} organizations={organizations}/>} />
           <Route path="/qr/generate" element={<QrGenerate />} />
           <Route path="/qr/scan" element={<QrScan />} />
           <Route path="/tickets/claim" element={<TicketClaim events={events} session={session} token={token} />} />
-          <Route path="/moderate/users" element ={<UserModerations organizations={organizations} users={users} user={user} />} />
+          <Route path="/moderate/users" element ={<UserModerations organizations={organizations} setOrganizations={setOrganizations} users={users} setUsers={setUsers} user={user} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} org={org} setOrg={setOrg} setSession={setSession} />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/logout" element={<Logout token={token} onLogout={handleLogout} setUser={setUser} setOrg={setOrg} setSession={setSession} />} />
         </Routes>
       </BrowserRouter>
     </div>

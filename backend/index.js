@@ -174,25 +174,25 @@ app.post('/api/moderate/user', async (req, res) => {
   let wasSuccess = false;
   switch (reqType) {
     case "ChangeAdminStatus":
-      changed = await database.updateUser(userId, {role: role});
+      wasSuccess = await database.updateUser(userId, {role: role});
       break;
     case "ApproveOrganization":
-      changed = await database.updateOrganization(orgId, {isApproved: true});
+      wasSuccess = await database.updateOrganization(orgId, {isApproved: true});
       break;
     case "UnapproveOrganization":
-      changed = await database.updateOrganization(orgId, {isApproved: false});
+      wasSuccess = await database.updateOrganization(orgId, {isApproved: false});
       break;
     case "DeleteUser":
-      changed = await database.deleteUser(authId);
+      wasSuccess = await database.deleteUser(authId);
       break;
     case "DeleteOrganization":
-      changed = await database.deleteOrganization(authId);
+      wasSuccess = await database.deleteOrganization(authId);
       break;
     default:
       return res.status(400).json({ message: "Invalid moderation request"});
   }
   if(wasSuccess) {
-    return res.status(201).json({ message: "Moderation request processed successfully"});
+    return res.status(201).json({ message: "Moderation request processed successfully" });
   } else {
     return res.status(401).json({ message: "Moderation request failed to process" });
   }
