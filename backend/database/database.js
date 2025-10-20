@@ -355,12 +355,14 @@ export async function getOrganization(session) {
  * @returns list of all the events
  */
 export async function getAllEvents() {
-    return await prisma.event.findMany({
+    const events = await prisma.event.findMany({
         include: {
             eventOwner: true,
             eventAttendees: true
         }
     });
+
+    return events;
 }
 
 /**
