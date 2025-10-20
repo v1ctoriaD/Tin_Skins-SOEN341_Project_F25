@@ -31,7 +31,6 @@ app.get("/api/getEvents", async (req, res) => {
   if (useMock) {
     return res.json({ events: mockEvents });
   }
-
   const events = await database.getAllEvents();
   if (!events) {
     return res.status(500).json({ error: "Either no events or database error" });
@@ -41,24 +40,33 @@ app.get("/api/getEvents", async (req, res) => {
 
 // Signup endpoint
 app.post("/api/signup", async (req, res) => {
-  const { email, password, firstName = "", lastName = "" } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password required" });
-  }
-  try {
-    const session = await database.createUser(email, password, firstName, lastName);
-    if (!session) {
-      return res.status(409).json({ error: "User already exists" });
+  const { formData, accountType } = req.body;
+  if(accountType === "user") {
+    try {
+      const email = await database.createUser(formData.email, formData.password, formData.firstName, formData.lastName);
+      if (!email) {
+        return res.status(409).json({ error: "User already exists" });
+      }
+      res.json({ message: "Signup successful", email});
+    } catch (err) {
+      res.status(500).json({ error: "Database error" });
     }
-    res.json({ message: "Signup successful", session });
-  } catch (err) {
-    res.status(500).json({ error: "Database error" });
+  } else {
+    try {
+      const email = await database.createOrganization(formData.email, formData.password, formData.organizationName, false);
+      if (!email) {
+        return res.status(409).json({ error: "Organization already exists" });
+      }
+      res.json({ message: "Signup successful", email });
+    } catch (err) {
+      res.status(500).json({ error: "Database error" });
+    }
   }
 });
 
 // Login endpoint
 app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, accountType } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password required" });
   }
@@ -67,7 +75,14 @@ app.post("/api/login", async (req, res) => {
     if (!session) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    res.json({ message: "Login successful", session });
+    let user = null;
+    let org = null;
+    if(accountType === "user") {
+      user = await database.getUser(session);
+    } else {
+      org = await database.getOrganization(session);
+    }
+    res.json({ message: "Login successful", session, user, org });
   } catch (err) {
     res.status(500).json({ error: "Database error" });
   }
@@ -79,8 +94,16 @@ app.post("/api/logout", (req, res) => {
   return res.json({ message: "Logout successful" });
 });
 
-app.get("/api/hello", (req, res) => {
-  res.json({ message: "Hello from backend!" });
+// Resend Email Verification
+app.post("/api/resendEmail", async (req, res) => {
+  const { email } = req.body;
+  const success = await database.resendConfirmationEmail(email);
+
+  if (success) {
+    return res.json({ message: "Email sent" });
+  } else {
+    return res.status(500).json({ error: "Failed to resend email" });
+  }
 });
 
 app.post("/api/tickets/:ticketId/qr", generateQr);
@@ -120,7 +143,7 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
   }
 
   try {
-  const result = await database.createTicketsForEvent(name, email, Number(eventId), ticketType, Number(quantity), buyerId ? Number(buyerId) : null);
+    const result = await database.createTicketsForEvent(name, email, Number(eventId), ticketType, Number(quantity), buyerId ? Number(buyerId) : null);
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }

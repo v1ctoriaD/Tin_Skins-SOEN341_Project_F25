@@ -1,7 +1,7 @@
 import { useState } from "react";
 import EventCard from "./EventCard";
-
-import "./Discover.css"; // create this CSS file
+import events from "../data/events";
+import "../styles/Discover.css";
 import Filters from "./Filters";
 
 

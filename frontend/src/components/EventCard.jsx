@@ -1,5 +1,3 @@
-import React from "react";
-
 function EventCard({ event, onClick }) {
   //format date
   const eventDate = new Date(event.date);
