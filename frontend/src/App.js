@@ -30,7 +30,14 @@ function App() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch("/api/getEvents");
+        const res = await fetch("/api/getEvents", {
+           method: "GET",
+        headers: {
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
+        },
+        cache: "no-store" 
+      });
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
         setEvents(data.events);
