@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import QRCode from "react-qr-code";
 import "../../styles/tokens.css";
 import "../../styles/qr.css";
@@ -18,12 +18,12 @@ export default function QrGenerate() {
       const data = await res.json();
       if (data.ok) {
         setToken(data.payload.t);
-        setResult("✅ QR generated successfully");
+        setResult("QR generated successfully");
       } else {
-        setResult(`❌ ${data.reason || "Failed to generate QR"}`);
+        setResult(`${data.reason || "Failed to generate QR"}`);
       }
     } catch {
-      setResult("❌ Server error while generating QR");
+      setResult("Server error while generating QR");
     }
   };
 

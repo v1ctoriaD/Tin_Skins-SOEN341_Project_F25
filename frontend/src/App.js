@@ -23,7 +23,7 @@ function App() {
   const [users, setUsers] = useState(null); //all users
 
   const [token, setToken] = useState(null);
-  const [session, setSession] = useState(null); //session from auth
+  const [/*session*/, setSession] = useState(null); //session from auth
   const [user, setUser] = useState(null);
   const [org, setOrg] = useState(null);
 
@@ -74,10 +74,11 @@ function App() {
         <Navbar token={token} onLogout={handleLogout} user={user} org={org} setUser={setUser} setOrg={setOrg} setSession={setSession} />
         <Routes>
           <Route path="/" element={<Banner />} />
-          <Route path="/discover" element={<Discover events={events} user={user} organizations={organizations}/>} />
+          <Route path="/discover" element={<Discover events={events} user={user} org={org} isDiscovering={true} />} />
+          <Route path="/registrations" element={<Discover events={events} user={user} org={org} isDiscovering={false} />} />
           <Route path="/qr/generate" element={<QrGenerate />} />
           <Route path="/qr/scan" element={<QrScan />} />
-          <Route path="/tickets/claim" element={<TicketClaim events={events} session={session} token={token} />} />
+          <Route path="/tickets/claim/" element={<TicketClaim setEvents={setEvents} user={user} setUser={setUser} />} />
           <Route path="/moderate/users" element ={<UserModerations organizations={organizations} setOrganizations={setOrganizations} users={users} setUsers={setUsers} user={user} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} org={org} setOrg={setOrg} setSession={setSession} />} />
           <Route path="/signup" element={<Signup />} />

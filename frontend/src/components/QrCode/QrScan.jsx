@@ -32,13 +32,13 @@ export default function QrScan() {
             if (parsed.t) {
               validateToken(parsed.t);
             } else {
-              setStatus("❌ Invalid QR format");
+              setStatus("Invalid QR format");
             }
           } catch {
-            setStatus("❌ QR code content is not JSON");
+            setStatus("QR code content is not JSON");
           }
         } else {
-          setStatus("❌ Could not read QR code");
+          setStatus("Could not read QR code");
         }
       };
       img.src = e.target.result;
@@ -57,11 +57,11 @@ export default function QrScan() {
       const data = await res.json();
       setStatus(
         data.ok
-          ? `✅ Ticket #${data.ticketId} checked in!`
-          : `❌ ${data.reason || "Validation failed"}`
+          ? `Ticket #${data.ticketId} checked in!`
+          : `${data.reason || "Validation failed"}`
       );
     } catch {
-      setStatus("❌ Server error while validating");
+      setStatus("Server error while validating");
     }
   };
 
@@ -71,7 +71,6 @@ export default function QrScan() {
         {/* Title ABOVE the box */}
         <h2 className="qr-page-title">Scan QR from Image</h2>
         <p className="qr-page-subtitle">Upload a photo or screenshot of a QR code.</p>
-        <p className="qr-page-subtitle">(For testing, use the QR generated for ticket ID <strong>1</strong>).</p>
 
         <section className="qr-card">
           <input

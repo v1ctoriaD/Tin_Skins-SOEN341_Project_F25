@@ -60,18 +60,11 @@ export default function Navbar({ token = null, onLogout = () => {}, user = null,
       <nav style={{ marginTop: "8px", textAlign: "center" }}>
         <Link to="/" className="nav-option">Home</Link>
         <Link to="/discover" className="nav-option">Discover</Link>
-        <Link to="/tickets/claim" className="nav-option">Claim Tickets</Link>
+        {user && <Link to="/registrations" className="nav-option">Registrations</Link>}
         <Link to="/map" className="nav-option">Map</Link>
 
-        <div className="nav-item has-dropdown">
-          <span className="nav-option">QR Code Test ▾</span>
-          <div className="dropdown">
-            <Link className="dropdown-link" to="/qr/generate">Generate QR</Link>
-            <Link className="dropdown-link" to="/qr/scan">Scan from Image</Link>
-          </div>
-        </div>
-        
-        {(org && <Link to="create" className="nav-options">Create Event</Link>)}
+        {org && <Link className="nav-option" to="/qr/scan">Scan Qr Code</Link>}
+        {org && <Link to="/create" className="nav-option">Create Event</Link>}
         {(user && user.role === "ADMIN") && <Link to="/moderate/users" className="nav-option">Moderate Users</Link>}
         <Link to="/about" className="nav-option">About Us</Link>
       </nav>
