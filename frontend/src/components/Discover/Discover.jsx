@@ -9,7 +9,7 @@ import QRCode from "react-qr-code";
 
 
 
-function Discover({ events, user, org, isDiscovering }) {
+function Discover({ events, user, org, isRegistrations, isMyEvent }) {
   usePageTitle();
   const navigate = useNavigate();
   const notNullEvents = events || [];
@@ -21,11 +21,15 @@ function Discover({ events, user, org, isDiscovering }) {
   const [token, setToken] = useState("");
 
   useEffect(() => {
-    if(!isDiscovering && !user) {
+    if(isRegistrations && !user) {
       navigate('/');
       return;
     }
-  }, [isDiscovering, user, navigate]);
+    if(isMyEvent && !org) {
+      navigate('/');
+      return;
+    }
+  }, [isRegistrations, user, navigate, isMyEvent, org]);
 
   // fetch tags and organizations from events
   const tags = notNullEvents.length > 0
@@ -72,6 +76,12 @@ function Discover({ events, user, org, isDiscovering }) {
   const handleSeeRegistration = (selectedEvent) => {
     const ticket = selectedEvent.tickets.find(t => t.userId === user.id);
     setToken(ticket.qrToken);
+    return;
+  }
+
+  const handleEditEvent = (selectedEvent) => {
+    const eventId = selectedEvent.id;
+    navigate(`/edit/${eventId}`);
     return;
   }
 
@@ -138,7 +148,12 @@ function Discover({ events, user, org, isDiscovering }) {
     }
 
     //Filter for Registration page
-    if(!isDiscovering && !event.eventAttendees.some(attendee => attendee.id === user?.id)) {
+    if(isRegistrations && !event.eventAttendees.some(attendee => attendee.id === user?.id)) {
+      return false;
+    }
+
+    //Filter for MyEvents page
+    if(isMyEvent && !(event.eventOwner.id === Number(org?.id))) {
       return false;
     }
 
@@ -150,9 +165,9 @@ function Discover({ events, user, org, isDiscovering }) {
   return (
     <div className="discover-page">
       
-      <h1>{isDiscovering? "Discover Events" : "Events Registered To"} ({filteredEvents.length} events)</h1>
+      <h1>{!isRegistrations? (!isMyEvent ? "Discover Events" : "My Events" ): "Events Registered To"} ({filteredEvents.length} events)</h1>
       
-      {isDiscovering && <Filters
+      {(!isRegistrations && !isMyEvent) && <Filters
         tags={tags}
         organizations={organizations}
         onTagChange={handleTagChange}
@@ -184,7 +199,7 @@ function Discover({ events, user, org, isDiscovering }) {
               <p>Max Attendees: {selectedEvent.maxAttendees}</p>
               <p>Places Left: {selectedEvent.maxAttendees - selectedEvent.eventAttendees.length}</p>
               <p>Cost: {formattedCost(selectedEvent.cost)}</p>
-              {isDiscovering? ((!org && selectedEvent.maxAttendees - selectedEvent.eventAttendees.length !== 0) && <button 
+              {!isRegistrations? ((!org && selectedEvent.maxAttendees - selectedEvent.eventAttendees.length !== 0) && <button 
                 className="register-btn" 
                 onClick={(user && selectedEvent.eventAttendees.some(attendee => attendee.id === user?.id)) ? () => handleSeeRegistration(selectedEvent) : () => handleRegister(selectedEvent)}
               >
@@ -196,7 +211,14 @@ function Discover({ events, user, org, isDiscovering }) {
                 >
                   Get QR Code
                 </button>
-              )} 
+              )}
+              {isMyEvent && <button
+                  className="register-btn"
+                  onClick={() => handleEditEvent(selectedEvent)}
+                >
+                  Edit Event
+                </button>
+              } 
             </>) : (
               <>
                 <div className="qr-decoded">

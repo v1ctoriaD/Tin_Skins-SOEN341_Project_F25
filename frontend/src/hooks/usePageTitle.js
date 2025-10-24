@@ -24,6 +24,9 @@ export default function usePageTitle() {
       case "/register":
         document.title = "Register | Campus Connect";
         break;
+      case "/myEvents":
+        document.title = "My Events | Campy Connect";
+        break;
       case "/login":
         document.title = "Log In | Campus Connect";
         break;

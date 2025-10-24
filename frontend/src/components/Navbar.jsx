@@ -61,6 +61,7 @@ export default function Navbar({ token = null, onLogout = () => {}, user = null,
         <Link to="/" className="nav-option">Home</Link>
         <Link to="/discover" className="nav-option">Discover</Link>
         {user && <Link to="/registrations" className="nav-option">Registrations</Link>}
+        {org && <Link to="/myEvents" className="nav-option">My Events</Link>}
         <Link to="/map" className="nav-option">Map</Link>
 
         {org && <Link className="nav-option" to="/qr/scan">Scan Qr Code</Link>}

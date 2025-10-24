@@ -74,8 +74,9 @@ function App() {
         <Navbar token={token} onLogout={handleLogout} user={user} org={org} setUser={setUser} setOrg={setOrg} setSession={setSession} />
         <Routes>
           <Route path="/" element={<Banner />} />
-          <Route path="/discover" element={<Discover events={events} user={user} org={org} isDiscovering={true} />} />
-          <Route path="/registrations" element={<Discover events={events} user={user} org={org} isDiscovering={false} />} />
+          <Route path="/discover" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={false} />} />
+          <Route path="/registrations" element={<Discover events={events} user={user} org={org} isRegistrations={true} isMyEvent={false} />} />
+          <Route path="/myEvents" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={true} />} />
           {/*<Route path="/qr/generate" element={<QrGenerate />} />*/}
           <Route path="/qr/scan" element={<QrScan />} />
           <Route path="/register" element={<TicketClaim setEvents={setEvents} user={user} setUser={setUser} />} />
