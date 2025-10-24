@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
-import "../styles/tokens.css";
-import "../styles/qr.css";
-import usePageTitle from "../hooks/usePageTitle";
+import "../../styles/tokens.css";
+import "../../styles/qr.css";
+import usePageTitle from "../../hooks/usePageTitle";
 
 export default function TicketClaim({ setEvents, user = null, setUser }) {
   usePageTitle();

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import EventCard from "./EventCard";
-import "../styles/Discover.css";
-import "../styles/qr.css";
+import "../../styles/Discover.css";
+import "../../styles/qr.css";
 import Filters from "./Filters";
-import usePageTitle from "../hooks/usePageTitle";
+import usePageTitle from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
 
@@ -58,7 +58,7 @@ function Discover({ events, user, org, isDiscovering }) {
       navigate("/login");
       return;
     }
-    navigate("/tickets/claim/", { state: { selectedEvent } });
+    navigate("/register", { state: { selectedEvent } });
     return;
   };
 

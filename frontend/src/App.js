@@ -3,11 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Banner from "./components/Banner";
-import Discover from "./components/Discover";
+import Discover from "./components/Discover/Discover";
 
-import QrGenerate from "./components/QrCode/QrGenerate";
+// import QrGenerate from "./components/QrCode/QrGenerate";
 import QrScan from "./components/QrCode/QrScan";
-import TicketClaim from "./components/TicketClaim";
+import TicketClaim from "./components/Discover/TicketClaim";
 import UserModerations from "./components/Moderation/UserModeration";
 
 import Signup from "./components/Account/Signup";
@@ -76,9 +76,9 @@ function App() {
           <Route path="/" element={<Banner />} />
           <Route path="/discover" element={<Discover events={events} user={user} org={org} isDiscovering={true} />} />
           <Route path="/registrations" element={<Discover events={events} user={user} org={org} isDiscovering={false} />} />
-          <Route path="/qr/generate" element={<QrGenerate />} />
+          {/*<Route path="/qr/generate" element={<QrGenerate />} />*/}
           <Route path="/qr/scan" element={<QrScan />} />
-          <Route path="/tickets/claim/" element={<TicketClaim setEvents={setEvents} user={user} setUser={setUser} />} />
+          <Route path="/register" element={<TicketClaim setEvents={setEvents} user={user} setUser={setUser} />} />
           <Route path="/moderate/users" element ={<UserModerations organizations={organizations} setOrganizations={setOrganizations} users={users} setUsers={setUsers} user={user} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} org={org} setOrg={setOrg} setSession={setSession} />} />
           <Route path="/signup" element={<Signup />} />

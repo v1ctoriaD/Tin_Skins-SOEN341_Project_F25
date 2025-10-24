@@ -18,11 +18,11 @@ export default function usePageTitle() {
       case "/qr/scan":
         document.title = "Scan QR | Campus Connect";
         break;
-      case "/qr/generate":
+      /*case "/qr/generate":
         document.title = "Generate QR | Campus Connect";
-        break;
-      case "/tickets/claim":
-        document.title = "Claim Ticket | Campus Connect";
+        break;*/
+      case "/register":
+        document.title = "Register | Campus Connect";
         break;
       case "/login":
         document.title = "Log In | Campus Connect";
