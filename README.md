@@ -63,6 +63,9 @@ We identify three primary users: Students, Organizers, and Administrators.
    - Map Based Discovery
      - View events around an area, and their details.
 
+# Architecture Diagram
+<img width="1149" height="650" alt="Block_Diagram_341" src="https://github.com/user-attachments/assets/8cbf1ac9-0645-4034-ace9-7ceb3b191a62" />
+
 
 # Team Members : 
 - Nicolas David Chacon Pabon ; 40302889 ; Arceton500
