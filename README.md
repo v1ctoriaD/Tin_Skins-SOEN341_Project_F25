@@ -64,7 +64,7 @@ We identify three primary users: Students, Organizers, and Administrators.
      - View events around an area, and their details.
 
 # Architecture Diagram
-<img width="1149" height="650" alt="Block_Diagram_341" src="https://github.com/user-attachments/assets/8cbf1ac9-0645-4034-ace9-7ceb3b191a62" />
+<img width="1117" height="640" alt="Block_Diagram_341_dark" src="https://github.com/user-attachments/assets/94e4ddab-febb-4c28-b078-1d32ed571f7a" />
 
 
 # Team Members : 
