@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import "../../styles/account.css";
 import "../../styles/Banner.css";
 import { PiWarning  } from "react-icons/pi";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const Signup = () => {
+  usePageTitle();
+
   const [message, setMessage] = useState("");
   const [accountType, setAccountType] = useState("user");
   const [formData, setFormData] = useState({
@@ -66,7 +69,8 @@ const Signup = () => {
     }
   };
 
-  const handleResendEmail = async () => {
+  const handleResendEmail = async (e) => {
+    e.preventDefault();
     setMessage("Resent email");
     const email = formData.email;
     const res = await fetch("/api/resendEmail", {

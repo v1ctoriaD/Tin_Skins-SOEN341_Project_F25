@@ -2,8 +2,10 @@
 import { Link } from "react-router-dom";
 import "../styles/tokens.css";
 import "../styles/Banner.css";
+import usePageTitle from "../hooks/usePageTitle";
 
 export default function Banner() {
+  usePageTitle();
   return (
     <section className="banner">
       <div className="banner-content left">

@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import "../../styles/account.css";
 import "../../styles/Banner.css";
 import { PiCheckCircle, PiClockUser } from "react-icons/pi";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const Login = ({ onLogin, setUser, org, setOrg, setSession }) => {
+  usePageTitle();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");

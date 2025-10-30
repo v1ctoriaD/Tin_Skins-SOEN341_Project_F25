@@ -3,11 +3,18 @@ import {
   FaTwitter, FaFacebook, FaInstagram, FaLinkedin,
   FaSearch, FaUser, FaBars
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/Logo.png";
+import Logout from "./Account/Logout";
 
 // Accept token/onLogout from App (backward compatible if not passed)
-export default function Navbar({ token = null, onLogout = () => {} }) {
+export default function Navbar({ token = null, onLogout = () => {}, user = null, org = null, setUser, setOrg, setSession }) {
+  const navigate = useNavigate();
+  function handleLogOut() {
+    navigate("/");
+    onLogout();
+  }
+
   return (
     <header className="navbar-header" style={{ borderBottom: "1px solid #ccc", padding: "8px 16px", position: "relative" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -32,7 +39,7 @@ export default function Navbar({ token = null, onLogout = () => {} }) {
 
           {/* User popover on hover (unique class) */}
           <div className="nav-user has-dropdown user-dropdown">
-            <span className="nav-logo"><FaUser /></span>
+            <span className="nav-logo"><FaUser onClick={() => (!token && navigate("/login"))} /></span>
             <div className="dropdown">
               {!token ? (
                 <>
@@ -40,7 +47,7 @@ export default function Navbar({ token = null, onLogout = () => {} }) {
                   <Link className="dropdown-link" to="/signup">Signup</Link>
                 </>
               ) : (
-                <button className="dropdown-link" onClick={onLogout}>Logout</button>
+                <Logout onLogout={handleLogOut} setOrg={setOrg} setUser={setUser} setSession={setSession} className="dropdown-link" />
               )}
             </div>
           </div>
@@ -53,18 +60,13 @@ export default function Navbar({ token = null, onLogout = () => {} }) {
       <nav style={{ marginTop: "8px", textAlign: "center" }}>
         <Link to="/" className="nav-option">Home</Link>
         <Link to="/discover" className="nav-option">Discover</Link>
-        <Link to="/tickets/claim" className="nav-option">Claim Tickets</Link>
+        {user && <Link to="/registrations" className="nav-option">Registrations</Link>}
+        {org && <Link to="/myEvents" className="nav-option">My Events</Link>}
         <Link to="/map" className="nav-option">Map</Link>
-        <Link to="/" className="nav-option">Option</Link>
 
-        <div className="nav-item has-dropdown">
-          <span className="nav-option">QR Code Test ▾</span>
-          <div className="dropdown">
-            <Link className="dropdown-link" to="/qr/generate">Generate QR</Link>
-            <Link className="dropdown-link" to="/qr/scan">Scan from Image</Link>
-          </div>
-        </div>
-
+        {org && <Link className="nav-option" to="/qr/scan">Scan Qr Code</Link>}
+        {org && <Link to="/create" className="nav-option">Create Event</Link>}
+        {(user && user.role === "ADMIN") && <Link to="/moderate/users" className="nav-option">Moderate Users</Link>}
         <Link to="/about" className="nav-option">About Us</Link>
       </nav>
     </header>

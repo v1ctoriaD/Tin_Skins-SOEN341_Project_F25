@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function Filters({ tags, organizations, onTagChange, onDateChange, onOrganizationChange }) {
   const [selectedTag, setSelectedTag] = useState("");
