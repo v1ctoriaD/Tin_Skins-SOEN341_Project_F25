@@ -1,22 +1,22 @@
-// node_modules
-node_modules/
-// dotenv environment variables file
-backend/.env
-frontend/.env
-// log files
-*.log
-// build output
-dist/
-build/
-// OS generated files
+# Node
+node_modules
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+build
+dist
+out
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Misc
 .DS_Store
-Thumbs.db
-// IDE specific files
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-backend/node_modules/.package-lock.json
-/backend/node_modules
+.vscode
+.idea
+*.log
