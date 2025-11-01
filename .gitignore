@@ -1,0 +1,20 @@
+// node_modules
+node_modules/
+// dotenv environment variables file
+backend/.env
+frontend/.env
+// log files
+*.log
+// build output
+dist/
+build/
+// OS generated files
+.DS_Store
+Thumbs.db
+// IDE specific files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
