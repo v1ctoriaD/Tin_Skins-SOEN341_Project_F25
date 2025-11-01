@@ -60,6 +60,20 @@ export async function getEventById(id) {
   });
 }
 
+// Count events grouped by locationName
+export async function getRegionStats() {
+  const rows = await prisma.event.groupBy({
+    by: ["locationName"],
+    _count: { id: true },
+  });
+
+  // normalize shape
+  return rows
+    .filter(r => r.locationName)
+    .map(r => ({ region: r.locationName, count: r._count.id }))
+    .sort((a, b) => b.count - a.count);
+}
+
 /**
  * Creates an new organization
  * @param {String} email 

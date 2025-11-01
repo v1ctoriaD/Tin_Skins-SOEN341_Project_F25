@@ -1,4 +1,5 @@
 import StudentMapView from './StudentMapView';
+import AdminMapView from './AdminMapView';
 
 const MapView = () => {
   // read the role saved in localStorage after login
@@ -18,7 +19,7 @@ const MapView = () => {
     case 'student':
       return <StudentMapView />;
     case 'admin':
-      return "loading..."; // Placeholder for future AdminMapView
+      return <AdminMapView />;
     default:
       return <p>Invalid role. Please contact support.</p>;
   }
