@@ -50,6 +50,7 @@ const Login = ({ onLogin, setUser, org, setOrg, setSession }) => {
       setUser(data.user);
       setOrg(data.org);
       setIsLoggedIn(true);
+      localStorage.setItem("role", data.user.role);
     } else {
       setMessage(data.error);
     }

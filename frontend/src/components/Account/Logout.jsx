@@ -7,6 +7,9 @@ const Logout = ({ onLogout, setUser, setOrg, setSession, className }) => {
     const data = await res.json();
     if (res.ok) {
       onLogout && onLogout();
+      localStorage.removeItem("role");
+        localStorage.removeItem("session");
+        localStorage.removeItem("user");
       setUser(null);
       setOrg(null);
       setSession(null);

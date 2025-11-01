@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import EventCard from "./EventCard";
 import "../../styles/Discover.css";
 import "../../styles/qr.css";
 import Filters from "./Filters";
 import usePageTitle from "../../hooks/usePageTitle";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import QRCode from "react-qr-code";
 
 
@@ -12,8 +12,8 @@ import QRCode from "react-qr-code";
 function Discover({ events, user, org, isRegistrations, isMyEvent }) {
   usePageTitle();
   const navigate = useNavigate();
-  const notNullEvents = events || [];
-
+  const notNullEvents = useMemo(() => events || [], [events]);
+  const { id } = useParams();
   const [selectedTag, setSelectedTag] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedOrganization, setSelectedOrganization] = useState("");
@@ -30,6 +30,15 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
       return;
     }
   }, [isRegistrations, user, navigate, isMyEvent, org]);
+
+  useEffect(() => {
+  if (id && notNullEvents.length > 0) {
+    const matched = notNullEvents.find(e => e.id === Number(id));
+    if (matched) {
+      setSelectedEvent(matched);
+    }
+  }
+}, [id, notNullEvents]);
 
   // fetch tags and organizations from events
   const tags = notNullEvents.length > 0
@@ -92,6 +101,7 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
 
   const handleClose = () => {
     setSelectedEvent(null);
+    navigate("/discover");
     setToken("");
     return;
   }

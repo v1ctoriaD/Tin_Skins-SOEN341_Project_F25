@@ -50,6 +50,16 @@ export async function createUser(email, password, firstName, lastName, role='USE
     return data.user.email;
 }
 
+export async function getEventById(id) {
+  return await prisma.event.findUnique({
+    where: { id },
+    include: {
+      eventOwner: true,
+      eventAttendees: true,
+    },
+  });
+}
+
 /**
  * Creates an new organization
  * @param {String} email 

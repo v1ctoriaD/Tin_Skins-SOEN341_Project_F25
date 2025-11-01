@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Banner from "./components/Banner";
 import Discover from "./components/Discover/Discover";
+import MapView from "./components/MapViews/MapView";
 
 // import QrGenerate from "./components/QrCode/QrGenerate";
 import QrScan from "./components/QrCode/QrScan";
@@ -75,6 +76,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Banner />} />
           <Route path="/discover" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={false} />} />
+          <Route path="/discover/:id" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={false} />} />
+          <Route path="/map" element={<MapView events={events} user={user} org={org} />} />
           <Route path="/registrations" element={<Discover events={events} user={user} org={org} isRegistrations={true} isMyEvent={false} />} />
           <Route path="/myEvents" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={true} />} />
           {/*<Route path="/qr/generate" element={<QrGenerate />} />*/}
