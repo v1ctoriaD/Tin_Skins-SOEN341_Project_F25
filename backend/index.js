@@ -22,6 +22,16 @@ app.get("/api/getEvents", async (req, res) => {
   res.json({ events });
 });
 
+app.get("/api/admin/region-stats", async (_req, res) => {
+  try {
+    const stats = await database.getRegionStats();
+    res.json({ stats });
+  } catch (e) {
+    console.error("region-stats error:", e);
+    res.status(500).json({ error: "Failed to load region stats" });
+  }
+});
+
 // Get all Organizations endpoint
 app.get("/api/getOrganizations", async (req, res) => {
   const organizations = await database.getAllOrganizations();
