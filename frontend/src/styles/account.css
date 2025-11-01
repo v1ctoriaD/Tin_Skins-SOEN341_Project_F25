@@ -1,0 +1,166 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background:
+    linear-gradient(to right, rgba(61, 82, 160, 0.85), rgba(237, 232, 245, 0.7)),
+    url("../assets/ConcordiaCampus1.jpg");
+  background-size: cover;
+  background-position: center;
+  color: #3D52A0;
+  padding: 20px;
+}
+
+.login-container {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 40px 60px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+}
+
+.login-container h1 {
+  font-family: "Oswald", sans-serif;
+  font-size: 48px;
+  color: #3D52A0;
+  margin-bottom: 0px;
+  margin-top: 0;
+}
+
+.login-container .success-text {
+  color: var(--color-extra-green);
+}
+
+.login-container .warn-text {
+  color: var(--color-extra-yellow);
+}
+
+.login-subtext {
+  color: #8697C4;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.login-subtext-dark {
+  color: #3D52A0;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-form input {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #ADBBDA;
+  font-size: 16px;
+  color: #3D52A0;
+  background-color: #EDE8F5;
+  transition: border 0.2s ease;
+}
+
+.login-form input:focus {
+  border-color: #7091E6;
+  outline: none;
+}
+
+.login-buttons .button {
+  background-color: #3D52A0;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.login-buttons .button:hover {
+  transform: translateY(-3px);
+  background-color: #7091E6;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+}
+
+.login-message {
+  margin-top: 15px;
+  color: var(--color-extra-red);
+  font-weight: 600;
+}
+
+.signup-message {
+  margin-top: 15px;
+  color: var(--color-extra-yellow);
+  font-weight: 600;
+}
+
+.account-type-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.toggle-btn {
+  background-color: #EDE8F5;
+  color: #3D52A0;
+  border: 1px solid #ADBBDA;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+  background-color: #3D52A0;
+  color: white;
+  border-color: #3D52A0;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.toggle-btn:hover:not(.active) {
+  background-color: #dfe3f3;
+}
+
+.signup-text {
+  margin-top: 25px;
+  color: #3D52A0;
+}
+
+.signup-link {
+  color: #7091E6;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.signup-link:hover {
+  color: #3D52A0;
+}
+
+.check-icon {
+  font-size: 128px;
+  color: var(--color-extra-green);
+  display: block;
+  margin: 0 auto auto;
+}
+
+.warn-icon {
+  font-size: 128px;
+  color: var(--color-extra-yellow);
+  display: block;
+  margin: 0 auto auto;
+}
+
+.spacer {
+  width: 100%;
+  height: 15px;
+}

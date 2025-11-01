@@ -63,6 +63,9 @@ We identify three primary users: Students, Organizers, and Administrators.
    - Map Based Discovery
      - View events around an area, and their details.
 
+# Architecture Diagram
+<img width="1117" height="640" alt="Block_Diagram_341_dark" src="https://github.com/user-attachments/assets/94e4ddab-febb-4c28-b078-1d32ed571f7a" />
+
 
 # Team Members : 
 - Nicolas David Chacon Pabon ; 40302889 ; Arceton500
@@ -77,8 +80,8 @@ We identify three primary users: Students, Organizers, and Administrators.
 # Responsibilities :
 - Alesia: Event Browsing, CSV exporting, Map feature
 - Hiba: Event Browsing, CSV exporting, Map feature
-- Neil: Saving to Calendar, LogIn/LogOut, Account Moderation
+- Neil: Saving to Calendar, LogIn/LogOut
 - Victoria: UI design, Creating/editing events, QR codes
 - Basma: UI design, Creating/editing events, QR codes
 - Daniel: Event signup, moc pay, Event Analytics
-- Adrian: PM, Database, Creating/editing events, Account Moderation
+- Adrian: PM, Database, Account Moderation / Creation
