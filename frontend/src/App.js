@@ -80,10 +80,11 @@ function App() {
           <Route path="/map" element={<MapView events={events} user={user} org={org} />} />
           <Route path="/registrations" element={<Discover events={events} user={user} org={org} isRegistrations={true} isMyEvent={false} />} />
           <Route path="/myEvents" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={true} />} />
+          <Route path="/myEvents/:id" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={true} />} />
           {/*<Route path="/qr/generate" element={<QrGenerate />} />*/}
           <Route path="/qr/scan" element={<QrScan />} />
           <Route path="/register" element={<TicketClaim setEvents={setEvents} user={user} setUser={setUser} />} />
-          <Route path="/moderate/users" element ={<UserModerations organizations={organizations} setOrganizations={setOrganizations} users={users} setUsers={setUsers} user={user} />} />
+          <Route path="/moderate/users" element={<UserModerations organizations={organizations} setOrganizations={setOrganizations} users={users} setUsers={setUsers} user={user} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} org={org} setOrg={setOrg} setSession={setSession} />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>

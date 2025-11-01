@@ -507,6 +507,20 @@ export async function getAllEventsOwned(session) {
   return org?.eventsOwned ?? [];
 }
 
+// Get events owned by a specific organization
+export async function getAllEventsOwnedByOrgId(orgId) {
+  try {
+    const org = await prisma.organization.findUnique({
+      where: { id: orgId },
+      include: { eventsOwned: true },
+    });
+    return org?.eventsOwned || [];
+  } catch (error) {
+    console.error("Failed to fetch events for organization:", error.message);
+    return [];
+  }
+}
+
 /**
  * Gets all the users registered to an event through the eventId
  * @param {Number} eventId 

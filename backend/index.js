@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import * as database from './database/database.js';
 import { generateQr, validateQr } from './database/qr.js';
+import prisma from "./database/prisma.js";
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -20,6 +21,21 @@ app.get("/api/getEvents", async (req, res) => {
     return res.status(500).json({ error: "Either no events or database error" });
   }
   res.json({ events });
+});
+
+// Get events owned by a specific organization
+app.get("/api/getEventsOwned/:orgId", async (req, res) => {
+  try {
+    const { orgId } = req.params;
+    const org = await database.getAllEventsOwnedByOrgId(Number(orgId));
+    if (!org || org.length === 0) {
+      return res.status(404).json({ error: "No events found for this organization" });
+    }
+    res.json({ events: org });
+  } catch (error) {
+    console.error("Error fetching org events:", error);
+    res.status(500).json({ error: "Database error fetching organization events" });
+  }
 });
 
 app.get("/api/admin/region-stats", async (_req, res) => {
