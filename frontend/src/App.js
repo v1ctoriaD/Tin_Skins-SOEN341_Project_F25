@@ -6,7 +6,6 @@ import Banner from "./components/Banner";
 import Discover from "./components/Discover/Discover";
 import MapView from "./components/MapViews/MapView";
 
-// import QrGenerate from "./components/QrCode/QrGenerate";
 import QrScan from "./components/QrCode/QrScan";
 import TicketClaim from "./components/Discover/TicketClaim";
 import UserModerations from "./components/Moderation/UserModeration";
@@ -19,6 +18,7 @@ import Login from "./components/Account/Login";
 import "./styles/tokens.css";
 import "./App.css";
 import "./styles/dropdown.css";
+import About from "./components/About";
 
 function App() {
   const [events, setEvents] = useState(null); //all events
@@ -83,7 +83,6 @@ function App() {
           <Route path="/registrations" element={<Discover events={events} user={user} org={org} isRegistrations={true} isMyEvent={false} />} />
           <Route path="/myEvents" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={true} />} />
           <Route path="/myEvents/:id" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={true} />} />
-          {/*<Route path="/qr/generate" element={<QrGenerate />} />*/}
           <Route path="/qr/scan" element={<QrScan />} />
           <Route path="/register" element={<TicketClaim setEvents={setEvents} user={user} setUser={setUser} />} />
           <Route path="/moderate/users" element={<UserModerations organizations={organizations} setOrganizations={setOrganizations} users={users} setUsers={setUsers} user={user} />} />
@@ -91,6 +90,7 @@ function App() {
           <Route path="/events/:eventId/analytics" element={<EventAnalytics token={token} org={org} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} org={org} setOrg={setOrg} setSession={setSession} />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/about" element={<About />} />
         </Routes>
       </BrowserRouter>
     </div>
