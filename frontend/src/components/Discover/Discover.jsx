@@ -7,8 +7,6 @@ import usePageTitle from "../../hooks/usePageTitle";
 import { useNavigate, useParams } from "react-router-dom";
 import QRCode from "react-qr-code";
 
-
-
 function Discover({ events, user, org, isRegistrations, isMyEvent }) {
   usePageTitle();
   const navigate = useNavigate();
