@@ -14,13 +14,75 @@
     padding: 35px;
 }
 
+.analytics-header {
+    position: relative;
+    margin-bottom: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50px;
+}
+
 .analytics-title {
-    text-align: center;
     color: var(--color-primary);
     font-size: 2.2rem;
     font-weight: 700;
-    margin-bottom: 35px;
+    margin: 0;
     letter-spacing: 0.5px;
+    text-align: center;
+    flex: 1;
+}
+
+.analytics-refresh-btn {
+    position: absolute;
+    right: 0;
+    background: linear-gradient(135deg, var(--color-primary2), var(--color-secondary));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(61, 82, 160, 0.2);
+}
+
+.analytics-refresh-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--color-secondary), var(--color-primary2));
+    box-shadow: 0 4px 12px rgba(61, 82, 160, 0.3);
+    transform: translateY(-2px);
+}
+
+.analytics-refresh-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.analytics-refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.analytics-refresh-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.analytics-refresh-btn:not(:disabled):hover .analytics-refresh-icon {
+    animation: spin 0.6s ease-in-out;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Summary Cards Grid */
@@ -181,8 +243,29 @@
         padding: 25px 20px;
     }
 
+    .analytics-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
     .analytics-title {
         font-size: 1.8rem;
+    }
+
+    .analytics-refresh-btn {
+        position: static;
+        transform: none;
+    }
+
+    .analytics-refresh-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+    }
+
+    .analytics-refresh-btn:active:not(:disabled) {
+        transform: translateY(0);
     }
 
     .analytics-summary {
@@ -209,6 +292,16 @@
 
     .analytics-title {
         font-size: 1.5rem;
+    }
+
+    .analytics-refresh-btn {
+        font-size: 0.85rem;
+        padding: 8px 14px;
+    }
+
+    .analytics-refresh-icon {
+        width: 16px;
+        height: 16px;
     }
 
     .analytics-icon-wrapper {

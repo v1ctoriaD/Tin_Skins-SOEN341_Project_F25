@@ -17,8 +17,9 @@
 
 /* Header */
 .analytics-header {
+    position: relative;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: flex-start;
     margin-bottom: 30px;
     padding-bottom: 20px;
@@ -27,6 +28,7 @@
 
 .header-content {
     flex: 1;
+    text-align: center;
 }
 
 .event-title {
@@ -50,6 +52,8 @@
 }
 
 .refresh-btn {
+    position: absolute;
+    right: 0;
     background: var(--color-primary2);
     color: white;
     border: none;
@@ -84,6 +88,19 @@
     display: inline-block;
     margin-right: 6px;
     vertical-align: middle;
+}
+
+.refresh-btn:not(:disabled):hover .refresh-icon {
+    animation: spin 0.6s ease-in-out;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes pulse {
@@ -410,7 +427,12 @@
 
     .analytics-header {
         flex-direction: column;
+        align-items: center;
         gap: 15px;
+    }
+
+    .refresh-btn {
+        position: static;
     }
 
     .event-title {

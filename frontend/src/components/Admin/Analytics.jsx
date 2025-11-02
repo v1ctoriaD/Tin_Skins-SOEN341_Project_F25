@@ -36,26 +36,30 @@ export default function Analytics({ token, user }) {
     const [showStatsModal, setShowStatsModal] = useState(false);
     const [detailedStats, setDetailedStats] = useState(null);
 
-    useEffect(() => {
-        const fetchAnalytics = async () => {
-            try {
-                setLoading(true);
-                const res = await fetch("/api/admin/analytics", {
-                    method: "GET",
-                    headers: token
-                        ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-                        : { "Content-Type": "application/json" },
-                });
-                if (!res.ok) throw new Error("Failed to load analytics");
-                const data = await res.json();
-                setAnalytics(data);
-            } catch (err) {
-                setError(err.message || "Error loading analytics");
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchAnalytics = async () => {
+        try {
+            setLoading(true);
+            const res = await fetch("/api/admin/analytics", {
+                method: "GET",
+                headers: token
+                    ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+                    : { "Content-Type": "application/json" },
+            });
+            if (!res.ok) throw new Error("Failed to load analytics");
+            const data = await res.json();
+            setAnalytics(data);
+        } catch (err) {
+            setError(err.message || "Error loading analytics");
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    const handleRefresh = () => {
+        fetchAnalytics();
+    };
+
+    useEffect(() => {
         // Only fetch if user is admin
         if (user && user.role === "ADMIN") {
             fetchAnalytics();
@@ -400,7 +404,30 @@ export default function Analytics({ token, user }) {
     return (
         <div className="analytics-page">
             <div className="analytics-container">
-                <h1 className="analytics-title">Administrator Analytics Dashboard</h1>
+                <div className="analytics-header">
+                    <h1 className="analytics-title">Administrator Analytics Dashboard</h1>
+                    <button
+                        className="analytics-refresh-btn"
+                        onClick={handleRefresh}
+                        disabled={loading}
+                        title="Refresh data"
+                    >
+                        <svg
+                            className="analytics-refresh-icon"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
 
                 {/* Summary Cards */}
                 <div className="analytics-summary">
