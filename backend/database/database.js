@@ -684,6 +684,45 @@ function getWeekStart(date) {
 }
 
 /**
+ * Get all tickets for a specific event with user information
+ * @param {Number} eventId - The event ID
+ * @returns {Promise<Array>} Array of tickets with user details
+ */
+export async function getTicketsByEventId(eventId) {
+  try {
+    // Validate event ID
+    if (!eventId) {
+      throw new Error('Event ID is required');
+    }
+
+    // Get all tickets for this event with user information
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        eventId: Number(eventId)
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return tickets;
+  } catch (err) {
+    console.error('Error fetching tickets by event ID:', err);
+    throw err;
+  }
+}
+
+/**
  * Get analytics data for a specific event
  * Returns tickets issued, attended, attendance rate, capacity, and remaining capacity
  * @param {Number} eventId - The event ID

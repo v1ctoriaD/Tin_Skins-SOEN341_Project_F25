@@ -100,17 +100,17 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
   }
 
   const handleClose = () => {
-  setSelectedEvent(null);
-  setToken("");
+    setSelectedEvent(null);
+    setToken("");
 
-  if (isMyEvent) {
-    navigate("/myEvents");
-  } else if (isRegistrations) {
-    navigate("/registrations");
-  } else {
-    navigate("/discover");
-  }
-};
+    if (isMyEvent) {
+      navigate("/myEvents");
+    } else if (isRegistrations) {
+      navigate("/registrations");
+    } else {
+      navigate("/discover");
+    }
+  };
 
   // format functions
   const formattedCost = (cost) => {
@@ -231,16 +231,16 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
               {isMyEvent && (
                 <>
                   <button
-                    className="register-btn"
-                    onClick={() => handleEditEvent(selectedEvent)}
-                  >
-                    Edit Event
-                  </button>
-                  <button
                     className="register-btn analytics-btn"
                     onClick={() => navigate(`/events/${selectedEvent.id}/analytics`)}
                   >
                     View Analytics
+                  </button>
+                  <button
+                    className="register-btn"
+                    onClick={() => handleEditEvent(selectedEvent)}
+                  >
+                    Edit Event
                   </button>
                 </>
               )}
