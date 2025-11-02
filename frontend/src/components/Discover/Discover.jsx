@@ -234,7 +234,7 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
                     className="register-btn analytics-btn"
                     onClick={() => navigate(`/events/${selectedEvent.id}/analytics`)}
                   >
-                    📊 View Analytics
+                    View Analytics
                   </button>
                 </>
               )}

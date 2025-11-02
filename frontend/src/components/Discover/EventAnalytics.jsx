@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -17,7 +17,7 @@ export default function EventAnalytics({ token, org }) {
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
 
-    const fetchAnalytics = async (isRefresh = false) => {
+    const fetchAnalytics = useCallback(async (isRefresh = false) => {
         try {
             if (isRefresh) {
                 setRefreshing(true);
@@ -47,20 +47,20 @@ export default function EventAnalytics({ token, org }) {
         } catch (err) {
             setError(err.message || "Error loading analytics");
             // Keep last good data visible if refresh fails
-            if (lastGoodData && isRefresh) {
-                setAnalytics(lastGoodData);
+            if (isRefresh) {
+                setAnalytics((prevAnalytics) => prevAnalytics || null);
             }
         } finally {
             setLoading(false);
             setRefreshing(false);
         }
-    };
+    }, [eventId, token]);
 
     useEffect(() => {
         if (eventId) {
             fetchAnalytics();
         }
-    }, [eventId, token]);
+    }, [eventId, fetchAnalytics]);
 
     const handleRefresh = () => {
         fetchAnalytics(true);
@@ -178,21 +178,35 @@ export default function EventAnalytics({ token, org }) {
                         onClick={handleRefresh}
                         disabled={refreshing}
                     >
-                        {refreshing ? "Refreshing..." : "🔄 Refresh"}
+                        {refreshing ? "Refreshing..." : (
+                            <>
+                                <svg className="refresh-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Refresh
+                            </>
+                        )}
                     </button>
                 </div>
 
                 {/* Error banner if refresh failed but showing last data */}
                 {error && lastGoodData && (
                     <div className="error-banner">
-                        ⚠️ Failed to refresh: {error}. Showing last successful data.
+                        <svg className="warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        Failed to refresh: {error}. Showing last successful data.
                     </div>
                 )}
 
                 {/* Empty state for zero tickets */}
                 {analytics.ticketsIssued === 0 && (
                     <div className="empty-state">
-                        <div className="empty-icon">🎟️</div>
+                        <div className="empty-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="48" height="48">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                            </svg>
+                        </div>
                         <h2>No Tickets Issued Yet</h2>
                         <p>This event hasn't sold any tickets yet. Check back later for analytics.</p>
                     </div>
@@ -293,9 +307,19 @@ export default function EventAnalytics({ token, org }) {
                         {/* Event Status */}
                         <div className="event-status">
                             {analytics.isEventPast ? (
-                                <div className="status-badge past">📅 Event has ended</div>
+                                <div className="status-badge past">
+                                    <svg className="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Event has ended
+                                </div>
                             ) : (
-                                <div className="status-badge live">🔴 Live Event</div>
+                                <div className="status-badge live">
+                                    <svg className="status-icon" fill="currentColor" viewBox="0 0 24 24" width="12" height="12">
+                                        <circle cx="12" cy="12" r="8" />
+                                    </svg>
+                                    Live Event
+                                </div>
                             )}
                         </div>
                     </>

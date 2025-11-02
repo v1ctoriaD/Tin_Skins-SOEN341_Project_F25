@@ -7,8 +7,7 @@
 }
 
 .analytics-container {
-    width: 100%;
-    max-width: 1200px;
+    width: 95%;
     background: var(--color-bg-light);
     border-radius: var(--radius-outer);
     box-shadow: var(--shadow-card);
@@ -49,7 +48,7 @@
     box-shadow: var(--shadow-card-hover);
 }
 
-.card-icon-wrapper {
+.analytics-icon-wrapper {
     flex-shrink: 0;
     width: 50px;
     height: 50px;
@@ -60,7 +59,7 @@
     justify-content: center;
 }
 
-.card-icon {
+.analytics-icon {
     width: 28px;
     height: 28px;
     color: white;
@@ -100,6 +99,7 @@
     position: relative;
     height: 400px;
     width: 100%;
+    min-width: 100%;
 }
 
 /* Additional Info */
@@ -184,12 +184,12 @@
         font-size: 1.5rem;
     }
 
-    .card-icon-wrapper {
+    .analytics-icon-wrapper {
         width: 40px;
         height: 40px;
     }
 
-    .card-icon {
+    .analytics-icon {
         width: 22px;
         height: 22px;
     }
