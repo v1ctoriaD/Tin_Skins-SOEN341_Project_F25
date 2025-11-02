@@ -52,7 +52,7 @@ export default function Navbar({ token = null, onLogout = () => {}, user = null,
             </div>
           </div>
 
-          <Link to="#" className="nav-logo"><FaBars /></Link>
+          <Link to="/about" className="nav-logo"><FaBars /></Link>
         </div>
       </div>
 
