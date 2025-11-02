@@ -60,6 +60,20 @@ export async function getEventById(id) {
   });
 }
 
+// Count events grouped by locationName
+export async function getRegionStats() {
+  const rows = await prisma.event.groupBy({
+    by: ["locationName"],
+    _count: { id: true },
+  });
+
+  // normalize shape
+  return rows
+    .filter(r => r.locationName)
+    .map(r => ({ region: r.locationName, count: r._count.id }))
+    .sort((a, b) => b.count - a.count);
+}
+
 /**
  * Creates an new organization
  * @param {String} email 
@@ -491,6 +505,20 @@ export async function getAllEventsOwned(session) {
   });
 
   return org?.eventsOwned ?? [];
+}
+
+// Get events owned by a specific organization
+export async function getAllEventsOwnedByOrgId(orgId) {
+  try {
+    const org = await prisma.organization.findUnique({
+      where: { id: orgId },
+      include: { eventsOwned: true },
+    });
+    return org?.eventsOwned || [];
+  } catch (error) {
+    console.error("Failed to fetch events for organization:", error.message);
+    return [];
+  }
 }
 
 /**

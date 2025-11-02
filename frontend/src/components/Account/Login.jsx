@@ -50,9 +50,13 @@ const Login = ({ onLogin, setUser, org, setOrg, setSession }) => {
       setUser(data.user);
       setOrg(data.org);
       setIsLoggedIn(true);
-      // Only set role if user exists (not organization login)
-      if (data.user && data.user.role) {
+      if (data.user) {
         localStorage.setItem("role", data.user.role);
+        localStorage.removeItem("isOrg");
+      } else if (data.org) {
+        localStorage.setItem("isOrg", "true");
+        localStorage.setItem("org", JSON.stringify(data.org));
+        localStorage.removeItem("role");
       }
     } else {
       setMessage(data.error);

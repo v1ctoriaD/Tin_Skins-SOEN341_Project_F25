@@ -1,24 +1,32 @@
 import StudentMapView from './StudentMapView';
+import AdminMapView from './AdminMapView';
+import OrganizerMapView from './OrganizerMapView';
 
 const MapView = () => {
-  // read the role saved in localStorage after login
+  // read stored data
   const storedRole = localStorage.getItem("role");
+  const isOrg = localStorage.getItem("isOrg") === "true"; // check if organizer logged in
 
-  // normalize Prisma roles to the app roles
+  // normalize user roles
   const normalized =
     storedRole === "USER" ? "student" :
     storedRole === "ADMIN" ? "admin" :
     null;
+
+  // organizer has no role (handeled separately)
+  if (isOrg) {
+    return <OrganizerMapView />;
+  }
 
   if (!normalized) {
     return <p>User role not defined. Please log in.</p>;
   }
 
   switch (normalized) {
-    case 'student':
+    case "student":
       return <StudentMapView />;
-    case 'admin':
-      return "loading..."; // Placeholder for future AdminMapView
+    case "admin":
+      return <AdminMapView />;
     default:
       return <p>Invalid role. Please contact support.</p>;
   }
