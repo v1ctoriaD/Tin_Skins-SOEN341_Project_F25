@@ -464,6 +464,28 @@ export async function getAllUsers() {
   return users;
 }
 
+/**
+ * Get all users with their ticket information
+ * @returns {Promise<Array>} Array of users with their tickets and event details
+ */
+export async function getAllUsersWithTickets() {
+  const users = await prisma.user.findMany({
+    include: {
+      tickets: {
+        include: {
+          event: {
+            select: {
+              id: true,
+              title: true,
+              date: true
+            }
+          }
+        }
+      }
+    }
+  });
+  return users;
+}
 
 /**
  * get all events that a user is registered to

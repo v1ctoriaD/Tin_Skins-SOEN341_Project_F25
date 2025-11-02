@@ -66,6 +66,20 @@ app.get("/api/getUsers", async (req, res) => {
   res.json({ users });
 });
 
+// Get all users with their ticket information
+app.get("/api/admin/users-with-tickets", async (req, res) => {
+  try {
+    const users = await database.getAllUsersWithTickets();
+    if (!users) {
+      return res.status(500).json({ error: "Failed to fetch users" });
+    }
+    res.json({ users });
+  } catch (err) {
+    console.error("Error fetching users with tickets:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
 // Signup endpoint
 app.post("/api/signup", async (req, res) => {
   const { formData, accountType } = req.body;
