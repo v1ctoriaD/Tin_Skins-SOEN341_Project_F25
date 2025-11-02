@@ -3,12 +3,13 @@ import cors from 'cors';
 import 'dotenv/config';
 import * as database from './database/database.js';
 import { generateQr, validateQr } from './database/qr.js';
+import prisma from "./database/prisma.js";
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
 app.use(cors({
-  origin: true, 
+  origin: true,
   credentials: true
 }));
 app.use(express.json());
@@ -20,6 +21,21 @@ app.get("/api/getEvents", async (req, res) => {
     return res.status(500).json({ error: "Either no events or database error" });
   }
   res.json({ events });
+});
+
+// Get events owned by a specific organization
+app.get("/api/getEventsOwned/:orgId", async (req, res) => {
+  try {
+    const { orgId } = req.params;
+    const org = await database.getAllEventsOwnedByOrgId(Number(orgId));
+    if (!org || org.length === 0) {
+      return res.status(404).json({ error: "No events found for this organization" });
+    }
+    res.json({ events: org });
+  } catch (error) {
+    console.error("Error fetching org events:", error);
+    res.status(500).json({ error: "Database error fetching organization events" });
+  }
 });
 
 app.get("/api/admin/region-stats", async (_req, res) => {
@@ -53,13 +69,13 @@ app.get("/api/getUsers", async (req, res) => {
 // Signup endpoint
 app.post("/api/signup", async (req, res) => {
   const { formData, accountType } = req.body;
-  if(accountType === "user") {
+  if (accountType === "user") {
     try {
       const email = await database.createUser(formData.email, formData.password, formData.firstName, formData.lastName);
       if (!email) {
         return res.status(409).json({ error: "User already exists" });
       }
-      res.json({ message: "Signup successful", email});
+      res.json({ message: "Signup successful", email });
     } catch (err) {
       res.status(500).json({ error: "Database error" });
     }
@@ -89,11 +105,21 @@ app.post("/api/login", async (req, res) => {
     }
     let user = null;
     let org = null;
-    if(accountType === "user") {
+
+    if (accountType === "user") {
       user = await database.getUser(session);
+      // Validate that this is actually a user account
+      if (!user) {
+        return res.status(401).json({ error: "This account is not a student account. Please select 'Organization' to log in." });
+      }
     } else {
       org = await database.getOrganization(session);
+      // Validate that this is actually an organization account
+      if (!org) {
+        return res.status(401).json({ error: "This account is not an organization account. Please select 'Student' to log in." });
+      }
     }
+
     res.json({ message: "Login successful", session, user, org });
   } catch (err) {
     res.status(500).json({ error: "Database error" });
@@ -149,13 +175,13 @@ app.post('/api/moderate/user', async (req, res) => {
   let wasSuccess = false;
   switch (reqType) {
     case "ChangeAdminStatus":
-      wasSuccess = await database.updateUser(userId, {role: role});
+      wasSuccess = await database.updateUser(userId, { role: role });
       break;
     case "ApproveOrganization":
-      wasSuccess = await database.updateOrganization(orgId, {isApproved: true});
+      wasSuccess = await database.updateOrganization(orgId, { isApproved: true });
       break;
     case "UnapproveOrganization":
-      wasSuccess = await database.updateOrganization(orgId, {isApproved: false});
+      wasSuccess = await database.updateOrganization(orgId, { isApproved: false });
       break;
     case "DeleteUser":
       wasSuccess = await database.deleteUser(authId);
@@ -164,12 +190,47 @@ app.post('/api/moderate/user', async (req, res) => {
       wasSuccess = await database.deleteOrganization(authId);
       break;
     default:
-      return res.status(400).json({ message: "Invalid moderation request"});
+      return res.status(400).json({ message: "Invalid moderation request" });
   }
-  if(wasSuccess) {
+  if (wasSuccess) {
     return res.status(201).json({ message: "Moderation request processed successfully" });
   } else {
     return res.status(401).json({ message: "Moderation request failed to process" });
+  }
+});
+
+// Admin Analytics endpoint
+app.get('/api/admin/analytics', async (req, res) => {
+  try {
+    // In a production app, you'd verify the user is an admin via token/session
+    // For now, we'll return the data (frontend checks admin status)
+    const analytics = await database.getAdminAnalytics();
+    return res.status(200).json(analytics);
+  } catch (err) {
+    console.error('Error fetching analytics:', err);
+    return res.status(500).json({ error: 'Failed to fetch analytics data' });
+  }
+});
+
+// Event Analytics endpoint - for organizers to view stats for their event
+app.get('/api/events/:eventId/analytics', async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    if (!eventId || isNaN(eventId)) {
+      return res.status(400).json({ error: 'Valid event ID is required' });
+    }
+
+    const analytics = await database.getEventAnalytics(Number(eventId));
+    return res.status(200).json(analytics);
+  } catch (err) {
+    console.error('Error fetching event analytics:', err);
+
+    if (err.message === 'Event not found') {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    return res.status(500).json({ error: 'Failed to fetch event analytics data' });
   }
 });
 
