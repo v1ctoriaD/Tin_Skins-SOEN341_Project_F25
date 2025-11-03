@@ -464,6 +464,28 @@ export async function getAllUsers() {
   return users;
 }
 
+/**
+ * Get all users with their ticket information
+ * @returns {Promise<Array>} Array of users with their tickets and event details
+ */
+export async function getAllUsersWithTickets() {
+  const users = await prisma.user.findMany({
+    include: {
+      tickets: {
+        include: {
+          event: {
+            select: {
+              id: true,
+              title: true,
+              date: true
+            }
+          }
+        }
+      }
+    }
+  });
+  return users;
+}
 
 /**
  * get all events that a user is registered to
@@ -659,6 +681,45 @@ function getWeekStart(date) {
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
   return new Date(d.setDate(diff));
+}
+
+/**
+ * Get all tickets for a specific event with user information
+ * @param {Number} eventId - The event ID
+ * @returns {Promise<Array>} Array of tickets with user details
+ */
+export async function getTicketsByEventId(eventId) {
+  try {
+    // Validate event ID
+    if (!eventId) {
+      throw new Error('Event ID is required');
+    }
+
+    // Get all tickets for this event with user information
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        eventId: Number(eventId)
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return tickets;
+  } catch (err) {
+    console.error('Error fetching tickets by event ID:', err);
+    throw err;
+  }
 }
 
 /**

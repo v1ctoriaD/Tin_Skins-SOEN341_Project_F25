@@ -66,6 +66,20 @@ app.get("/api/getUsers", async (req, res) => {
   res.json({ users });
 });
 
+// Get all users with their ticket information
+app.get("/api/admin/users-with-tickets", async (req, res) => {
+  try {
+    const users = await database.getAllUsersWithTickets();
+    if (!users) {
+      return res.status(500).json({ error: "Failed to fetch users" });
+    }
+    res.json({ users });
+  } catch (err) {
+    console.error("Error fetching users with tickets:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
 // Signup endpoint
 app.post("/api/signup", async (req, res) => {
   const { formData, accountType } = req.body;
@@ -146,6 +160,23 @@ app.post("/api/resendEmail", async (req, res) => {
 
 app.post("/api/tickets/:ticketId/qr", generateQr);
 app.post("/api/checkin", validateQr);
+
+// Get tickets for an event
+app.get('/api/events/:eventId/tickets', async (req, res) => {
+  const { eventId } = req.params;
+
+  if (!eventId) {
+    return res.status(400).json({ error: 'Event ID is required' });
+  }
+
+  try {
+    const tickets = await database.getTicketsByEventId(Number(eventId));
+    return res.status(200).json(tickets);
+  } catch (err) {
+    console.error('Ticket fetch error:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
 
 // Create tickets for an event (enforce capacity, support mock-paid)
 app.post('/api/events/:eventId/tickets', async (req, res) => {
