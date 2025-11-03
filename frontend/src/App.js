@@ -20,6 +20,8 @@ import "./App.css";
 import "./styles/dropdown.css";
 import About from "./components/About";
 
+import CreateEvent from "./components/CreateEvent/CreateEvent";
+
 function App() {
   const [events, setEvents] = useState(null); //all events
   const [organizations, setOrganizations] = useState(null); //all organizations
@@ -89,6 +91,7 @@ function App() {
           <Route path="/admin/analytics" element={<Analytics token={token} user={user} />} />
           <Route path="/events/:eventId/analytics" element={<EventAnalytics token={token} org={org} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} org={org} setOrg={setOrg} setSession={setSession} />} />
+          <Route path="/create" element={<CreateEvent user={user} org={org} />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/about" element={<About />} />
         </Routes>

@@ -3,7 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import * as database from './database/database.js';
 import { generateQr, validateQr } from './database/qr.js';
-import prisma from "./database/prisma.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -234,10 +234,6 @@ app.get('/api/events/:eventId/analytics', async (req, res) => {
   }
 });
 
-if (process.env.NODE_ENV !== "test") {
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}
-
-export default app;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
