@@ -77,7 +77,6 @@ export async function createUser(email, password, firstName, lastName, role = 'U
 }
 
 
-
 // Count events grouped by locationName
 export async function getRegionStats() {
   const rows = await prisma.event.groupBy({
