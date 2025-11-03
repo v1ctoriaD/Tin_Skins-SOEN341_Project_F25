@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Discover.css';
+import '../../styles/Discover.css';
 
 export function CalendarActions({ event }) {
   if (!event) return null;

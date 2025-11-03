@@ -29,30 +29,6 @@ export async function getEventById(eventId) {
   }
 }
 
-/**
- * Get a single event by ID with all related data
- * @param {number|string} eventId - The ID of the event to retrieve
- * @returns {Promise<Object|null>} The event object or null if not found
- */
-export async function getEventById(eventId) {
-  try {
-    const id = Number(eventId);
-    if (!Number.isInteger(id)) return null;
-    
-    const event = await prisma.event.findUnique({
-      where: { id },
-      include: {
-        eventOwner: true,
-        eventAttendees: true,
-        tickets: true,
-      },
-    });
-    return event;
-  } catch (err) {
-    console.error("getEventById error:", err);
-    return null;
-  }
-}
 
 /**
  * 
@@ -100,15 +76,7 @@ export async function createUser(email, password, firstName, lastName, role = 'U
   return data.user.email;
 }
 
-export async function getEventById(id) {
-  return await prisma.event.findUnique({
-    where: { id },
-    include: {
-      eventOwner: true,
-      eventAttendees: true,
-    },
-  });
-}
+
 
 // Count events grouped by locationName
 export async function getRegionStats() {
