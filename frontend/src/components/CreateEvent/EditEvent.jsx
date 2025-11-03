@@ -1,5 +1,4 @@
-// frontend/src/components/CreateEvent/EditEvent.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const TAGS = [
@@ -19,29 +18,33 @@ export default function EditEvent({ org, user, onUpdated }) {
   const navigate = useNavigate();
   const { eventId } = useParams();
 
+  const isAdmin = useMemo(() => user?.role === "ADMIN", [user]);
+  const isOrganizer = !!org;
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");      // datetime-local string
+  const [date, setDate] = useState(""); // yyyy-MM-ddTHH:mm for input
   const [location, setLocation] = useState("");
   const [maxAttendees, setMaxAttendees] = useState(0);
   const [cost, setCost] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
-  const [selectedTags, setSelectedTags] = useState([]);
 
-  // Allow organizers or admins
+  // Tags UX same as CreateEvent:
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [tagToAdd, setTagToAdd] = useState("");
+
+  // Auth guard
   useEffect(() => {
-    const isAdmin = user?.role === "ADMIN";
-    const isOrganizer = !!org;
     if (!(isAdmin || isOrganizer)) {
       navigate("/login");
     }
-  }, [user, org, navigate]);
+  }, [isAdmin, isOrganizer, navigate]);
 
-  // Load event once
+  // Load current event
   useEffect(() => {
     (async () => {
       try {
@@ -49,7 +52,7 @@ export default function EditEvent({ org, user, onUpdated }) {
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
 
-        const evt = (data.events || []).find(e => e.id === Number(eventId));
+        const evt = (data.events || []).find((e) => e.id === Number(eventId));
         if (!evt) {
           setMsg("Event not found");
           setLoading(false);
@@ -59,7 +62,6 @@ export default function EditEvent({ org, user, onUpdated }) {
         setTitle(evt.title || "");
         setDescription(evt.description || "");
 
-        // Convert DB date to yyyy-MM-ddTHH:mm for <input type="datetime-local">
         const d = new Date(evt.date);
         const isoLocal = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
           .toISOString()
@@ -78,6 +80,18 @@ export default function EditEvent({ org, user, onUpdated }) {
       }
     })();
   }, [eventId]);
+
+  const onAddTag = () => {
+    if (!tagToAdd) return;
+    if (!selectedTags.includes(tagToAdd)) {
+      setSelectedTags((prev) => [...prev, tagToAdd]);
+    }
+    setTagToAdd("");
+  };
+
+  const removeTag = (tag) => {
+    setSelectedTags((prev) => prev.filter((t) => t !== tag));
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -106,12 +120,12 @@ export default function EditEvent({ org, user, onUpdated }) {
       }
 
       const { event } = await res.json();
-      if(onUpdated && event) onUpdated(event);
-      setMsg("✅ Saved!");
-      setTimeout(() => navigate("/myEvents"), 500);
+      if(onUpdated) onUpdated(event);
+        setMsg("✅ Event updated successfully!");
+      setTimeout(() => { navigate("/myEvents"); }, 600);
 
-    } catch (e) {
-      setMsg(`⚠️ ${e.message}`);
+    } catch (e2) {
+      setMsg(`⚠️ ${e2.message}`);
     } finally {
       setSaving(false);
     }
@@ -200,32 +214,36 @@ export default function EditEvent({ org, user, onUpdated }) {
             />
           </div>
 
-          {/* Compact dropdown multiselect for tags */}
-          <div className="form-row">
+          {/* Tags UI same as CreateEvent */}
+          <div className="form-row tag-picker">
             <label>Tags</label>
             <select
-              multiple
-              value={selectedTags}
-              onChange={(e) =>
-                setSelectedTags(Array.from(e.target.selectedOptions, (opt) => opt.value))
-              }
-              style={{
-                width: "100%",
-                padding: "6px",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-                height: "120px",
-              }}
+              className="tag-select"
+              value={tagToAdd}
+              onChange={(e) => setTagToAdd(e.target.value)}
             >
+              <option value="">Add a tag…</option>
               {TAGS.map((t) => (
                 <option key={t} value={t}>
                   {t}
                 </option>
               ))}
             </select>
-            <small style={{ color: "#666" }}>
-              Hold Cmd ⌘ (Mac) or Ctrl (Windows) to select multiple.
-            </small>
+
+            <div className="form-actions">
+              <button type="button" className="btn-secondary" onClick={onAddTag}>
+                Add tag
+              </button>
+              <span className="tag-hint">Click a pill to remove it.</span>
+            </div>
+
+            <div className="selected-tags">
+              {selectedTags.map((t) => (
+                <span key={t} className="tag-pill" onClick={() => removeTag(t)}>
+                  {t} <span className="tag-x">×</span>
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="form-actions">
