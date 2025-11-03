@@ -1,5 +1,12 @@
 import 'dotenv/config';
+<<<<<<< Updated upstream
 import express from "express";
+=======
+import * as database from './database/database.js';
+import { generateQr, validateQr } from './database/qr.js';
+import { buildIcsForEvent } from './database/calendar.js';
+
+>>>>>>> Stashed changes
 const app = express();
 const PORT = 5000;
 
@@ -69,6 +76,25 @@ app.get("/api/hello", (req, res) => {
   res.json({ message: "Hello from backend!" });
 });
 
+
+// Calendar endpoints
+app.get("/api/events/:eventId/ics", async (req, res) => {
+  const { eventId } = req.params;
+  const event = await database.getEventById(eventId);
+  
+  if (!event) {
+    return res.status(404).json({ error: "Event not found" });
+  }
+
+  const ics = buildIcsForEvent(event);
+  if (!ics) {
+    return res.status(500).json({ error: "Failed to generate calendar file" });
+  }
+
+  res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename=event-${event.id}.ics`);
+  res.send(ics);
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
