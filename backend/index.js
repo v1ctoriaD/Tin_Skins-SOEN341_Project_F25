@@ -5,10 +5,12 @@ import * as database from './database/database.js';
 import { generateQr, validateQr } from './database/qr.js';
 import { buildIcsForEvent } from './database/calendar.js';
 
-app.use(express.json());
-
 const app = express();
+
+
+app.use(express.json());
 const PORT = process.env.PORT || 5001;
+
 
 app.use(cors({
   origin: true,
