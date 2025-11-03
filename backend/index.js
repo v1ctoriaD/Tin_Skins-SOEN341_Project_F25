@@ -3,10 +3,14 @@ import cors from 'cors';
 import 'dotenv/config';
 import * as database from './database/database.js';
 import { generateQr, validateQr } from './database/qr.js';
-
+import { buildIcsForEvent } from './database/calendar.js';
 
 const app = express();
+
+
+app.use(express.json());
 const PORT = process.env.PORT || 5001;
+
 
 app.use(cors({
   origin: true,
@@ -190,14 +194,36 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
   try {
     await database.registerToEvent(userId, eventId);
     const result = await database.createTicketForEvent(eventId, userId);
+
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }
+
     return res.status(201).json({ message: 'Ticket created', ticket: result.ticket });
   } catch (err) {
     console.error('Ticket creation error:', err);
     return res.status(500).json({ error: 'Server error' });
   }
+});
+
+
+// Calendar endpoint 
+app.get("/api/events/:eventId/ics", async (req, res) => {
+  const { eventId } = req.params;
+  const event = await database.getEventById(eventId);
+
+  if (!event) {
+    return res.status(404).json({ error: "Event not found" });
+  }
+
+  const ics = buildIcsForEvent(event);
+  if (!ics) {
+    return res.status(500).json({ error: "Failed to generate calendar file" });
+  }
+
+  res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename=event-${event.id}.ics`);
+  res.send(ics);
 });
 
 //Admin Moderation
@@ -411,4 +437,5 @@ if (process.env.NODE_ENV !== "test") {
   });
 }
 
+// Export app for Jest tests
 export default app;
