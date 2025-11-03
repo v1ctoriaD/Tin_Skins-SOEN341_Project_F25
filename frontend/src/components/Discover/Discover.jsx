@@ -186,7 +186,7 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
         <div className="event-details-modal">
           <div className="modal-content">
             <img
-              src={selectedEvent.imageUrl || ""}
+              src={selectedEvent.imageUrl || "https://rcsurqillaykjdtmzfed.supabase.co/storage/v1/object/public/event-images/default_event_image.png"}
               alt={selectedEvent.title}
               className="modal-image"
             />

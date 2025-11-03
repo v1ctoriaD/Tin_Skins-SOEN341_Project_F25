@@ -15,9 +15,15 @@ cd TIN_SKINS-SOEN341_PROJECT_F25/
 Configure environment variables
 ```bash
 cd backend/
-cp .env.example .env
+code .env
 ```
-Swap out \[password\] with password from Supabase.
+Add API keys for Supabase including: DATABASE_URL, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
+```bash
+cd ..
+cd frontend/
+code .env
+```
+Add API key for Google Maps API for React: REACT_APP_GOOGLE_MAPS_API_KEY
 
 Generate Prisma Client (from backend/)
 ```bash
@@ -28,6 +34,17 @@ npx prisma generate
 In the root folder run:
 ```bash
 npm start
+```
+
+# Test the Project
+From root:
+```bash
+cd frontend/
+npm test
+
+cd ..
+cd backend/
+npm test
 ```
 
 # Objectives/Core Features
