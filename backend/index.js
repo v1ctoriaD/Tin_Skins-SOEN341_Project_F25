@@ -96,6 +96,25 @@ app.get("/api/events/:eventId/ics", async (req, res) => {
   res.send(ics);
 });
 
+// Calendar endpoints
+app.get("/api/events/:eventId/ics", async (req, res) => {
+  const { eventId } = req.params;
+  const event = await database.getEventById(eventId);
+  
+  if (!event) {
+    return res.status(404).json({ error: "Event not found" });
+  }
+
+  const ics = buildIcsForEvent(event);
+  if (!ics) {
+    return res.status(500).json({ error: "Failed to generate calendar file" });
+  }
+
+  res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename=event-${event.id}.ics`);
+  res.send(ics);
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
