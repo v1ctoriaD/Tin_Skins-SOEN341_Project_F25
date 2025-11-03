@@ -1,15 +1,18 @@
-import React from "react";
-
-const Logout = ({ token, onLogout }) => {
+const Logout = ({ onLogout, setUser, setOrg, setSession, className }) => {
   const handleLogout = async () => {
     const res = await fetch("/api/logout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
     });
     const data = await res.json();
     if (res.ok) {
       onLogout && onLogout();
+      localStorage.removeItem("role");
+        localStorage.removeItem("session");
+        localStorage.removeItem("user");
+      setUser(null);
+      setOrg(null);
+      setSession(null);
       alert("Logout successful!");
     } else {
       alert(data.error);
@@ -17,7 +20,7 @@ const Logout = ({ token, onLogout }) => {
   };
 
   return (
-    <button onClick={handleLogout}>Logout</button>
+    <button className={className} onClick={handleLogout}>Logout</button>
   );
 };
 

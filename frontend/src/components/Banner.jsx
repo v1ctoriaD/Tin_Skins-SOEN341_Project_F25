@@ -1,25 +1,28 @@
 // src/components/Banner.jsx
-import React from "react";
+import { Link } from "react-router-dom";
 import "../styles/tokens.css";
+import "../styles/Banner.css";
+import usePageTitle from "../hooks/usePageTitle";
 
 export default function Banner() {
+  usePageTitle();
   return (
-    <section style={{
-      background:"linear-gradient(135deg, var(--color-surface), var(--color-bg))",
-      padding:"48px 16px"
-    }}>
-      <div style={{ maxWidth:1200, margin:"0 auto" }}>
-        <h1 style={{ fontSize:48, margin:0, color:"var(--color-primary)" }}>
-          Discover campus events your way
-        </h1>
-        <p style={{ color:"var(--color-subtext)" }}>
-          Find clubs, shows, workshops and more across campus
+    <section className="banner">
+      <div className="banner-content left">
+        <h1>Experience Campus Life Like Never Before</h1>
+        <p>
+          Discover and participate in the events that make Concordia come alive.
+          From club activities and networking sessions to workshops and social gatherings — 
+          find the experiences that fit your passions and schedule.
         </p>
-        <div style={{ marginTop:"16px" }}>
-          <a className="button" href="/discover">See events</a>
-          <a className="button" style={{ marginLeft:"12px", background:"var(--color-accent)" }}>
-            Create an event
-          </a>
+
+        <div className="banner-buttons">
+          <Link className="button" to="/discover">
+            Explore Events
+          </Link>
+          <Link className="button create-btn" to="/create">
+            Host Your Own
+          </Link>
         </div>
       </div>
     </section>
