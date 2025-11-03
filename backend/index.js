@@ -187,12 +187,31 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
   const { eventId } = req.params;
   const { userId } = req.body;
 
+  if (!eventId) {
+    return res.status(400).json({ error: 'Event ID is required' });
+  }
 
-// Calendar endpoints
+  try {
+    await database.registerToEvent(userId, eventId);
+    const result = await database.createTicketForEvent(eventId, userId);
+
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+
+    return res.status(201).json({ message: 'Ticket created', ticket: result.ticket });
+  } catch (err) {
+    console.error('Ticket creation error:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+// Calendar endpoint 
 app.get("/api/events/:eventId/ics", async (req, res) => {
   const { eventId } = req.params;
   const event = await database.getEventById(eventId);
-  
+
   if (!event) {
     return res.status(404).json({ error: "Event not found" });
   }
@@ -205,24 +224,6 @@ app.get("/api/events/:eventId/ics", async (req, res) => {
   res.setHeader("Content-Type", "text/calendar; charset=utf-8");
   res.setHeader("Content-Disposition", `attachment; filename=event-${event.id}.ics`);
   res.send(ics);
-});
-
-
-  if (!eventId) {
-    return res.status(400).json({ error: 'Event ID is required' });
-  }
-
-  try {
-    await database.registerToEvent(userId, eventId);
-    const result = await database.createTicketForEvent(eventId, userId);
-    if (!result.success) {
-      return res.status(400).json({ error: result.error });
-    }
-    return res.status(201).json({ message: 'Ticket created', ticket: result.ticket });
-  } catch (err) {
-    console.error('Ticket creation error:', err);
-    return res.status(500).json({ error: 'Server error' });
-  }
 });
 
 //Admin Moderation
