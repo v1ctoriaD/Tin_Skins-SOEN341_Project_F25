@@ -111,11 +111,17 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
   const handleClose = () => {
     setSelectedEvent(null);
     setToken("");
-    if (isMyEvent) navigate("/myEvents");
-    else if (isRegistrations) navigate("/registrations");
-    else navigate("/discover");
+
+    if (isMyEvent) {
+      navigate("/myEvents");
+    } else if (isRegistrations) {
+      navigate("/registrations");
+    } else {
+      navigate("/discover");
+    }
   };
 
+  // format functions
   const formattedCost = (cost) => {
     if (cost === 0 || !cost) return "FREE";
     return `$${cost}`;
