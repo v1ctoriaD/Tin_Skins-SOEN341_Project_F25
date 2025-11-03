@@ -201,39 +201,42 @@ export async function signOut() {
  * @param {*} imageFile //png file
  * @returns true if successfull and false if fails
  */
-export async function createEvent(title, description, cost, maxAttendees, date, locationName, latitude, longitude, image = null, tags = null, session, imageFile) {
-  //add image to db to get imageUrl
-  const fileName = `user_${Date.now()}.png`
-  const { data, error } = await supabase.storage.from('user-images').upload(fileName, file)
-  if (error) {
-    console.error(error)
-    return false;
-  }
-  const { data: publicUrlData } = supabase.storage.from('user-images').getPublicUrl(fileName);
-  const imageUrl = publicUrlData.publicUrl;
-
-  //get owner id
-  const organization = await getOrganization(session);
-  const eventOwnerId = organization.id;
-
-  //create event
+export async function createEvent({
+  title,
+  description,
+  cost = 0,
+  maxAttendees,
+  date,
+  locationName = null,
+  latitude = null,
+  longitude = null,
+  tags = [],
+  eventOwnerId,            // may be null if admin creates w/out org
+  imageUrl = null
+}) {
   const event = await prisma.event.create({
     data: {
-      title: title,
-      description: description,
-      cost: new Decimal(new Number(cost)),
-      maxAttendees: maxAttendees,
-      date: date,
-      locationName: locationName,
-      latitude: latitude,
-      longitude: longitude,
-      imageUrl: imageUrl,
-      tags: tags,
-      eventOwnerId: eventOwnerId
-    }
+      title,
+      description,
+      cost: new Decimal(Number(cost) || 0),
+      maxAttendees: Number(maxAttendees),
+      date: new Date(date),
+      locationName,
+      latitude: latitude == null ? null : Number(latitude),
+      longitude: longitude == null ? null : Number(longitude),
+      imageUrl,
+      tags: { set: tags },
+      // If there is no org, eventOwnerId will be null — that's OK.
+      eventOwnerId: eventOwnerId == null ? null : Number(eventOwnerId),
+    },
+    include: {
+      eventOwner: true,
+      eventAttendees: true,
+      tickets: true,
+    },
   });
 
-  return true;
+  return event;
 }
 
 /**
@@ -285,45 +288,82 @@ export async function deleteOrganization(authId) {
 
   return true;
 }
-
-/**
- * Deletes an event based on the id param provided
- * @param {String} eventId from event
- * @returns true if successfull and false in case of failure
- */
 export async function deleteEvent(eventId) {
   try {
-    const deleted = await prisma.event.delete({
-      where: { id: eventId }
-    });
-  } catch (error) {
-    console.log("Failed to delete event");
-    return false;
-  }
-  return true;
-}
+    const id = Number(eventId);
 
-/**
- * Updates an event listing depending on given input fields
- * @param {String} eventId 
- * @param {*} updatedFields //object with fields matching those in schema.prisma for what is to be updated
- * @returns true if success and false if fail
- */
-export async function updateEvent(eventId, updatedFields) {
-  try {
-    await prisma.event.update({
-      where: { id: eventId },
-      data: {
-        ...updatedFields,
-        updatedAt: new Date(),
-      },
-    });
+    await prisma.$transaction([
+      // 1) sever M-N links to users
+      prisma.event.update({
+        where: { id },
+        data: { eventAttendees: { set: [] } },
+      }),
+      // 2) remove tickets (child table)
+      prisma.ticket.deleteMany({ where: { eventId: id } }),
+      // 3) finally delete the event
+      prisma.event.delete({ where: { id } }),
+    ]);
+
     return true;
   } catch (error) {
-    console.error("Failed to update event:", error.message);
+    console.error("Failed to delete event:", error.message);
     return false;
   }
 }
+
+//update: coerce types safely and handle enum set
+export async function updateEvent(eventId, updatedFields) {
+  try {
+    const data = { updatedAt: new Date() };
+
+    if (updatedFields.title !== undefined) data.title = updatedFields.title;
+    if (updatedFields.description !== undefined) data.description = updatedFields.description;
+
+    if (updatedFields.cost !== undefined) {
+      const n = Number(updatedFields.cost);
+      data.cost = new Decimal(isNaN(n) ? 0 : n);
+    }
+
+    if (updatedFields.maxAttendees !== undefined) {
+      const n = Number(updatedFields.maxAttendees);
+      data.maxAttendees = isNaN(n) ? 0 : n;
+    }
+
+    if (updatedFields.date !== undefined) {
+      data.date = new Date(updatedFields.date);
+    }
+
+    if (updatedFields.locationName !== undefined) data.locationName = updatedFields.locationName;
+
+    if (updatedFields.latitude !== undefined) {
+      data.latitude = updatedFields.latitude == null ? null : Number(updatedFields.latitude);
+    }
+    if (updatedFields.longitude !== undefined) {
+      data.longitude = updatedFields.longitude == null ? null : Number(updatedFields.longitude);
+    }
+
+    if (Array.isArray(updatedFields.tags)) {
+      data.tags = { set: updatedFields.tags };
+    }
+
+    if (updatedFields.imageUrl !== undefined) {
+      data.imageUrl = updatedFields.imageUrl;
+    }
+
+    const updated = await prisma.event.update({
+      where: { id: Number(eventId) },
+      data,
+      include: { eventOwner: true, eventAttendees: true, tickets: true },
+    });
+
+    return updated;                    // ← return object, not boolean
+  } catch (error) {
+    console.error("Failed to update event:", error.message);
+    return null;                       // ← null signals failure
+  }
+}
+
+
 
 /**
  * Updates a user depending on given input fields
