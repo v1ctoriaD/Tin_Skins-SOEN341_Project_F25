@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Line } from "react-chartjs-2";
 import {
@@ -36,24 +36,24 @@ export default function Analytics({ token, user }) {
     const [showStatsModal, setShowStatsModal] = useState(false);
     const [detailedStats, setDetailedStats] = useState(null);
 
-    const fetchAnalytics = async () => {
+    const fetchAnalytics = useCallback(async () => {
         try {
-            setLoading(true);
-            const res = await fetch("/api/admin/analytics", {
-                method: "GET",
-                headers: token
-                    ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
-                    : { "Content-Type": "application/json" },
-            });
-            if (!res.ok) throw new Error("Failed to load analytics");
-            const data = await res.json();
-            setAnalytics(data);
+        setLoading(true);
+        const res = await fetch("/api/admin/analytics", {
+            method: "GET",
+            headers: token
+            ? { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+            : { "Content-Type": "application/json" },
+        });
+        if (!res.ok) throw new Error("Failed to load analytics");
+        const data = await res.json();
+        setAnalytics(data);
         } catch (err) {
-            setError(err.message || "Error loading analytics");
+        setError(err.message || "Error loading analytics");
         } finally {
-            setLoading(false);
+        setLoading(false);
         }
-    };
+    }, [token]);
 
     const handleRefresh = () => {
         fetchAnalytics();
@@ -67,7 +67,7 @@ export default function Analytics({ token, user }) {
             setError("Unauthorized: Admin access required");
             setLoading(false);
         }
-    }, [token, user]);
+    }, [user, fetchAnalytics]);
 
     if (loading) {
         return (
