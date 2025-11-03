@@ -199,6 +199,152 @@ app.post('/api/moderate/user', async (req, res) => {
   }
 });
 
+// Create event endpoint
+// Create event endpoint
+app.post("/api/events", async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      cost = 0,
+      maxAttendees,
+      date,
+      locationName = null,
+      latitude = null,
+      longitude = null,
+      tags = [],
+      eventOwnerId,
+      imageUrl = null
+    } = req.body;
+
+    if (!title || !description || !maxAttendees || !date || !eventOwnerId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const created = await database.createEvent({
+      title,
+      description,
+      cost,
+      maxAttendees,
+      date,
+      locationName,
+      latitude,
+      longitude,
+      tags,
+      eventOwnerId,
+      imageUrl
+    });
+
+    return res.status(201).json({ event: created });
+  } catch (err) {
+    console.error("Create event error:", err);
+    return res.status(500).json({ error: "Server error creating event" });
+  }
+});
+
+// Update event
+app.put("/api/events/:eventId", async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const {
+      title,
+      description,
+      cost,
+      maxAttendees,
+      date,
+      locationName,
+      latitude = null,
+      longitude = null,
+      tags,
+      imageUrl // optional
+    } = req.body;
+
+    if (!eventId || isNaN(eventId)) {
+      return res.status(400).json({ error: "Valid event ID is required" });
+    }
+
+    const updatedFields = {};
+    if (title !== undefined) updatedFields.title = title;
+    if (description !== undefined) updatedFields.description = description;
+    if (cost !== undefined) updatedFields.cost = Number(cost);
+    if (maxAttendees !== undefined) updatedFields.maxAttendees = Number(maxAttendees);
+    if (date !== undefined) updatedFields.date = new Date(date);
+    if (locationName !== undefined) updatedFields.locationName = locationName;
+    if (latitude !== undefined) updatedFields.latitude = latitude === null ? null : Number(latitude);
+    if (longitude !== undefined) updatedFields.longitude = longitude === null ? null : Number(longitude);
+    if (Array.isArray(tags)) updatedFields.tags = { set: tags };
+    if (imageUrl !== undefined) updatedFields.imageUrl = imageUrl;
+
+    const ok = await database.updateEvent(Number(eventId), updatedFields);
+    if (!ok) return res.status(500).json({ error: "Failed to update event" });
+
+    res.status(200).json({ message: "Event updated" });
+  } catch (err) {
+    console.error("Update event error:", err);
+    res.status(500).json({ error: "Server error updating event" });
+  }
+});
+
+// Update event (partial update)
+app.patch("/api/events/:eventId", async (req, res) => {
+  try {
+    const eventId = Number(req.params.eventId);
+    if (!eventId) return res.status(400).json({ error: "Valid event ID is required" });
+
+    // Only allow known fields
+    const {
+      title,
+      description,
+      cost,
+      maxAttendees,
+      date,
+      locationName,
+      latitude,
+      longitude,
+      tags,
+      imageUrl,
+    } = req.body;
+
+    const updatedFields = {};
+    if (title !== undefined) updatedFields.title = title;
+    if (description !== undefined) updatedFields.description = description;
+    if (cost !== undefined) updatedFields.cost = cost;
+    if (maxAttendees !== undefined) updatedFields.maxAttendees = maxAttendees;
+    if (date !== undefined) updatedFields.date = date;
+    if (locationName !== undefined) updatedFields.locationName = locationName;
+    if (latitude !== undefined) updatedFields.latitude = latitude;
+    if (longitude !== undefined) updatedFields.longitude = longitude;
+    if (Array.isArray(tags)) updatedFields.tags = tags;
+    if (imageUrl !== undefined) updatedFields.imageUrl = imageUrl;
+
+    const ok = await database.updateEvent(eventId, updatedFields);
+    if (!ok) return res.status(500).json({ error: "Failed to update event" });
+
+    return res.status(200).json({ message: "Event updated" });
+  } catch (err) {
+    console.error("Update event error:", err);
+    return res.status(500).json({ error: "Server error updating event" });
+  }
+});
+
+// Delete event
+app.delete("/api/events/:eventId", async (req, res) => {
+  try {
+    const eventId = Number(req.params.eventId);
+    if (!eventId) return res.status(400).json({ error: "Valid event ID is required" });
+
+    const ok = await database.deleteEvent(eventId);
+    if (!ok) return res.status(500).json({ error: "Failed to delete event" });
+
+    return res.status(204).end();
+  } catch (err) {
+    console.error("Delete event error:", err);
+    return res.status(500).json({ error: "Server error deleting event" });
+  }
+});
+
+
+
 // Admin Analytics endpoint
 app.get('/api/admin/analytics', async (req, res) => {
   try {
