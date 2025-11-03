@@ -1,5 +1,5 @@
 // frontend/src/components/CreateEvent/CreateEvent.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/CreateEvent.css";
 
@@ -17,33 +17,50 @@ const TAGS = [
   "FREE_ENTRY","PAID_EVENT","ON_CAMPUS","OFF_CAMPUS","VIRTUAL","HYBRID","FOOD_PROVIDED","CERTIFICATE_AVAILABLE","TEAM_EVENT","SOLO_EVENT"
 ];
 
-export default function CreateEvent({ user, org }) {
+export default function CreateEvent({ user, org, onCreated }) {
   const navigate = useNavigate();
 
-  // allow admins OR organizers
+  const isAdmin = useMemo(() => user?.role === "ADMIN", [user]);
+
+  // Redirect non-admins who are not orgs
   useEffect(() => {
-    const isAdmin = user?.role === "ADMIN";
     const isOrganizer = !!org;
-    if (!(isAdmin || isOrganizer)) {
-      navigate("/login");
-    }
-  }, [user, org, navigate]);
+    if (!(isAdmin || isOrganizer)) navigate("/login");
+  }, [isAdmin, org, navigate]);
 
   // form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState(""); // yyyy-MM-ddTHH:mm
+  const [date, setDate] = useState(""); // yyyy-MM-ddTHH:mm (from input)
   const [location, setLocation] = useState("");
   const [maxAttendees, setMaxAttendees] = useState(0);
   const [cost, setCost] = useState(0);
-  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
 
-  // tag state
+  // tags
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagToAdd, setTagToAdd] = useState("");
 
+  // admin-only owner picker
+  const [ownerId, setOwnerId] = useState(""); // string for <select>
+  const [orgs, setOrgs] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  // load orgs for admin picker
+  useEffect(() => {
+    if (!isAdmin) return;
+    (async () => {
+      try {
+        const res = await fetch("/api/getOrganizations");
+        const data = await res.json();
+        setOrgs(data.organizations || []);
+      } catch {
+        setOrgs([]);
+      }
+    })();
+  }, [isAdmin]);
 
   const onAddTag = () => {
     if (!tagToAdd) return;
@@ -57,48 +74,55 @@ export default function CreateEvent({ user, org }) {
     setSelectedTags(prev => prev.filter(t => t !== tag));
   };
 
-  const handleFileChange = (e) => setImage(e.target.files[0]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
     try {
-      const eventOwnerId = org?.id ?? null;
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("cost", String(cost || 0));
-      formData.append("maxAttendees", String(maxAttendees || 0));
-      formData.append("date", date ? new Date(date).toISOString() : "");
-      formData.append("locationName", location);
-      formData.append("eventOwnerId", String(eventOwnerId || ""));
-      selectedTags.forEach(t => formData.append("tags[]", t));
-      if (image) formData.append("image", image);
+      // Admin must choose an owner
+      const eventOwnerId = isAdmin ? Number(ownerId) : Number(org?.id ?? 0);
+      if (!eventOwnerId) {
+        setMessage("Please select an organization to own this event.");
+        setLoading(false);
+        return;
+      }
 
-      // assumes you have POST /api/events that accepts form-data
+      // Normalize numbers and date
+      const normalizedCost = Number(String(cost).replace(",", ".")) || 0;
+      const normalizedMax = Number(maxAttendees) || 0;
+      const whenISO = date ? new Date(date).toISOString() : "";
+
+      const payload = {
+        title,
+        description,
+        cost: normalizedCost,
+        maxAttendees: normalizedMax,
+        date: whenISO,
+        locationName: location,
+        latitude: null,
+        longitude: null,
+        tags: selectedTags,
+        eventOwnerId,
+        imageUrl: imageUrl || null
+      };
+
       const res = await fetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description,
-          cost,
-          maxAttendees,
-          date,
-          locationName: location,
-          tags: selectedTags,
-          eventOwnerId: org?.id
-        })
+        body: JSON.stringify(payload)
       });
+
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || "Failed to create event");
       }
 
+      const { event } = await res.json();
+      if(onCreated && event) onCreated(event);
+
       setMessage("✅ Event created successfully!");
-      setTimeout(() => navigate("/myEvents"), 1200);
+      setTimeout(() => navigate("/myEvents"), 800);
     } catch (err) {
       console.error(err);
       setMessage(`⚠️ ${err.message || "Error creating event."}`);
@@ -112,7 +136,6 @@ export default function CreateEvent({ user, org }) {
       <div className="create-container">
         <h2>Create Event</h2>
 
-        {/* IMPORTANT: wrapper classes must match CSS (.create-form etc.) */}
         <form className="create-form" onSubmit={handleSubmit}>
           <div className="form-row">
             <label>Title</label>
@@ -150,7 +173,7 @@ export default function CreateEvent({ user, org }) {
               <label>Location</label>
               <input
                 type="text"
-                placeholder="e.g., Hall Building H-110"
+                placeholder="e.g., Hall Building H-210"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 required
@@ -177,9 +200,39 @@ export default function CreateEvent({ user, org }) {
                 step="0.01"
                 min="0"
                 value={cost}
-                onChange={(e) => setCost(Number(e.target.value))}
+                onChange={(e) => setCost(e.target.value)}
               />
             </div>
+          </div>
+
+          {/* Admin-only: choose owning organization */}
+          {isAdmin && (
+            <div className="form-row">
+              <label>Event owner (organization)</label>
+              <select
+                value={ownerId}
+                onChange={(e) => setOwnerId(e.target.value)}
+                required
+              >
+                <option value="">Select an organization…</option>
+                {orgs.map(o => (
+                  <option key={o.id} value={o.id}>
+                    {o.orgName} ({o.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Optional image URL */}
+          <div className="form-row">
+            <label>Image URL (optional)</label>
+            <input
+              type="url"
+              placeholder="https://..."
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+            />
           </div>
 
           {/* Tags */}
@@ -212,12 +265,6 @@ export default function CreateEvent({ user, org }) {
                 </span>
               ))}
             </div>
-          </div>
-
-          {/* Image */}
-          <div className="form-row">
-            <label>Image</label>
-            <input type="file" accept="image/*" onChange={handleFileChange} />
           </div>
 
           <div className="form-actions">
