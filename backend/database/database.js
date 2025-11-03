@@ -298,66 +298,50 @@ export async function updateEvent(eventId, updatedFields) {
   try {
     const data = { updatedAt: new Date() };
 
-    // title / description
     if (updatedFields.title !== undefined) data.title = updatedFields.title;
     if (updatedFields.description !== undefined) data.description = updatedFields.description;
 
-    // cost (Decimal)
     if (updatedFields.cost !== undefined) {
       const n = Number(updatedFields.cost);
       data.cost = new Decimal(isNaN(n) ? 0 : n);
     }
 
-    // maxAttendees
     if (updatedFields.maxAttendees !== undefined) {
       const n = Number(updatedFields.maxAttendees);
       data.maxAttendees = isNaN(n) ? 0 : n;
     }
 
-    // date: guard invalid/empty
-    if (updatedFields.date !== undefined && updatedFields.date !== "") {
-      const d = new Date(updatedFields.date);
-      if (!isNaN(d.getTime())) data.date = d;
+    if (updatedFields.date !== undefined) {
+      data.date = new Date(updatedFields.date);
     }
 
-    // location
     if (updatedFields.locationName !== undefined) data.locationName = updatedFields.locationName;
 
-    // lat/lng: allow null, number, or empty -> null
     if (updatedFields.latitude !== undefined) {
-      if (updatedFields.latitude === "" || updatedFields.latitude == null) data.latitude = null;
-      else {
-        const n = Number(updatedFields.latitude);
-        data.latitude = isNaN(n) ? null : n;
-      }
+      data.latitude = updatedFields.latitude == null ? null : Number(updatedFields.latitude);
     }
     if (updatedFields.longitude !== undefined) {
-      if (updatedFields.longitude === "" || updatedFields.longitude == null) data.longitude = null;
-      else {
-        const n = Number(updatedFields.longitude);
-        data.longitude = isNaN(n) ? null : n;
-      }
+      data.longitude = updatedFields.longitude == null ? null : Number(updatedFields.longitude);
     }
 
-    // tags: accept array or { set: array }
     if (Array.isArray(updatedFields.tags)) {
       data.tags = { set: updatedFields.tags };
-    } else if (updatedFields.tags && Array.isArray(updatedFields.tags.set)) {
-      data.tags = { set: updatedFields.tags.set };
     }
 
-    // image
-    if (updatedFields.imageUrl !== undefined) data.imageUrl = updatedFields.imageUrl;
+    if (updatedFields.imageUrl !== undefined) {
+      data.imageUrl = updatedFields.imageUrl;
+    }
 
-    await prisma.event.update({
+    const updated = await prisma.event.update({
       where: { id: Number(eventId) },
-      data
+      data,
+      include: { eventOwner: true, eventAttendees: true, tickets: true },
     });
 
-    return true;
+    return updated;                    // ← return object, not boolean
   } catch (error) {
-    console.error("Failed to update event:", error.message, error);
-    return false;
+    console.error("Failed to update event:", error.message);
+    return null;                       // ← null signals failure
   }
 }
 
