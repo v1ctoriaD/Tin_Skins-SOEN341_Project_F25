@@ -1,12 +1,9 @@
 import 'dotenv/config';
-<<<<<<< Updated upstream
 import express from "express";
-=======
 import * as database from './database/database.js';
 import { generateQr, validateQr } from './database/qr.js';
 import { buildIcsForEvent } from './database/calendar.js';
 
->>>>>>> Stashed changes
 const app = express();
 const PORT = 5000;
 
