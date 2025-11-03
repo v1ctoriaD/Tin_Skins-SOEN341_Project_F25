@@ -207,9 +207,7 @@ app.get("/api/events/:eventId/ics", async (req, res) => {
   res.send(ics);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+
   if (!eventId) {
     return res.status(400).json({ error: 'Event ID is required' });
   }
@@ -438,4 +436,5 @@ if (process.env.NODE_ENV !== "test") {
   });
 }
 
+// Export app for Jest tests
 export default app;
