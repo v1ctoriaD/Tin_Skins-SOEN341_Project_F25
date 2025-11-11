@@ -66,56 +66,56 @@ const Login = ({ onLogin, setUser, org, setOrg, setSession }) => {
   return (
     <section className="login-page">
       <div className="login-container">
-        {(!isLoggedIn) ? ( <>
-        <h1>Welcome Back</h1>
-        <p className="login-subtext">
-          {accountType === "user" ? <>Log in as a <b>student</b> to <u>explore</u> amazing events</> : <>Log in as an <b>organization</b> to <u>host</u> amazing events</>}
-        </p>
+        {(!isLoggedIn) ? (<>
+          <h1>Welcome Back</h1>
+          <p className="login-subtext">
+            {accountType === "user" ? <>Log in as a <b>student</b> to <u>explore</u> amazing events</> : <>Log in as an <b>organization</b> to <u>host</u> amazing events</>}
+          </p>
 
-        <div className="account-type-toggle">
-          <button
-            className={`toggle-btn ${accountType === "user" ? "active" : ""}`}
-            onClick={() => setAccountType("user")}
-          >
-            Student
-          </button>
-          <button
-            className={`toggle-btn ${accountType === "organization" ? "active" : ""}`}
-            onClick={() => setAccountType("organization")}
-          >
-            Organization
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="login-form">
-          <input
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
-
-          <div className="login-buttons">
-            <button type="submit" className="button">Login</button>
+          <div className="account-type-toggle">
+            <button
+              className={`toggle-btn ${accountType === "user" ? "active" : ""}`}
+              onClick={() => setAccountType("user")}
+            >
+              Student
+            </button>
+            <button
+              className={`toggle-btn ${accountType === "organization" ? "active" : ""}`}
+              onClick={() => setAccountType("organization")}
+            >
+              Organization
+            </button>
           </div>
-        </form>
 
-        {message && <div className="login-message">{message}</div>}
+          <form onSubmit={handleSubmit} className="login-form">
+            <input
+              type="text"
+              placeholder="Email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
 
-        <p className="signup-text">
-          Don't have an account?{" "}
-          <Link to="/signup" className="signup-link">
-            Sign up
-          </Link>
-        </p>
+            <div className="login-buttons">
+              <button type="submit" className="button">Login</button>
+            </div>
+          </form>
+
+          {message && <div className="login-message">{message}</div>}
+
+          <p className="signup-text">
+            Don't have an account?{" "}
+            <Link to="/signup" className="signup-link">
+              Sign up
+            </Link>
+          </p>
         </>
         ) : ((accountType !== "user" && (org && !org.isApproved)) ? ( //check if this line is good...
           <>
@@ -146,11 +146,11 @@ const Login = ({ onLogin, setUser, org, setOrg, setSession }) => {
                 <Link className="button create-btn" to="/discover">
                   View Events
                 </Link>
-              ): (
+              ) : (
                 <Link className="button create-btn" to="/create">
                   Host Events
                 </Link>
-              )} 
+              )}
             </div>
           </>
         )

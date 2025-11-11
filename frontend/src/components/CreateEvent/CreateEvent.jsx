@@ -1,4 +1,3 @@
-// frontend/src/components/CreateEvent/CreateEvent.jsx
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useJsApiLoader, Autocomplete } from "@react-google-maps/api";

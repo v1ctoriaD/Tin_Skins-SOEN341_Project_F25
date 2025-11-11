@@ -5,11 +5,37 @@ import Decimal from "decimal.js";
 import crypto from "node:crypto";
 
 /**
+ * Get a single event by ID with all related data
+ * @param {number|string} eventId - The ID of the event to retrieve
+ * @returns {Promise<Object|null>} The event object or null if not found
+ */
+export async function getEventById(eventId) {
+  try {
+    const id = Number(eventId);
+    if (!Number.isInteger(id)) return null;
+    
+    const event = await prisma.event.findUnique({
+      where: { id },
+      include: {
+        eventOwner: true,
+        eventAttendees: true,
+        tickets: true,
+      },
+    });
+    return event;
+  } catch (err) {
+    console.error("getEventById error:", err);
+    return null;
+  }
+}
+
+
+/**
  * 
  * @returns a list of all the possible filter tags
  */
-export function getAllTags () {
-    return ["WORKSHOP","SEMINAR","LECTURE","STUDY_SESSION","HACKATHON","BOOTCAMP","RESEARCH_SYMPOSIUM","COMPETITION","EXAM_PREP","TUTORING","CAREER_FAIR","INFO_SESSION","NETWORKING","RESUME_CLINIC","INTERVIEW_PREP","INTERNSHIP_FAIR","COMPANY_VISIT","PANEL_DISCUSSION","ALUMNI_MEETUP","ENTREPRENEURSHIP","PARTY","MIXER","CLUB_FAIR","GAME_NIGHT","MOVIE_NIGHT","CULTURAL_FESTIVAL","CONCERT","TALENT_SHOW","STUDENT_GALA","SPORTS_GAME","FUNDRAISER","CHARITY_EVENT","CLEANUP_DRIVE","BLOOD_DRIVE","VOLUNTEERING","AWARENESS_CAMPAIGN","DONATION_DRIVE","MENTORSHIP","MEDITATION","YOGA","FITNESS_CLASS","MENTAL_HEALTH","SELF_DEVELOPMENT","MINDFULNESS","NUTRITION_TALK","COUNSELING_SESSION","CODING_CHALLENGE","TECH_TALK","AI_ML_WORKSHOP","STARTUP_PITCH","ROBOTICS_DEMO","CYBERSECURITY","PRODUCT_SHOWCASE","CULTURAL_NIGHT","LANGUAGE_EXCHANGE","INTERNATIONAL_MEETUP","PRIDE_EVENT","HERITAGE_CELEBRATION","INCLUSION_WORKSHOP","ART_EXHIBIT","PHOTOGRAPHY_CONTEST","FILM_SCREENING","THEATER_PLAY","OPEN_MIC","DANCE_PERFORMANCE","MUSIC_JAM","ECO_WORKSHOP","RECYCLING_DRIVE","CLIMATE_TALK","GREEN_TECH","TREE_PLANTING","SUSTAINABILITY","FREE_ENTRY","PAID_EVENT","ON_CAMPUS","OFF_CAMPUS","VIRTUAL","HYBRID","FOOD_PROVIDED","CERTIFICATE_AVAILABLE","TEAM_EVENT","SOLO_EVENT"];
+export function getAllTags() {
+  return ["WORKSHOP", "SEMINAR", "LECTURE", "STUDY_SESSION", "HACKATHON", "BOOTCAMP", "RESEARCH_SYMPOSIUM", "COMPETITION", "EXAM_PREP", "TUTORING", "CAREER_FAIR", "INFO_SESSION", "NETWORKING", "RESUME_CLINIC", "INTERVIEW_PREP", "INTERNSHIP_FAIR", "COMPANY_VISIT", "PANEL_DISCUSSION", "ALUMNI_MEETUP", "ENTREPRENEURSHIP", "PARTY", "MIXER", "CLUB_FAIR", "GAME_NIGHT", "MOVIE_NIGHT", "CULTURAL_FESTIVAL", "CONCERT", "TALENT_SHOW", "STUDENT_GALA", "SPORTS_GAME", "FUNDRAISER", "CHARITY_EVENT", "CLEANUP_DRIVE", "BLOOD_DRIVE", "VOLUNTEERING", "AWARENESS_CAMPAIGN", "DONATION_DRIVE", "MENTORSHIP", "MEDITATION", "YOGA", "FITNESS_CLASS", "MENTAL_HEALTH", "SELF_DEVELOPMENT", "MINDFULNESS", "NUTRITION_TALK", "COUNSELING_SESSION", "CODING_CHALLENGE", "TECH_TALK", "AI_ML_WORKSHOP", "STARTUP_PITCH", "ROBOTICS_DEMO", "CYBERSECURITY", "PRODUCT_SHOWCASE", "CULTURAL_NIGHT", "LANGUAGE_EXCHANGE", "INTERNATIONAL_MEETUP", "PRIDE_EVENT", "HERITAGE_CELEBRATION", "INCLUSION_WORKSHOP", "ART_EXHIBIT", "PHOTOGRAPHY_CONTEST", "FILM_SCREENING", "THEATER_PLAY", "OPEN_MIC", "DANCE_PERFORMANCE", "MUSIC_JAM", "ECO_WORKSHOP", "RECYCLING_DRIVE", "CLIMATE_TALK", "GREEN_TECH", "TREE_PLANTING", "SUSTAINABILITY", "FREE_ENTRY", "PAID_EVENT", "ON_CAMPUS", "OFF_CAMPUS", "VIRTUAL", "HYBRID", "FOOD_PROVIDED", "CERTIFICATE_AVAILABLE", "TEAM_EVENT", "SOLO_EVENT"];
 }
 
 /**
@@ -21,44 +47,35 @@ export function getAllTags () {
  * @param {String} role default: 'USER' //please don't change unless for 'ADMIN'
  * @returns user email or null id user already exists
  */
-export async function createUser(email, password, firstName, lastName, role='USER') {
-    //register user to auth from supabase
-    const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-    });
-    /**const { data, error } = await supabase.auth.admin.createUser({
-        email: email,
-        password,
-        email_confirm: true
-    }); */ //Only used for seeding - unsafe
-
-    if(error) {
-        console.error("Sign-up error:", error.message);
-        return null;
-    }
-
-    //create user in User table
-    await prisma.user.create({
-        data: {
-            authId: data.user.id,
-            email: email,
-            firstName: firstName,
-            lastName: lastName,
-        }
-    });
-    return data.user.email;
-}
-
-export async function getEventById(id) {
-  return await prisma.event.findUnique({
-    where: { id },
-    include: {
-      eventOwner: true,
-      eventAttendees: true,
-    },
+export async function createUser(email, password, firstName, lastName, role = 'USER') {
+  //register user to auth from supabase
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
   });
+  /**const { data, error } = await supabase.auth.admin.createUser({
+      email: email,
+      password,
+      email_confirm: true
+  }); */ //Only used for seeding - unsafe
+
+  if (error) {
+    console.error("Sign-up error:", error.message);
+    return null;
+  }
+
+  //create user in User table
+  await prisma.user.create({
+    data: {
+      authId: data.user.id,
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+    }
+  });
+  return data.user.email;
 }
+
 
 // Count events grouped by locationName
 export async function getRegionStats() {
@@ -82,33 +99,33 @@ export async function getRegionStats() {
  * @param {Boolean} isApproved default=false. please don't change
  * @returns user email or null id organization already exists
  */
-export async function createOrganization(email, password, orgName, isApproved=false) {
-    //register user/organization to auth from supabase
-    const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-    });
-    /**const { data, error } = await supabase.auth.admin.createUser({
-        email: email,
-        password,
-        email_confirm: true
-    });*/ //Only used for seeding - unsafe
+export async function createOrganization(email, password, orgName, isApproved = false) {
+  //register user/organization to auth from supabase
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+  /**const { data, error } = await supabase.auth.admin.createUser({
+      email: email,
+      password,
+      email_confirm: true
+  });*/ //Only used for seeding - unsafe
 
-    if(error) {
-        console.error("Sign-up error:", error.message);
-        return null;
+  if (error) {
+    console.error("Sign-up error:", error.message);
+    return null;
+  }
+
+  //create user in Organization in table
+  await prisma.organization.create({
+    data: {
+      authId: data.user.id,
+      email: email,
+      orgName: orgName,
+      isApproved: isApproved
     }
-
-    //create user in Organization in table
-    await prisma.organization.create({
-        data: {
-            authId: data.user.id,
-            email: email,
-            orgName: orgName,
-            isApproved: isApproved
-        }
-    })
-    return data.user.email;
+  })
+  return data.user.email;
 }
 
 /**
@@ -124,14 +141,14 @@ export async function createOrganization(email, password, orgName, isApproved=fa
     or null if there is an error in the signin data
  */
 export async function signIn(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
-    if(error) {
-        return null;
-    }
-    return data.session;
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+  if (error) {
+    return null;
+  }
+  return data.session;
 }
 
 /**
@@ -163,8 +180,8 @@ export async function resendConfirmationEmail(email) {
  * @returns false if there was an error, true if signOut successful
  */
 export async function signOut() {
-    const {error} = await supabase.auth.signOut();
-    return error ? false : true;
+  const { error } = await supabase.auth.signOut();
+  return error ? false : true;
 }
 
 /**
@@ -183,39 +200,42 @@ export async function signOut() {
  * @param {*} imageFile //png file
  * @returns true if successfull and false if fails
  */
-export async function createEvent(title, description, cost, maxAttendees, date, locationName, latitude, longitude, image=null, tags=null, session, imageFile) {
-    //add image to db to get imageUrl
-    const fileName = `user_${Date.now()}.png`
-    const { data, error } = await supabase.storage.from('user-images').upload(fileName, file)
-    if (error) { 
-        console.error(error)
-        return false;
-    }
-    const { data: publicUrlData } = supabase.storage.from('user-images').getPublicUrl(fileName);
-    const imageUrl = publicUrlData.publicUrl;
-    
-    //get owner id
-    const organization = await getOrganization(session);
-    const eventOwnerId = organization.id;
+export async function createEvent({
+  title,
+  description,
+  cost = 0,
+  maxAttendees,
+  date,
+  locationName = null,
+  latitude = null,
+  longitude = null,
+  tags = [],
+  eventOwnerId,            // may be null if admin creates w/out org
+  imageUrl = null
+}) {
+  const event = await prisma.event.create({
+    data: {
+      title,
+      description,
+      cost: new Decimal(Number(cost) || 0),
+      maxAttendees: Number(maxAttendees),
+      date: new Date(date),
+      locationName,
+      latitude: latitude == null ? null : Number(latitude),
+      longitude: longitude == null ? null : Number(longitude),
+      imageUrl,
+      tags: { set: tags },
+      // If there is no org, eventOwnerId will be null — that's OK.
+      eventOwnerId: eventOwnerId == null ? null : Number(eventOwnerId),
+    },
+    include: {
+      eventOwner: true,
+      eventAttendees: true,
+      tickets: true,
+    },
+  });
 
-    //create event
-    const event = await prisma.event.create({
-        data: {
-            title: title,
-            description: description,
-            cost: new Decimal(new Number(cost)),
-            maxAttendees: maxAttendees,
-            date: date,
-            locationName: locationName,
-            latitude: latitude,
-            longitude: longitude,
-            imageUrl: imageUrl,
-            tags: tags,
-            eventOwnerId: eventOwnerId
-        }
-    }); 
-
-    return true;
+  return event;
 }
 
 /**
@@ -224,23 +244,23 @@ export async function createEvent(title, description, cost, maxAttendees, date, 
  * @returns true if successful and false on failure to delete
  */
 export async function deleteUser(authId) {
-    try {
-        const deleted = await prisma.user.delete({
-            where: { authId: authId }
-        });
-        console.log("Deleted:", deleted);
-    } catch (error) {
-        console.log("Not a user - can't delete");
-        return false;
-    }
-    
-    const { data, error } = await supabase.auth.admin.deleteUser(authId);
-    if(error) {
-        console.error("Failed to delete user:", error.message);
-        return false;
-    }
+  try {
+    const deleted = await prisma.user.delete({
+      where: { authId: authId }
+    });
+    console.log("Deleted:", deleted);
+  } catch (error) {
+    console.log("Not a user - can't delete");
+    return false;
+  }
 
-    return true;
+  const { data, error } = await supabase.auth.admin.deleteUser(authId);
+  if (error) {
+    console.error("Failed to delete user:", error.message);
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -249,63 +269,100 @@ export async function deleteUser(authId) {
  * @returns true if successful and false on failure to delete
  */
 export async function deleteOrganization(authId) {
-    try {
-        const deleted = await prisma.organization.delete({
-            where: { authId: authId }
-        });
-        console.log("Deleted:", deleted);
-    } catch (error) {
-        console.log("Not an organization - can't delete");
-        return false;
-    }
-
-    const { data, error } = await supabase.auth.admin.deleteUser(authId);
-    if(error) {
-        console.error("Failed to delete user:", error.message);
-        return false;
-    }
-
-    return true;
-}
-
-/**
- * Deletes an event based on the id param provided
- * @param {String} eventId from event
- * @returns true if successfull and false in case of failure
- */
-export async function deleteEvent(eventId) {
-    try {
-        const deleted = await prisma.event.delete({
-            where: { id: eventId}
-        });
-    } catch(error) {
-        console.log("Failed to delete event");
-        return false;
-    }
-    return true;
-}
-
-/**
- * Updates an event listing depending on given input fields
- * @param {String} eventId 
- * @param {*} updatedFields //object with fields matching those in schema.prisma for what is to be updated
- * @returns true if success and false if fail
- */
-export async function updateEvent(eventId, updatedFields) {
   try {
-    await prisma.event.update({
-      where: { id: eventId },
-      data: {
-        ...updatedFields,
-        updatedAt: new Date(),
-      },
+    const deleted = await prisma.organization.delete({
+      where: { authId: authId }
     });
+    console.log("Deleted:", deleted);
+  } catch (error) {
+    console.log("Not an organization - can't delete");
+    return false;
+  }
+
+  const { data, error } = await supabase.auth.admin.deleteUser(authId);
+  if (error) {
+    console.error("Failed to delete user:", error.message);
+    return false;
+  }
+
+  return true;
+}
+export async function deleteEvent(eventId) {
+  try {
+    const id = Number(eventId);
+
+    await prisma.$transaction([
+      // 1) sever M-N links to users
+      prisma.event.update({
+        where: { id },
+        data: { eventAttendees: { set: [] } },
+      }),
+      // 2) remove tickets (child table)
+      prisma.ticket.deleteMany({ where: { eventId: id } }),
+      // 3) finally delete the event
+      prisma.event.delete({ where: { id } }),
+    ]);
+
     return true;
   } catch (error) {
-    console.error("Failed to update event:", error.message);
+    console.error("Failed to delete event:", error.message);
     return false;
   }
 }
+
+//update: coerce types safely and handle enum set
+export async function updateEvent(eventId, updatedFields) {
+  try {
+    const data = { updatedAt: new Date() };
+
+    if (updatedFields.title !== undefined) data.title = updatedFields.title;
+    if (updatedFields.description !== undefined) data.description = updatedFields.description;
+
+    if (updatedFields.cost !== undefined) {
+      const n = Number(updatedFields.cost);
+      data.cost = new Decimal(isNaN(n) ? 0 : n);
+    }
+
+    if (updatedFields.maxAttendees !== undefined) {
+      const n = Number(updatedFields.maxAttendees);
+      data.maxAttendees = isNaN(n) ? 0 : n;
+    }
+
+    if (updatedFields.date !== undefined) {
+      data.date = new Date(updatedFields.date);
+    }
+
+    if (updatedFields.locationName !== undefined) data.locationName = updatedFields.locationName;
+
+    if (updatedFields.latitude !== undefined) {
+      data.latitude = updatedFields.latitude == null ? null : Number(updatedFields.latitude);
+    }
+    if (updatedFields.longitude !== undefined) {
+      data.longitude = updatedFields.longitude == null ? null : Number(updatedFields.longitude);
+    }
+
+    if (Array.isArray(updatedFields.tags)) {
+      data.tags = { set: updatedFields.tags };
+    }
+
+    if (updatedFields.imageUrl !== undefined) {
+      data.imageUrl = updatedFields.imageUrl;
+    }
+
+    const updated = await prisma.event.update({
+      where: { id: Number(eventId) },
+      data,
+      include: { eventOwner: true, eventAttendees: true, tickets: true },
+    });
+
+    return updated;                    // ← return object, not boolean
+  } catch (error) {
+    console.error("Failed to update event:", error.message);
+    return null;                       // ← null signals failure
+  }
+}
+
+
 
 /**
  * Updates a user depending on given input fields
@@ -406,10 +463,10 @@ export async function deregisterFromEvent(session, eventId) {
  * @returns the user data or null
  */
 export async function getUser(session) {
-  if(!session) return null;
+  if (!session) return null;
   const { user } = session;
   if (!user) return null;
-  const userData =  await prisma.user.findUnique({
+  const userData = await prisma.user.findUnique({
     where: { authId: user.id },
   });
   return userData;
@@ -421,9 +478,9 @@ export async function getUser(session) {
  * @returns organization data or null
  */
 export async function getOrganization(session) {
-  if(!session) return null;
+  if (!session) return null;
   const { user } = session;
-  if(!user) return null;
+  if (!user) return null;
   const orgData = await prisma.organization.findUnique({
     where: { authId: user.id }
   });
@@ -435,15 +492,15 @@ export async function getOrganization(session) {
  * @returns list of all the events
  */
 export async function getAllEvents() {
-    const events = await prisma.event.findMany({
-        include: {
-            eventOwner: true,
-            eventAttendees: true,
-            tickets: true,
-        }
-    });
+  const events = await prisma.event.findMany({
+    include: {
+      eventOwner: true,
+      eventAttendees: true,
+      tickets: true,
+    }
+  });
 
-    return events;
+  return events;
 }
 
 /**
@@ -464,6 +521,28 @@ export async function getAllUsers() {
   return users;
 }
 
+/**
+ * Get all users with their ticket information
+ * @returns {Promise<Array>} Array of users with their tickets and event details
+ */
+export async function getAllUsersWithTickets() {
+  const users = await prisma.user.findMany({
+    include: {
+      tickets: {
+        include: {
+          event: {
+            select: {
+              id: true,
+              title: true,
+              date: true
+            }
+          }
+        }
+      }
+    }
+  });
+  return users;
+}
 
 /**
  * get all events that a user is registered to
@@ -479,7 +558,7 @@ export async function getUserRegisteredEvents(session) {
     include: {
       eventsRegistered: {
         include: {
-          eventOwner: { select: { orgName: true } }, 
+          eventOwner: { select: { orgName: true } },
         },
       },
     },
@@ -500,7 +579,7 @@ export async function getAllEventsOwned(session) {
   const org = await prisma.organization.findUnique({
     where: { authId: user.id },
     include: {
-      eventsOwned: true, 
+      eventsOwned: true,
     },
   });
 
@@ -527,15 +606,15 @@ export async function getAllEventsOwnedByOrgId(orgId) {
  * @returns array with all users registered to the event or []
  */
 export async function getAllUsersRegisteredTo(eventId) {
-    const events = await prisma.event.findUnique({
-        where: {
-            id: eventId,
-        },
-        include: {
-            eventAttendees: true
-        }
-    });
-    return events?.eventAttendees ?? [];
+  const events = await prisma.event.findUnique({
+    where: {
+      id: eventId,
+    },
+    include: {
+      eventAttendees: true
+    }
+  });
+  return events?.eventAttendees ?? [];
 }
 
 /**
@@ -544,8 +623,8 @@ export async function getAllUsersRegisteredTo(eventId) {
  * @returns refreshed session
  */
 export async function refreshSession(session) {
-    const { data: refreshedSession } = await supabase.auth.refreshSession(session.refresh_token);
-    return refreshedSession.session;
+  const { data: refreshedSession } = await supabase.auth.refreshSession(session.refresh_token);
+  return refreshedSession.session;
 }
 
 /**
@@ -556,22 +635,212 @@ export async function refreshSession(session) {
  * @param {Number} eventId
  * @returns {Object} { success: boolean, error?: string, ticket?: Object }
  */
-export async function createTicketForEvent( eventId, userId ) {
+export async function createTicketForEvent(eventId, userId) {
   // Basic validation: require user and event
   if (!eventId || !userId) {
     return { success: false, error: 'Invalid input: user and event are required' };
   }
   const token = crypto.randomBytes(24).toString("base64url");
   try {
-    const createdTicket = await prisma.ticket.create({ data: {
-      eventId: Number(eventId), 
-      userId: Number(userId),
-      qrToken: token, 
-    } });
+    const createdTicket = await prisma.ticket.create({
+      data: {
+        eventId: Number(eventId),
+        userId: Number(userId),
+        qrToken: token,
+      }
+    });
 
     return { success: true, ticket: createdTicket };
-  } catch(err) {
+  } catch (err) {
     console.error('Prisma error creating ticket:', err);
     return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Get administrator analytics data
+ * Returns number of events, tickets, attendance, and participation trends
+ * @returns {Object} Analytics data with numEvents, numTickets, totalAttendance, and attendanceTrend
+ */
+export async function getAdminAnalytics() {
+  try {
+    // Get total number of events
+    const numEvents = await prisma.event.count();
+
+    // Get total number of tickets
+    const numTickets = await prisma.ticket.count();
+
+    // Get total attendance (checked-in tickets)
+    const totalAttendance = await prisma.ticket.count({
+      where: {
+        status: 'CHECKED_IN'
+      }
+    });
+
+    // Get participation trend data - group by event date
+    // Get all events with their ticket stats
+    const events = await prisma.event.findMany({
+      include: {
+        tickets: true
+      },
+      orderBy: {
+        date: 'asc'
+      }
+    });
+
+    // Group events by week for trend analysis
+    const trendMap = new Map();
+
+    events.forEach(event => {
+      // Format date as YYYY-MM-DD for grouping by week
+      const eventDate = new Date(event.date);
+      const weekStart = getWeekStart(eventDate);
+      const weekKey = weekStart.toISOString().split('T')[0];
+
+      const registered = event.tickets.length;
+      const attended = event.tickets.filter(t => t.status === 'CHECKED_IN').length;
+
+      if (!trendMap.has(weekKey)) {
+        trendMap.set(weekKey, { registered: 0, attended: 0 });
+      }
+
+      const current = trendMap.get(weekKey);
+      current.registered += registered;
+      current.attended += attended;
+    });
+
+    // Convert map to array for response
+    const attendanceTrend = Array.from(trendMap.entries()).map(([label, data]) => ({
+      label,
+      registered: data.registered,
+      attended: data.attended
+    }));
+
+    return {
+      numEvents,
+      numTickets,
+      totalAttendance,
+      attendanceTrend
+    };
+  } catch (err) {
+    console.error('Error fetching admin analytics:', err);
+    throw err;
+  }
+}
+
+/**
+ * Helper function to get the start of the week (Monday) for a given date
+ * @param {Date} date 
+ * @returns {Date} Start of the week
+ */
+function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+  return new Date(d.setDate(diff));
+}
+
+/**
+ * Get all tickets for a specific event with user information
+ * @param {Number} eventId - The event ID
+ * @returns {Promise<Array>} Array of tickets with user details
+ */
+export async function getTicketsByEventId(eventId) {
+  try {
+    // Validate event ID
+    if (!eventId) {
+      throw new Error('Event ID is required');
+    }
+
+    // Get all tickets for this event with user information
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        eventId: Number(eventId)
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return tickets;
+  } catch (err) {
+    console.error('Error fetching tickets by event ID:', err);
+    throw err;
+  }
+}
+
+/**
+ * Get analytics data for a specific event
+ * Returns tickets issued, attended, attendance rate, capacity, and remaining capacity
+ * @param {Number} eventId - The event ID
+ * @returns {Object} Analytics data for the event
+ */
+export async function getEventAnalytics(eventId) {
+  try {
+    // Validate event ID
+    if (!eventId) {
+      throw new Error('Event ID is required');
+    }
+
+    // Get event with tickets
+    const event = await prisma.event.findUnique({
+      where: {
+        id: Number(eventId)
+      },
+      include: {
+        tickets: true,
+        eventOwner: true
+      }
+    });
+
+    // Handle missing event
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
+    // Calculate metrics
+    const capacity = event.maxAttendees;
+    const ticketsIssued = event.tickets.length;
+    const attended = event.tickets.filter(ticket => ticket.status === 'CHECKED_IN').length;
+    const remainingCapacity = Math.max(0, capacity - ticketsIssued);
+
+    // Calculate attendance rate (handle zero tickets case)
+    const attendanceRate = ticketsIssued > 0
+      ? ((attended / ticketsIssued) * 100).toFixed(1)
+      : 0;
+
+    // Calculate capacity utilization
+    const capacityUtilization = capacity > 0
+      ? ((ticketsIssued / capacity) * 100).toFixed(1)
+      : 0;
+
+    return {
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: event.date,
+      organizationName: event.eventOwner.orgName,
+      capacity,
+      ticketsIssued,
+      attended,
+      remainingCapacity,
+      attendanceRate: parseFloat(attendanceRate),
+      capacityUtilization: parseFloat(capacityUtilization),
+      // Additional breakdown for visualization
+      notAttended: ticketsIssued - attended,
+      isEventPast: new Date(event.date) < new Date(),
+    };
+  } catch (err) {
+    console.error('Error fetching event analytics:', err);
+    throw err;
   }
 }
