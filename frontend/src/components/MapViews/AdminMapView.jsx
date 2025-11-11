@@ -12,6 +12,7 @@ const center = { lat: 45.5017, lng: -73.5673 };
 const AdminMapView = () => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
   });
 
   const [events, setEvents] = useState([]);
