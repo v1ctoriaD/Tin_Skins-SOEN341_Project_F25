@@ -1,6 +1,6 @@
-// frontend/src/components/CreateEvent/CreateEvent.jsx
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useJsApiLoader, Autocomplete } from "@react-google-maps/api";
 import "../../styles/CreateEvent.css";
 
 /** Copy of your Prisma enum (frontend constant) */
@@ -17,10 +17,18 @@ const TAGS = [
   "FREE_ENTRY","PAID_EVENT","ON_CAMPUS","OFF_CAMPUS","VIRTUAL","HYBRID","FOOD_PROVIDED","CERTIFICATE_AVAILABLE","TEAM_EVENT","SOLO_EVENT"
 ];
 
+const libraries = ["places"];
+
 export default function CreateEvent({ user, org, onCreated }) {
   const navigate = useNavigate();
 
   const isAdmin = useMemo(() => user?.role === "ADMIN", [user]);
+
+  // load Google Maps JS w/ Places
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    libraries,
+  });
 
   // Redirect non-admins who are not orgs
   useEffect(() => {
@@ -33,6 +41,7 @@ export default function CreateEvent({ user, org, onCreated }) {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(""); // yyyy-MM-ddTHH:mm (from input)
   const [location, setLocation] = useState("");
+  const [latLng, setLatLng] = useState({ lat: null, lng: null }); // new
   const [maxAttendees, setMaxAttendees] = useState(0);
   const [cost, setCost] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
@@ -47,6 +56,30 @@ export default function CreateEvent({ user, org, onCreated }) {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Autocomplete ref
+  const autocompleteRef = useRef(null);
+
+  const onLoadAutocomplete = (autocomplete) => {
+    autocompleteRef.current = autocomplete;
+  };
+
+  const onPlaceChanged = () => {
+    if (!autocompleteRef.current) return;
+    const place = autocompleteRef.current.getPlace();
+
+    const formatted =
+      place.formatted_address || place.name || location || "";
+
+    setLocation(formatted);
+
+    if (place.geometry && place.geometry.location) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      setLatLng({ lat, lng });
+      // console.log("Picked place:", formatted, lat, lng);
+    }
+  };
 
   // load orgs for admin picker
   useEffect(() => {
@@ -100,8 +133,8 @@ export default function CreateEvent({ user, org, onCreated }) {
         maxAttendees: normalizedMax,
         date: whenISO,
         locationName: location,
-        latitude: null,
-        longitude: null,
+        latitude: latLng.lat,    // <--- now using values from Places
+        longitude: latLng.lng,   // <---
         tags: selectedTags,
         eventOwnerId,
         imageUrl: imageUrl || null
@@ -119,7 +152,7 @@ export default function CreateEvent({ user, org, onCreated }) {
       }
 
       const { event } = await res.json();
-      if(onCreated && event) onCreated(event);
+      if (onCreated && event) onCreated(event);
 
       setMessage("✅ Event created successfully!");
       setTimeout(() => navigate("/myEvents"), 800);
@@ -130,6 +163,18 @@ export default function CreateEvent({ user, org, onCreated }) {
       setLoading(false);
     }
   };
+
+  if (!isLoaded) {
+    // don’t render form until Google Maps JS is ready
+    return (
+      <div className="create-page">
+        <div className="create-container">
+          <h2>Create Event</h2>
+          <p>Loading map services…</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="create-page">
@@ -171,13 +216,18 @@ export default function CreateEvent({ user, org, onCreated }) {
 
             <div className="form-row">
               <label>Location</label>
-              <input
-                type="text"
-                placeholder="e.g., Hall Building H-210"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                required
-              />
+              <Autocomplete
+                onLoad={onLoadAutocomplete}
+                onPlaceChanged={onPlaceChanged}
+              >
+                <input
+                  type="text"
+                  placeholder="e.g., Hall Building H-210"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  required
+                />
+              </Autocomplete>
             </div>
           </div>
 
@@ -215,7 +265,7 @@ export default function CreateEvent({ user, org, onCreated }) {
                 required
               >
                 <option value="">Select an organization…</option>
-                {orgs.map(o => (
+                {orgs.map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.orgName} ({o.email})
                   </option>
@@ -260,7 +310,11 @@ export default function CreateEvent({ user, org, onCreated }) {
 
             <div className="selected-tags">
               {selectedTags.map((t) => (
-                <span key={t} className="tag-pill" onClick={() => removeTag(t)}>
+                <span
+                  key={t}
+                  className="tag-pill"
+                  onClick={() => removeTag(t)}
+                >
                   {t} <span className="tag-x">×</span>
                 </span>
               ))}
