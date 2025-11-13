@@ -104,7 +104,7 @@ export default function EditEvent({ org, user, onUpdated }) {
         const selectedDate = new Date(date);
         const now = new Date();
         if (selectedDate < now) {
-          setMsg("⚠️ Cannot update event with a date in the past. Please select a present or future date.");
+          setMsg("Cannot update event with a date in the past. Please select a present or future date.");
           setSaving(false);
           return;
         }

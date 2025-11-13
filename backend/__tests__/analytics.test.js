@@ -141,4 +141,92 @@ describe('Analytics API Tests', () => {
       expect(duration).toBeLessThan(3000);
     });
   });
+
+  describe('Organizer Event Analytics Dashboard', () => {
+    it('should calculate attendance rate correctly (attended / issued)', async () => {
+      const analytics = await database.getEventAnalytics(testEvents[0].id);
+      
+      // 2 attended out of 3 issued = 66.7%
+      const expectedRate = (2 / 3) * 100;
+      expect(analytics.attendanceRate).toBeCloseTo(expectedRate, 1);
+    });
+
+    it('should update ticket count after new ticket issued', async () => {
+      const beforeAnalytics = await database.getEventAnalytics(testEvents[1].id);
+      
+      // Issue new ticket
+      const newTicket = await prisma.ticket.create({
+        data: {
+          userId: testUsers[3].id,
+          eventId: testEvents[1].id,
+          status: 'ISSUED',
+          qrToken: `QR-new-${Date.now()}`
+        }
+      });
+
+      const afterAnalytics = await database.getEventAnalytics(testEvents[1].id);
+      
+      expect(afterAnalytics.ticketsIssued).toBe(beforeAnalytics.ticketsIssued + 1);
+      expect(afterAnalytics.remainingCapacity).toBe(beforeAnalytics.remainingCapacity - 1);
+
+      // Cleanup
+      await prisma.ticket.delete({ where: { id: newTicket.id } });
+    });
+
+    it('should update attendance when ticket checked in', async () => {
+      const beforeAnalytics = await database.getEventAnalytics(testEvents[2].id);
+      
+      // Find an ISSUED ticket and check it in
+      const issuedTicket = testTickets.find(
+        t => t.eventId === testEvents[2].id && t.status === 'ISSUED'
+      );
+      
+      await prisma.ticket.update({
+        where: { id: issuedTicket.id },
+        data: { status: 'CHECKED_IN', validatedAt: new Date() }
+      });
+
+      const afterAnalytics = await database.getEventAnalytics(testEvents[2].id);
+      
+      expect(afterAnalytics.attended).toBe(beforeAnalytics.attended + 1);
+      expect(afterAnalytics.attendanceRate).toBeGreaterThan(beforeAnalytics.attendanceRate);
+
+      // Cleanup - revert status
+      await prisma.ticket.update({
+        where: { id: issuedTicket.id },
+        data: { status: 'ISSUED', validatedAt: null }
+      });
+    });
+
+    it('should match database query values', async () => {
+      const eventId = testEvents[0].id;
+      
+      // Direct database queries
+      const ticketCount = await prisma.ticket.count({ 
+        where: { eventId } 
+      });
+      const attendedCount = await prisma.ticket.count({ 
+        where: { eventId, status: 'CHECKED_IN' } 
+      });
+      const event = await prisma.event.findUnique({ 
+        where: { id: eventId } 
+      });
+
+      // Analytics function result
+      const analytics = await database.getEventAnalytics(eventId);
+
+      expect(analytics.ticketsIssued).toBe(ticketCount);
+      expect(analytics.attended).toBe(attendedCount);
+      expect(analytics.capacity).toBe(event.maxAttendees);
+    });
+
+    it('should calculate capacity correctly', async () => {
+      const analytics = await database.getEventAnalytics(testEvents[0].id);
+      
+      expect(analytics.capacity).toBe(50);
+      expect(analytics.ticketsIssued).toBe(3);
+      expect(analytics.remainingCapacity).toBe(50 - 3);
+      expect(analytics.capacityUtilization).toBeCloseTo(6, 1); // 3/50 * 100
+    });
+  });
 });
