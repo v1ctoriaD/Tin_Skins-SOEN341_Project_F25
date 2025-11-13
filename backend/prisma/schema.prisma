@@ -7,7 +7,7 @@
 //Note: If you change this, run "npx prisma generate" in terminal
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  //output   = "../generated/prisma"
 }
 
 datasource db {
