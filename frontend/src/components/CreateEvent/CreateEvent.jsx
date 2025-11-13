@@ -93,6 +93,17 @@ export default function CreateEvent({ user, org, onCreated }) {
       const normalizedMax = Number(maxAttendees) || 0;
       const whenISO = date ? new Date(date).toISOString() : "";
 
+      // Check if date is in the past
+      if (date) {
+        const selectedDate = new Date(date);
+        const now = new Date();
+        if (selectedDate < now) {
+          setMessage("Cannot create an event with a date in the past. Please select a present or future date.");
+          setLoading(false);
+          return;
+        }
+      }
+
       const payload = {
         title,
         description,
