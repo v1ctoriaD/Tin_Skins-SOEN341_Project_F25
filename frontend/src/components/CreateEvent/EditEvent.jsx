@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useJsApiLoader, Autocomplete } from "@react-google-maps/api";
 
 const TAGS = [
   "WORKSHOP","SEMINAR","LECTURE","STUDY_SESSION","HACKATHON","BOOTCAMP","RESEARCH_SYMPOSIUM","COMPETITION","EXAM_PREP","TUTORING",
@@ -13,6 +14,8 @@ const TAGS = [
   "ECO_WORKSHOP","RECYCLING_DRIVE","CLIMATE_TALK","GREEN_TECH","TREE_PLANTING","SUSTAINABILITY",
   "FREE_ENTRY","PAID_EVENT","ON_CAMPUS","OFF_CAMPUS","VIRTUAL","HYBRID","FOOD_PROVIDED","CERTIFICATE_AVAILABLE","TEAM_EVENT","SOLO_EVENT"
 ];
+
+const libraries = ["places"];
 
 export default function EditEvent({ org, user, onUpdated }) {
   const navigate = useNavigate();
@@ -29,6 +32,7 @@ export default function EditEvent({ org, user, onUpdated }) {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(""); // yyyy-MM-ddTHH:mm for input
   const [location, setLocation] = useState("");
+  const [latLng, setLatLng] = useState({ lat: null, lng: null }); 
   const [maxAttendees, setMaxAttendees] = useState(0);
   const [cost, setCost] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
@@ -36,6 +40,36 @@ export default function EditEvent({ org, user, onUpdated }) {
   // Tags UX same as CreateEvent:
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagToAdd, setTagToAdd] = useState("");
+
+  // Google Maps loader (same config as CreateEvent / map views)
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    libraries,
+  });
+
+  // Autocomplete ref + handlers
+  const autocompleteRef = useRef(null);
+
+  const onLoadAutocomplete = (autocomplete) => {
+    autocompleteRef.current = autocomplete;
+  };
+
+  const onPlaceChanged = () => {
+    if (!autocompleteRef.current) return;
+    const place = autocompleteRef.current.getPlace();
+
+    const formatted =
+      place.formatted_address || place.name || location || "";
+
+    setLocation(formatted);
+
+    if (place.geometry && place.geometry.location) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      setLatLng({ lat, lng });
+      // console.log("Edit picked place:", formatted, lat, lng);
+    }
+  };
 
   // Auth guard
   useEffect(() => {
@@ -69,6 +103,11 @@ export default function EditEvent({ org, user, onUpdated }) {
         setDate(isoLocal);
 
         setLocation(evt.locationName || "");
+        setLatLng({
+          lat: evt.latitude ?? null,
+          lng: evt.longitude ?? null,
+        });
+
         setMaxAttendees(evt.maxAttendees || 0);
         setCost(Number(evt.cost) || 0);
         setImageUrl(evt.imageUrl || "");
@@ -109,9 +148,11 @@ export default function EditEvent({ org, user, onUpdated }) {
           maxAttendees: Number(maxAttendees),
           date: new Date(date).toISOString(),
           locationName: location,
+          latitude: latLng.lat,   
+          longitude: latLng.lng,  
           tags: selectedTags,
-          imageUrl: imageUrl || null
-        })
+          imageUrl: imageUrl || null,
+        }),
       });
 
       if (!res.ok) {
@@ -120,10 +161,11 @@ export default function EditEvent({ org, user, onUpdated }) {
       }
 
       const { event } = await res.json();
-      if(onUpdated) onUpdated(event);
-        setMsg("✅ Event updated successfully!");
-      setTimeout(() => { navigate("/myEvents"); }, 600);
-
+      if (onUpdated) onUpdated(event);
+      setMsg("✅ Event updated successfully!");
+      setTimeout(() => {
+        navigate("/myEvents");
+      }, 600);
     } catch (e2) {
       setMsg(`⚠️ ${e2.message}`);
     } finally {
@@ -131,7 +173,8 @@ export default function EditEvent({ org, user, onUpdated }) {
     }
   };
 
-  if (loading) return <div style={{ padding: 16 }}>Loading…</div>;
+  // Wait for both event data + Maps script
+  if (loading || !isLoaded) return <div style={{ padding: 16 }}>Loading…</div>;
 
   return (
     <div className="create-page">
@@ -171,12 +214,17 @@ export default function EditEvent({ org, user, onUpdated }) {
 
             <div className="form-row">
               <label>Location</label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                required
-              />
+              <Autocomplete
+                onLoad={onLoadAutocomplete}
+                onPlaceChanged={onPlaceChanged}
+              >
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  required
+                />
+              </Autocomplete>
             </div>
           </div>
 
@@ -231,7 +279,11 @@ export default function EditEvent({ org, user, onUpdated }) {
             </select>
 
             <div className="form-actions">
-              <button type="button" className="btn-secondary" onClick={onAddTag}>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={onAddTag}
+              >
                 Add tag
               </button>
               <span className="tag-hint">Click a pill to remove it.</span>
@@ -239,7 +291,11 @@ export default function EditEvent({ org, user, onUpdated }) {
 
             <div className="selected-tags">
               {selectedTags.map((t) => (
-                <span key={t} className="tag-pill" onClick={() => removeTag(t)}>
+                <span
+                  key={t}
+                  className="tag-pill"
+                  onClick={() => removeTag(t)}
+                >
                   {t} <span className="tag-x">×</span>
                 </span>
               ))}
