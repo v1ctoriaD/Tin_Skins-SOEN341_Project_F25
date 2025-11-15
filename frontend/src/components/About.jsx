@@ -1,9 +1,9 @@
-import "../styles/about.css";
-import member1 from "../assets/member1.jpg";
-import member2 from "../assets/member2.jpg";
-import member3 from "../assets/member3.jpg";
-import mission from "../assets/ConcordiaCampus.jpg";
-import values from "../assets/ConcordiaCampus1.jpg";
+import '../styles/about.css'
+import member1 from '../assets/member1.jpg'
+import member2 from '../assets/member2.jpg'
+import member3 from '../assets/member3.jpg'
+import mission from '../assets/ConcordiaCampus.jpg'
+import values from '../assets/ConcordiaCampus1.jpg'
 
 export default function About() {
   return (
@@ -13,9 +13,9 @@ export default function About() {
         <div className="about-hero-content">
           <h1>About Us</h1>
           <p>
-            We’re passionate about creating opportunities for students and communities to
-            connect, grow, and make an impact. Our platform helps people discover events,
-            register seamlessly, and share experiences together.
+            We’re passionate about creating opportunities for students and communities to connect,
+            grow, and make an impact. Our platform helps people discover events, register
+            seamlessly, and share experiences together.
           </p>
         </div>
       </section>
@@ -25,10 +25,9 @@ export default function About() {
         <div className="about-text">
           <h2>Our Mission</h2>
           <p>
-            Our mission is to empower organizations and students by making event
-            management simple, accessible, and inspiring. Whether you’re hosting a
-            workshop, social night, or academic conference — we’re here to make your
-            events unforgettable.
+            Our mission is to empower organizations and students by making event management simple,
+            accessible, and inspiring. Whether you’re hosting a workshop, social night, or academic
+            conference — we’re here to make your events unforgettable.
           </p>
         </div>
         <div className="about-image about-image-right">
@@ -44,10 +43,18 @@ export default function About() {
         <div className="about-text">
           <h2>Our Values</h2>
           <ul>
-            <li><strong>Community:</strong> We believe in bringing people together.</li>
-            <li><strong>Innovation:</strong> We embrace new ideas and technologies.</li>
-            <li><strong>Integrity:</strong> We act with honesty and purpose.</li>
-            <li><strong>Growth:</strong> We never stop learning and improving.</li>
+            <li>
+              <strong>Community:</strong> We believe in bringing people together.
+            </li>
+            <li>
+              <strong>Innovation:</strong> We embrace new ideas and technologies.
+            </li>
+            <li>
+              <strong>Integrity:</strong> We act with honesty and purpose.
+            </li>
+            <li>
+              <strong>Growth:</strong> We never stop learning and improving.
+            </li>
           </ul>
         </div>
       </section>
@@ -74,5 +81,5 @@ export default function About() {
         </div>
       </section>
     </div>
-  );
+  )
 }

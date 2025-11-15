@@ -1,39 +1,49 @@
 # SOEN-341-Project
+
 Tin Skins' version of the SOEN 341 Project.
 
 We are developping a Campus Events & Ticketing Web application meant for students to be involved and participate in campus activies and the student life.
 
 We plan on coding using JavaScript as the main language and React as the Framework.
 
-
 # Project Setup
+
 Clone the repo
+
 ```bash
 git clone https://github.com/v1ctoriaD/Tin_Skins-SOEN341_Project_F25/
 cd TIN_SKINS-SOEN341_PROJECT_F25/
 ```
+
 Configure environment variables
+
 ```bash
 cd backend/
 cp .env.example .env
 ```
+
 Swap out \[password\] with password from Supabase.
 
 Generate Prisma Client (from backend/)
+
 ```bash
 npx prisma generate
 ```
 
 # Run the Project
+
 In the root folder run:
+
 ```bash
 npm start
 ```
 
 # Objectives/Core Features
+
 Technologies to be used: React or Node.js, JavaScript, CSS, HTML, PostgreSQL(Supabase + Prisma)
 
 We identify three primary users: Students, Organizers, and Administrators.
+
 1. Student Event Experience
    - Event Discovery
      - Browse and search events with filters (date, category, organization).
@@ -41,7 +51,7 @@ We identify three primary users: Students, Organizers, and Administrators.
      - Save events to a personal calendar.
      - Claim tickets (free or mock paid).
      - Receive a digital ticket with a unique QR code.
-2. Organizer Event Management 
+2. Organizer Event Management
    - Event Creation
      - Enter event details: title, description, date/time, location, ticket capacity, ticket type (free or paid).
    - Event Analytics
@@ -64,10 +74,11 @@ We identify three primary users: Students, Organizers, and Administrators.
      - View events around an area, and their details.
 
 # Architecture Diagram
+
 <img width="1117" height="640" alt="Block_Diagram_341_dark" src="https://github.com/user-attachments/assets/94e4ddab-febb-4c28-b078-1d32ed571f7a" />
 
+# Team Members :
 
-# Team Members : 
 - Nicolas David Chacon Pabon ; 40302889 ; Arceton500
 - Alesia Kulagina; 40260096; lesyak1
 - Neil Bryan Moukam-Tchuangou; 40316930; shinehiro
@@ -78,6 +89,7 @@ We identify three primary users: Students, Organizers, and Administrators.
 - Adrian Charbonneau ; 40310777 ; Alphabot54
 
 # Responsibilities :
+
 - Alesia: Event Browsing, CSV exporting, Map feature
 - Hiba: Event Browsing, CSV exporting, Map feature
 - Neil: Saving to Calendar, LogIn/LogOut

@@ -1,7 +1,7 @@
 .discover-page {
   padding: 20px;
   text-align: center;
-  color: #3D52A0;
+  color: #3d52a0;
 }
 
 .event-grid {
@@ -17,7 +17,9 @@
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   background: #ffff;
 }
 
@@ -44,7 +46,7 @@
 .event-info p {
   margin: 2px 0;
   font-size: 0.9rem;
-  color: #8697C4;
+  color: #8697c4;
 }
 
 .event-details-modal {
@@ -61,7 +63,7 @@
 }
 
 .register-btn {
-  background-color: #7091E6;
+  background-color: #7091e6;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -72,16 +74,16 @@
 }
 
 .register-btn:hover {
-  background-color: #3D52A0;
+  background-color: #3d52a0;
   /* darker green on hover */
 }
 
 .analytics-btn {
-  background: linear-gradient(135deg, #43A047, #66BB6A) !important;
+  background: linear-gradient(135deg, #43a047, #66bb6a) !important;
 }
 
 .analytics-btn:hover {
-  background: linear-gradient(135deg, #2E7D32, #43A047) !important;
+  background: linear-gradient(135deg, #2e7d32, #43a047) !important;
 }
 
 .close-btn {
@@ -100,7 +102,6 @@
   background-color: #d32f2f;
   /* darker red on hover */
 }
-
 
 .modal-content {
   background: #fff;
@@ -139,7 +140,7 @@
   border-radius: 12px;
   color: #fff;
   margin-top: 5px;
-  background-color: #ADBBDA;
+  background-color: #adbbda;
 }
 
 .filters-container {
@@ -156,6 +157,6 @@
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 0.9rem;
-  color: #3D52A0;
-  background-color: #EDE8F5;
+  color: #3d52a0;
+  background-color: #ede8f5;
 }
