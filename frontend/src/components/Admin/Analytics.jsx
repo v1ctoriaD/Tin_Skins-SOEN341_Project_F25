@@ -2,19 +2,19 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Line } from "react-chartjs-2";
 import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
-import "../../styles/Analytics.css";
-import usePageTitle from "../../hooks/usePageTitle";
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import '../../styles/Analytics.css'
+import usePageTitle from '../../hooks/usePageTitle'
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 export default function Analytics({ token, user }) {
     usePageTitle();
@@ -69,32 +69,32 @@ export default function Analytics({ token, user }) {
         }
     }, [user, fetchAnalytics]);
 
-    if (loading) {
-        return (
-            <div className="analytics-page">
-                <div className="analytics-loading">Loading analytics...</div>
-            </div>
-        );
-    }
+  if (loading) {
+    return (
+      <div className="analytics-page">
+        <div className="analytics-loading">Loading analytics...</div>
+      </div>
+    )
+  }
 
-    if (error) {
-        return (
-            <div className="analytics-page">
-                <div className="analytics-error">
-                    <h2>Access Denied</h2>
-                    <p>{error}</p>
-                </div>
-            </div>
-        );
-    }
+  if (error) {
+    return (
+      <div className="analytics-page">
+        <div className="analytics-error">
+          <h2>Access Denied</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    )
+  }
 
-    if (!analytics) {
-        return (
-            <div className="analytics-page">
-                <div className="analytics-empty">No analytics data available</div>
-            </div>
-        );
-    }
+  if (!analytics) {
+    return (
+      <div className="analytics-page">
+        <div className="analytics-empty">No analytics data available</div>
+      </div>
+    )
+  }
 
     // Prepare chart data with formatted labels
     const labels = analytics.attendanceTrend.map((point) => {
@@ -280,10 +280,11 @@ export default function Analytics({ token, user }) {
         },
     };
 
-    // Calculate attendance rate
-    const attendanceRate = analytics.totalAttendance > 0
-        ? ((analytics.totalAttendance / analytics.numTickets) * 100).toFixed(1)
-        : 0;
+  // Calculate attendance rate
+  const attendanceRate =
+    analytics.totalAttendance > 0
+      ? ((analytics.totalAttendance / analytics.numTickets) * 100).toFixed(1)
+      : 0
 
     // Show detailed statistics
     const showDetailedStats = () => {

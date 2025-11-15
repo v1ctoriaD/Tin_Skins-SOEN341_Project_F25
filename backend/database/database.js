@@ -31,19 +31,102 @@ export async function getEventById(eventId) {
 
 
 /**
- * 
+ *
  * @returns a list of all the possible filter tags
  */
 export function getAllTags() {
-  return ["WORKSHOP", "SEMINAR", "LECTURE", "STUDY_SESSION", "HACKATHON", "BOOTCAMP", "RESEARCH_SYMPOSIUM", "COMPETITION", "EXAM_PREP", "TUTORING", "CAREER_FAIR", "INFO_SESSION", "NETWORKING", "RESUME_CLINIC", "INTERVIEW_PREP", "INTERNSHIP_FAIR", "COMPANY_VISIT", "PANEL_DISCUSSION", "ALUMNI_MEETUP", "ENTREPRENEURSHIP", "PARTY", "MIXER", "CLUB_FAIR", "GAME_NIGHT", "MOVIE_NIGHT", "CULTURAL_FESTIVAL", "CONCERT", "TALENT_SHOW", "STUDENT_GALA", "SPORTS_GAME", "FUNDRAISER", "CHARITY_EVENT", "CLEANUP_DRIVE", "BLOOD_DRIVE", "VOLUNTEERING", "AWARENESS_CAMPAIGN", "DONATION_DRIVE", "MENTORSHIP", "MEDITATION", "YOGA", "FITNESS_CLASS", "MENTAL_HEALTH", "SELF_DEVELOPMENT", "MINDFULNESS", "NUTRITION_TALK", "COUNSELING_SESSION", "CODING_CHALLENGE", "TECH_TALK", "AI_ML_WORKSHOP", "STARTUP_PITCH", "ROBOTICS_DEMO", "CYBERSECURITY", "PRODUCT_SHOWCASE", "CULTURAL_NIGHT", "LANGUAGE_EXCHANGE", "INTERNATIONAL_MEETUP", "PRIDE_EVENT", "HERITAGE_CELEBRATION", "INCLUSION_WORKSHOP", "ART_EXHIBIT", "PHOTOGRAPHY_CONTEST", "FILM_SCREENING", "THEATER_PLAY", "OPEN_MIC", "DANCE_PERFORMANCE", "MUSIC_JAM", "ECO_WORKSHOP", "RECYCLING_DRIVE", "CLIMATE_TALK", "GREEN_TECH", "TREE_PLANTING", "SUSTAINABILITY", "FREE_ENTRY", "PAID_EVENT", "ON_CAMPUS", "OFF_CAMPUS", "VIRTUAL", "HYBRID", "FOOD_PROVIDED", "CERTIFICATE_AVAILABLE", "TEAM_EVENT", "SOLO_EVENT"];
+  return [
+    'WORKSHOP',
+    'SEMINAR',
+    'LECTURE',
+    'STUDY_SESSION',
+    'HACKATHON',
+    'BOOTCAMP',
+    'RESEARCH_SYMPOSIUM',
+    'COMPETITION',
+    'EXAM_PREP',
+    'TUTORING',
+    'CAREER_FAIR',
+    'INFO_SESSION',
+    'NETWORKING',
+    'RESUME_CLINIC',
+    'INTERVIEW_PREP',
+    'INTERNSHIP_FAIR',
+    'COMPANY_VISIT',
+    'PANEL_DISCUSSION',
+    'ALUMNI_MEETUP',
+    'ENTREPRENEURSHIP',
+    'PARTY',
+    'MIXER',
+    'CLUB_FAIR',
+    'GAME_NIGHT',
+    'MOVIE_NIGHT',
+    'CULTURAL_FESTIVAL',
+    'CONCERT',
+    'TALENT_SHOW',
+    'STUDENT_GALA',
+    'SPORTS_GAME',
+    'FUNDRAISER',
+    'CHARITY_EVENT',
+    'CLEANUP_DRIVE',
+    'BLOOD_DRIVE',
+    'VOLUNTEERING',
+    'AWARENESS_CAMPAIGN',
+    'DONATION_DRIVE',
+    'MENTORSHIP',
+    'MEDITATION',
+    'YOGA',
+    'FITNESS_CLASS',
+    'MENTAL_HEALTH',
+    'SELF_DEVELOPMENT',
+    'MINDFULNESS',
+    'NUTRITION_TALK',
+    'COUNSELING_SESSION',
+    'CODING_CHALLENGE',
+    'TECH_TALK',
+    'AI_ML_WORKSHOP',
+    'STARTUP_PITCH',
+    'ROBOTICS_DEMO',
+    'CYBERSECURITY',
+    'PRODUCT_SHOWCASE',
+    'CULTURAL_NIGHT',
+    'LANGUAGE_EXCHANGE',
+    'INTERNATIONAL_MEETUP',
+    'PRIDE_EVENT',
+    'HERITAGE_CELEBRATION',
+    'INCLUSION_WORKSHOP',
+    'ART_EXHIBIT',
+    'PHOTOGRAPHY_CONTEST',
+    'FILM_SCREENING',
+    'THEATER_PLAY',
+    'OPEN_MIC',
+    'DANCE_PERFORMANCE',
+    'MUSIC_JAM',
+    'ECO_WORKSHOP',
+    'RECYCLING_DRIVE',
+    'CLIMATE_TALK',
+    'GREEN_TECH',
+    'TREE_PLANTING',
+    'SUSTAINABILITY',
+    'FREE_ENTRY',
+    'PAID_EVENT',
+    'ON_CAMPUS',
+    'OFF_CAMPUS',
+    'VIRTUAL',
+    'HYBRID',
+    'FOOD_PROVIDED',
+    'CERTIFICATE_AVAILABLE',
+    'TEAM_EVENT',
+    'SOLO_EVENT',
+  ]
 }
 
 /**
  * Creates a new user
- * @param {String} email 
- * @param {String} password 
- * @param {String} firstName 
- * @param {String} lastName 
+ * @param {String} email
+ * @param {String} password
+ * @param {String} firstName
+ * @param {String} lastName
  * @param {String} role default: 'USER' //please don't change unless for 'ADMIN'
  * @returns user email or null id user already exists
  */
@@ -52,7 +135,7 @@ export async function createUser(email, password, firstName, lastName, role = 'U
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-  });
+  })
   /**const { data, error } = await supabase.auth.admin.createUser({
       email: email,
       password,
@@ -60,8 +143,8 @@ export async function createUser(email, password, firstName, lastName, role = 'U
   }); */ //Only used for seeding - unsafe
 
   if (error) {
-    console.error("Sign-up error:", error.message);
-    return null;
+    console.error('Sign-up error:', error.message)
+    return null
   }
 
   //create user in User table
@@ -71,31 +154,31 @@ export async function createUser(email, password, firstName, lastName, role = 'U
       email: email,
       firstName: firstName,
       lastName: lastName,
-    }
-  });
-  return data.user.email;
+    },
+  })
+  return data.user.email
 }
 
 
 // Count events grouped by locationName
 export async function getRegionStats() {
   const rows = await prisma.event.groupBy({
-    by: ["locationName"],
+    by: ['locationName'],
     _count: { id: true },
-  });
+  })
 
   // normalize shape
   return rows
     .filter(r => r.locationName)
     .map(r => ({ region: r.locationName, count: r._count.id }))
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => b.count - a.count)
 }
 
 /**
  * Creates an new organization
- * @param {String} email 
- * @param {String} password 
- * @param {String} orgName 
+ * @param {String} email
+ * @param {String} password
+ * @param {String} orgName
  * @param {Boolean} isApproved default=false. please don't change
  * @returns user email or null id organization already exists
  */
@@ -104,7 +187,7 @@ export async function createOrganization(email, password, orgName, isApproved = 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-  });
+  })
   /**const { data, error } = await supabase.auth.admin.createUser({
       email: email,
       password,
@@ -112,8 +195,8 @@ export async function createOrganization(email, password, orgName, isApproved = 
   });*/ //Only used for seeding - unsafe
 
   if (error) {
-    console.error("Sign-up error:", error.message);
-    return null;
+    console.error('Sign-up error:', error.message)
+    return null
   }
 
   //create user in Organization in table
@@ -122,10 +205,10 @@ export async function createOrganization(email, password, orgName, isApproved = 
       authId: data.user.id,
       email: email,
       orgName: orgName,
-      isApproved: isApproved
-    }
+      isApproved: isApproved,
+    },
   })
-  return data.user.email;
+  return data.user.email
 }
 
 /**
@@ -143,35 +226,36 @@ export async function createOrganization(email, password, orgName, isApproved = 
 export async function signIn(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email: email,
-    password: password
-  });
+    password: password,
+  })
   if (error) {
-    return null;
+    return null
   }
-  return data.session;
+  return data.session
 }
 
 /**
- * 
- * @param {string} email 
+ *
+ * @param {string} email
  * @returns true if successful and false if fails
  */
 export async function resendConfirmationEmail(email) {
   try {
-    const { data, error } = await supabase.auth.admin.generateLink({ //watch out for this: potentially unsafe
+    const { data, error } = await supabase.auth.admin.generateLink({
+      //watch out for this: potentially unsafe
       type: 'signup', //this will send the email
-      email
-    });
+      email,
+    })
 
     if (error) {
-      console.error("Error resending confirmation:", error.message);
-      return false;
+      console.error('Error resending confirmation:', error.message)
+      return false
     }
 
-    return true;
+    return true
   } catch (err) {
-    console.error("Unexpected error:", err);
-    return false;
+    console.error('Unexpected error:', err)
+    return false
   }
 }
 
@@ -180,21 +264,21 @@ export async function resendConfirmationEmail(email) {
  * @returns false if there was an error, true if signOut successful
  */
 export async function signOut() {
-  const { error } = await supabase.auth.signOut();
-  return error ? false : true;
+  const { error } = await supabase.auth.signOut()
+  return error ? false : true
 }
 
 /**
  * Creates a new Event
- * @param {String} title 
- * @param {String} description 
- * @param {Float} cost 
- * @param {Integer} maxAttendees 
- * @param {Date} date 
- * @param {String} locationName 
- * @param {Float} latitude 
- * @param {Float} longitude 
- * @param {} image 
+ * @param {String} title
+ * @param {String} description
+ * @param {Float} cost
+ * @param {Integer} maxAttendees
+ * @param {Date} date
+ * @param {String} locationName
+ * @param {Float} latitude
+ * @param {Float} longitude
+ * @param {} image
  * @param {*} tags //from getAllTags() list
  * @param {*} session //session object
  * @param {*} imageFile //png file
@@ -246,21 +330,21 @@ export async function createEvent({
 export async function deleteUser(authId) {
   try {
     const deleted = await prisma.user.delete({
-      where: { authId: authId }
-    });
-    console.log("Deleted:", deleted);
+      where: { authId: authId },
+    })
+    console.log('Deleted:', deleted)
   } catch (error) {
-    console.log("Not a user - can't delete");
-    return false;
+    console.log("Not a user - can't delete")
+    return false
   }
 
-  const { data, error } = await supabase.auth.admin.deleteUser(authId);
+  const { data, error } = await supabase.auth.admin.deleteUser(authId)
   if (error) {
-    console.error("Failed to delete user:", error.message);
-    return false;
+    console.error('Failed to delete user:', error.message)
+    return false
   }
 
-  return true;
+  return true
 }
 
 /**
@@ -271,21 +355,21 @@ export async function deleteUser(authId) {
 export async function deleteOrganization(authId) {
   try {
     const deleted = await prisma.organization.delete({
-      where: { authId: authId }
-    });
-    console.log("Deleted:", deleted);
+      where: { authId: authId },
+    })
+    console.log('Deleted:', deleted)
   } catch (error) {
-    console.log("Not an organization - can't delete");
-    return false;
+    console.log("Not an organization - can't delete")
+    return false
   }
 
-  const { data, error } = await supabase.auth.admin.deleteUser(authId);
+  const { data, error } = await supabase.auth.admin.deleteUser(authId)
   if (error) {
-    console.error("Failed to delete user:", error.message);
-    return false;
+    console.error('Failed to delete user:', error.message)
+    return false
   }
 
-  return true;
+  return true
 }
 export async function deleteEvent(eventId) {
   try {
@@ -366,8 +450,8 @@ export async function updateEvent(eventId, updatedFields) {
 
 /**
  * Updates a user depending on given input fields
- * @param {String} userId 
- * @param {*} updatedFields 
+ * @param {String} userId
+ * @param {*} updatedFields
  * @returns true if success and false if fail
  */
 export async function updateUser(userId, updatedFields) {
@@ -378,18 +462,18 @@ export async function updateUser(userId, updatedFields) {
         ...updatedFields,
         updatedAt: new Date(),
       },
-    });
-    return true;
+    })
+    return true
   } catch (error) {
-    console.error("Failed to update user:", error.message);
-    return false;
+    console.error('Failed to update user:', error.message)
+    return false
   }
 }
 
 /**
  * Updates an organization depending on given input fields
- * @param {String} orgId 
- * @param {*} updatedFields 
+ * @param {String} orgId
+ * @param {*} updatedFields
  * @returns true if success and false if fail
  */
 export async function updateOrganization(orgId, updatedFields) {
@@ -400,18 +484,18 @@ export async function updateOrganization(orgId, updatedFields) {
         ...updatedFields,
         updatedAt: new Date(),
       },
-    });
-    return true;
+    })
+    return true
   } catch (error) {
-    console.error("Failed to update organization:", error.message);
-    return false;
+    console.error('Failed to update organization:', error.message)
+    return false
   }
 }
 
 /**
  * Registers a user to an event
- * @param {Number} userId  
- * @param {Number} eventId 
+ * @param {Number} userId
+ * @param {Number} eventId
  * @returns true if success and false if fail
  */
 export async function registerToEvent(userId, eventId) {
@@ -423,23 +507,23 @@ export async function registerToEvent(userId, eventId) {
           connect: { id: Number(userId) },
         },
       },
-    });
-    return true;
+    })
+    return true
   } catch (error) {
-    console.error("Event registration failed:", error.message);
-    return false;
+    console.error('Event registration failed:', error.message)
+    return false
   }
 }
 
 /**
  * Deregisters a user from an event
- * @param {*} session 
- * @param {String} eventId 
+ * @param {*} session
+ * @param {String} eventId
  * @returns true if success and false if fail
  */
 export async function deregisterFromEvent(session, eventId) {
-  const user = await getUser(session);
-  if (!user) return false;
+  const user = await getUser(session)
+  if (!user) return false
 
   try {
     await prisma.event.update({
@@ -449,42 +533,42 @@ export async function deregisterFromEvent(session, eventId) {
           disconnect: { id: user.id },
         },
       },
-    });
-    return true;
+    })
+    return true
   } catch (error) {
-    console.error("Event deregistration failed:", error.message);
-    return false;
+    console.error('Event deregistration failed:', error.message)
+    return false
   }
 }
 
 /**
  * Gets the data from user table
- * @param {*} session 
+ * @param {*} session
  * @returns the user data or null
  */
 export async function getUser(session) {
-  if (!session) return null;
-  const { user } = session;
-  if (!user) return null;
+  if (!session) return null
+  const { user } = session
+  if (!user) return null
   const userData = await prisma.user.findUnique({
     where: { authId: user.id },
-  });
-  return userData;
+  })
+  return userData
 }
 
 /**
  * Gets the organization from table
- * @param {*} session 
+ * @param {*} session
  * @returns organization data or null
  */
 export async function getOrganization(session) {
-  if (!session) return null;
-  const { user } = session;
-  if (!user) return null;
+  if (!session) return null
+  const { user } = session
+  if (!user) return null
   const orgData = await prisma.organization.findUnique({
-    where: { authId: user.id }
-  });
-  return orgData;
+    where: { authId: user.id },
+  })
+  return orgData
 }
 
 /**
@@ -497,10 +581,10 @@ export async function getAllEvents() {
       eventOwner: true,
       eventAttendees: true,
       tickets: true,
-    }
-  });
+    },
+  })
 
-  return events;
+  return events
 }
 
 /**
@@ -508,8 +592,8 @@ export async function getAllEvents() {
  * @returns list of all the organizations
  */
 export async function getAllOrganizations() {
-  const organizations = await prisma.organization.findMany();
-  return organizations;
+  const organizations = await prisma.organization.findMany()
+  return organizations
 }
 
 /**
@@ -517,8 +601,8 @@ export async function getAllOrganizations() {
  * @returns list of all the users
  */
 export async function getAllUsers() {
-  const users = await prisma.user.findMany();
-  return users;
+  const users = await prisma.user.findMany()
+  return users
 }
 
 /**
@@ -546,12 +630,12 @@ export async function getAllUsersWithTickets() {
 
 /**
  * get all events that a user is registered to
- * @param {*} session 
+ * @param {*} session
  * @returns array with all events that a user is registered to or []
  */
 export async function getUserRegisteredEvents(session) {
-  const user = await getUser(session);
-  if (!user) return [];
+  const user = await getUser(session)
+  if (!user) return []
 
   const userWithEvents = await prisma.user.findUnique({
     where: { id: user.id },
@@ -562,28 +646,28 @@ export async function getUserRegisteredEvents(session) {
         },
       },
     },
-  });
+  })
 
-  return userWithEvents?.eventsRegistered ?? [];
+  return userWithEvents?.eventsRegistered ?? []
 }
 
 /**
  * Gets all events owned by an organization
- * @param {*} session 
+ * @param {*} session
  * @returns array with all events owned by the organization or []
  */
 export async function getAllEventsOwned(session) {
-  const { user } = session;
-  if (!user) return [];
+  const { user } = session
+  if (!user) return []
 
   const org = await prisma.organization.findUnique({
     where: { authId: user.id },
     include: {
       eventsOwned: true,
     },
-  });
+  })
 
-  return org?.eventsOwned ?? [];
+  return org?.eventsOwned ?? []
 }
 
 // Get events owned by a specific organization
@@ -592,17 +676,17 @@ export async function getAllEventsOwnedByOrgId(orgId) {
     const org = await prisma.organization.findUnique({
       where: { id: orgId },
       include: { eventsOwned: true },
-    });
-    return org?.eventsOwned || [];
+    })
+    return org?.eventsOwned || []
   } catch (error) {
-    console.error("Failed to fetch events for organization:", error.message);
-    return [];
+    console.error('Failed to fetch events for organization:', error.message)
+    return []
   }
 }
 
 /**
  * Gets all the users registered to an event through the eventId
- * @param {Number} eventId 
+ * @param {Number} eventId
  * @returns array with all users registered to the event or []
  */
 export async function getAllUsersRegisteredTo(eventId) {
@@ -611,20 +695,20 @@ export async function getAllUsersRegisteredTo(eventId) {
       id: eventId,
     },
     include: {
-      eventAttendees: true
-    }
-  });
-  return events?.eventAttendees ?? [];
+      eventAttendees: true,
+    },
+  })
+  return events?.eventAttendees ?? []
 }
 
 /**
  * Refreshes the session since the session expires every hour
- * @param {*} session 
+ * @param {*} session
  * @returns refreshed session
  */
 export async function refreshSession(session) {
-  const { data: refreshedSession } = await supabase.auth.refreshSession(session.refresh_token);
-  return refreshedSession.session;
+  const { data: refreshedSession } = await supabase.auth.refreshSession(session.refresh_token)
+  return refreshedSession.session
 }
 
 /**
@@ -638,22 +722,22 @@ export async function refreshSession(session) {
 export async function createTicketForEvent(eventId, userId) {
   // Basic validation: require user and event
   if (!eventId || !userId) {
-    return { success: false, error: 'Invalid input: user and event are required' };
+    return { success: false, error: 'Invalid input: user and event are required' }
   }
-  const token = crypto.randomBytes(24).toString("base64url");
+  const token = crypto.randomBytes(24).toString('base64url')
   try {
     const createdTicket = await prisma.ticket.create({
       data: {
         eventId: Number(eventId),
         userId: Number(userId),
         qrToken: token,
-      }
-    });
+      },
+    })
 
-    return { success: true, ticket: createdTicket };
+    return { success: true, ticket: createdTicket }
   } catch (err) {
-    console.error('Prisma error creating ticket:', err);
-    return { success: false, error: err.message };
+    console.error('Prisma error creating ticket:', err)
+    return { success: false, error: err.message }
   }
 }
 
@@ -665,72 +749,72 @@ export async function createTicketForEvent(eventId, userId) {
 export async function getAdminAnalytics() {
   try {
     // Get total number of events
-    const numEvents = await prisma.event.count();
+    const numEvents = await prisma.event.count()
 
     // Get total number of tickets
-    const numTickets = await prisma.ticket.count();
+    const numTickets = await prisma.ticket.count()
 
     // Get total attendance (checked-in tickets)
     const totalAttendance = await prisma.ticket.count({
       where: {
-        status: 'CHECKED_IN'
-      }
-    });
+        status: 'CHECKED_IN',
+      },
+    })
 
     // Get participation trend data - group by event date
     // Get all events with their ticket stats
     const events = await prisma.event.findMany({
       include: {
-        tickets: true
+        tickets: true,
       },
       orderBy: {
-        date: 'asc'
-      }
-    });
+        date: 'asc',
+      },
+    })
 
     // Group events by week for trend analysis
-    const trendMap = new Map();
+    const trendMap = new Map()
 
     events.forEach(event => {
       // Format date as YYYY-MM-DD for grouping by week
-      const eventDate = new Date(event.date);
-      const weekStart = getWeekStart(eventDate);
-      const weekKey = weekStart.toISOString().split('T')[0];
+      const eventDate = new Date(event.date)
+      const weekStart = getWeekStart(eventDate)
+      const weekKey = weekStart.toISOString().split('T')[0]
 
-      const registered = event.tickets.length;
-      const attended = event.tickets.filter(t => t.status === 'CHECKED_IN').length;
+      const registered = event.tickets.length
+      const attended = event.tickets.filter(t => t.status === 'CHECKED_IN').length
 
       if (!trendMap.has(weekKey)) {
-        trendMap.set(weekKey, { registered: 0, attended: 0 });
+        trendMap.set(weekKey, { registered: 0, attended: 0 })
       }
 
-      const current = trendMap.get(weekKey);
-      current.registered += registered;
-      current.attended += attended;
-    });
+      const current = trendMap.get(weekKey)
+      current.registered += registered
+      current.attended += attended
+    })
 
     // Convert map to array for response
     const attendanceTrend = Array.from(trendMap.entries()).map(([label, data]) => ({
       label,
       registered: data.registered,
-      attended: data.attended
-    }));
+      attended: data.attended,
+    }))
 
     return {
       numEvents,
       numTickets,
       totalAttendance,
-      attendanceTrend
-    };
+      attendanceTrend,
+    }
   } catch (err) {
-    console.error('Error fetching admin analytics:', err);
-    throw err;
+    console.error('Error fetching admin analytics:', err)
+    throw err
   }
 }
 
 /**
  * Helper function to get the start of the week (Monday) for a given date
- * @param {Date} date 
+ * @param {Date} date
  * @returns {Date} Start of the week
  */
 function getWeekStart(date) {
@@ -789,40 +873,36 @@ export async function getEventAnalytics(eventId) {
   try {
     // Validate event ID
     if (!eventId) {
-      throw new Error('Event ID is required');
+      throw new Error('Event ID is required')
     }
 
     // Get event with tickets
     const event = await prisma.event.findUnique({
       where: {
-        id: Number(eventId)
+        id: Number(eventId),
       },
       include: {
         tickets: true,
-        eventOwner: true
-      }
-    });
+        eventOwner: true,
+      },
+    })
 
     // Handle missing event
     if (!event) {
-      throw new Error('Event not found');
+      throw new Error('Event not found')
     }
 
     // Calculate metrics
-    const capacity = event.maxAttendees;
-    const ticketsIssued = event.tickets.length;
-    const attended = event.tickets.filter(ticket => ticket.status === 'CHECKED_IN').length;
-    const remainingCapacity = Math.max(0, capacity - ticketsIssued);
+    const capacity = event.maxAttendees
+    const ticketsIssued = event.tickets.length
+    const attended = event.tickets.filter(ticket => ticket.status === 'CHECKED_IN').length
+    const remainingCapacity = Math.max(0, capacity - ticketsIssued)
 
     // Calculate attendance rate (handle zero tickets case)
-    const attendanceRate = ticketsIssued > 0
-      ? ((attended / ticketsIssued) * 100).toFixed(1)
-      : 0;
+    const attendanceRate = ticketsIssued > 0 ? ((attended / ticketsIssued) * 100).toFixed(1) : 0
 
     // Calculate capacity utilization
-    const capacityUtilization = capacity > 0
-      ? ((ticketsIssued / capacity) * 100).toFixed(1)
-      : 0;
+    const capacityUtilization = capacity > 0 ? ((ticketsIssued / capacity) * 100).toFixed(1) : 0
 
     return {
       eventId: event.id,
@@ -838,9 +918,9 @@ export async function getEventAnalytics(eventId) {
       // Additional breakdown for visualization
       notAttended: ticketsIssued - attended,
       isEventPast: new Date(event.date) < new Date(),
-    };
+    }
   } catch (err) {
-    console.error('Error fetching event analytics:', err);
-    throw err;
+    console.error('Error fetching event analytics:', err)
+    throw err
   }
 }

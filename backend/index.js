@@ -12,60 +12,62 @@ app.use(express.json());
 const PORT = process.env.PORT || 5001;
 
 
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
-app.use(express.json());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+)
+app.use(express.json())
 
 // Get all Events endpoint
-app.get("/api/getEvents", async (req, res) => {
-  const events = await database.getAllEvents();
+app.get('/api/getEvents', async (req, res) => {
+  const events = await database.getAllEvents()
   if (!events) {
-    return res.status(500).json({ error: "Either no events or database error" });
+    return res.status(500).json({ error: 'Either no events or database error' })
   }
-  res.json({ events });
-});
+  res.json({ events })
+})
 
 // Get events owned by a specific organization
-app.get("/api/getEventsOwned/:orgId", async (req, res) => {
+app.get('/api/getEventsOwned/:orgId', async (req, res) => {
   try {
-    const { orgId } = req.params;
-    const org = await database.getAllEventsOwnedByOrgId(Number(orgId));
+    const { orgId } = req.params
+    const org = await database.getAllEventsOwnedByOrgId(Number(orgId))
     if (!org || org.length === 0) {
-      return res.status(404).json({ error: "No events found for this organization" });
+      return res.status(404).json({ error: 'No events found for this organization' })
     }
-    res.json({ events: org });
+    res.json({ events: org })
   } catch (error) {
-    console.error("Error fetching org events:", error);
-    res.status(500).json({ error: "Database error fetching organization events" });
+    console.error('Error fetching org events:', error)
+    res.status(500).json({ error: 'Database error fetching organization events' })
   }
-});
+})
 
-app.get("/api/admin/region-stats", async (_req, res) => {
+app.get('/api/admin/region-stats', async (_req, res) => {
   try {
-    const stats = await database.getRegionStats();
-    res.json({ stats });
+    const stats = await database.getRegionStats()
+    res.json({ stats })
   } catch (e) {
-    console.error("region-stats error:", e);
-    res.status(500).json({ error: "Failed to load region stats" });
+    console.error('region-stats error:', e)
+    res.status(500).json({ error: 'Failed to load region stats' })
   }
-});
+})
 
 // Get all Organizations endpoint
-app.get("/api/getOrganizations", async (req, res) => {
-  const organizations = await database.getAllOrganizations();
+app.get('/api/getOrganizations', async (req, res) => {
+  const organizations = await database.getAllOrganizations()
   if (!organizations) {
-    return res.status(500).json({ error: "Either no organizations or database error" });
+    return res.status(500).json({ error: 'Either no organizations or database error' })
   }
-  res.json({ organizations });
-});
+  res.json({ organizations })
+})
 
 // Get all Users endpoint
-app.get("/api/getUsers", async (req, res) => {
-  const users = await database.getAllUsers();
+app.get('/api/getUsers', async (req, res) => {
+  const users = await database.getAllUsers()
   if (!users) {
-    return res.status(500).json({ error: "Either no users or database error" });
+    return res.status(500).json({ error: 'Either no users or database error' })
   }
   res.json({ users });
 });
@@ -85,82 +87,96 @@ app.get("/api/admin/users-with-tickets", async (req, res) => {
 });
 
 // Signup endpoint
-app.post("/api/signup", async (req, res) => {
-  const { formData, accountType } = req.body;
-  if (accountType === "user") {
+app.post('/api/signup', async (req, res) => {
+  const { formData, accountType } = req.body
+  if (accountType === 'user') {
     try {
-      const email = await database.createUser(formData.email, formData.password, formData.firstName, formData.lastName);
+      const email = await database.createUser(
+        formData.email,
+        formData.password,
+        formData.firstName,
+        formData.lastName,
+      )
       if (!email) {
-        return res.status(409).json({ error: "User already exists" });
+        return res.status(409).json({ error: 'User already exists' })
       }
-      res.json({ message: "Signup successful", email });
+      res.json({ message: 'Signup successful', email })
     } catch (err) {
-      res.status(500).json({ error: "Database error" });
+      res.status(500).json({ error: 'Database error' })
     }
   } else {
     try {
-      const email = await database.createOrganization(formData.email, formData.password, formData.organizationName, false);
+      const email = await database.createOrganization(
+        formData.email,
+        formData.password,
+        formData.organizationName,
+        false,
+      )
       if (!email) {
-        return res.status(409).json({ error: "Organization already exists" });
+        return res.status(409).json({ error: 'Organization already exists' })
       }
-      res.json({ message: "Signup successful", email });
+      res.json({ message: 'Signup successful', email })
     } catch (err) {
-      res.status(500).json({ error: "Database error" });
+      res.status(500).json({ error: 'Database error' })
     }
   }
-});
+})
 
 // Login endpoint
-app.post("/api/login", async (req, res) => {
-  const { email, password, accountType } = req.body;
+app.post('/api/login', async (req, res) => {
+  const { email, password, accountType } = req.body
   if (!email || !password) {
-    return res.status(400).json({ error: "Email and password required" });
+    return res.status(400).json({ error: 'Email and password required' })
   }
   try {
-    const session = await database.signIn(email, password);
+    const session = await database.signIn(email, password)
     if (!session) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: 'Invalid credentials' })
     }
-    let user = null;
-    let org = null;
+    let user = null
+    let org = null
 
-    if (accountType === "user") {
-      user = await database.getUser(session);
+    if (accountType === 'user') {
+      user = await database.getUser(session)
       // Validate that this is actually a user account
       if (!user) {
-        return res.status(401).json({ error: "This account is not a student account. Please select 'Organization' to log in." });
+        return res.status(401).json({
+          error: "This account is not a student account. Please select 'Organization' to log in.",
+        })
       }
     } else {
-      org = await database.getOrganization(session);
+      org = await database.getOrganization(session)
       // Validate that this is actually an organization account
       if (!org) {
-        return res.status(401).json({ error: "This account is not an organization account. Please select 'Student' to log in." });
+        return res.status(401).json({
+          error: "This account is not an organization account. Please select 'Student' to log in.",
+        })
       }
     }
 
-    res.json({ message: "Login successful", session, user, org });
+    res.json({ message: 'Login successful', session, user, org })
   } catch (err) {
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: 'Database error' })
   }
-});
+})
 
 // Logout endpoint
-app.post("/api/logout", (req, res) => {
-  database.signOut();
-  return res.json({ message: "Logout successful" });
-});
+app.post('/api/logout', (req, res) => {
+  database.signOut()
+  return res.json({ message: 'Logout successful' })
+})
 
 // Resend Email Verification
-app.post("/api/resendEmail", async (req, res) => {
-  const { email } = req.body;
-  const success = await database.resendConfirmationEmail(email);
+app.post('/api/resendEmail', async (req, res) => {
+  const { email } = req.body
+  const success = await database.resendConfirmationEmail(email)
 
   if (success) {
-    return res.json({ message: "Email sent" });
+    return res.json({ message: 'Email sent' })
   } else {
-    return res.status(500).json({ error: "Failed to resend email" });
+    return res.status(500).json({ error: 'Failed to resend email' })
   }
-});
+})
 
 app.post("/api/tickets/:ticketId/qr", generateQr);
 app.post("/api/checkin", validateQr);
@@ -184,11 +200,11 @@ app.get('/api/events/:eventId/tickets', async (req, res) => {
 
 // Create tickets for an event (enforce capacity, support mock-paid)
 app.post('/api/events/:eventId/tickets', async (req, res) => {
-  const { eventId } = req.params;
-  const { userId } = req.body;
+  const { eventId } = req.params
+  const { userId } = req.body
 
   if (!eventId) {
-    return res.status(400).json({ error: 'Event ID is required' });
+    return res.status(400).json({ error: 'Event ID is required' })
   }
 
   try {
@@ -196,13 +212,13 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
     const result = await database.createTicketForEvent(eventId, userId);
 
     if (!result.success) {
-      return res.status(400).json({ error: result.error });
+      return res.status(400).json({ error: result.error })
     }
 
     return res.status(201).json({ message: 'Ticket created', ticket: result.ticket });
   } catch (err) {
-    console.error('Ticket creation error:', err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error('Ticket creation error:', err)
+    return res.status(500).json({ error: 'Server error' })
   }
 });
 
@@ -228,31 +244,31 @@ app.get("/api/events/:eventId/ics", async (req, res) => {
 
 //Admin Moderation
 app.post('/api/moderate/user', async (req, res) => {
-  const { reqType, userId, role, orgId, authId } = req.body;
-  let wasSuccess = false;
+  const { reqType, userId, role, orgId, authId } = req.body
+  let wasSuccess = false
   switch (reqType) {
-    case "ChangeAdminStatus":
-      wasSuccess = await database.updateUser(userId, { role: role });
-      break;
-    case "ApproveOrganization":
-      wasSuccess = await database.updateOrganization(orgId, { isApproved: true });
-      break;
-    case "UnapproveOrganization":
-      wasSuccess = await database.updateOrganization(orgId, { isApproved: false });
-      break;
-    case "DeleteUser":
-      wasSuccess = await database.deleteUser(authId);
-      break;
-    case "DeleteOrganization":
-      wasSuccess = await database.deleteOrganization(authId);
-      break;
+    case 'ChangeAdminStatus':
+      wasSuccess = await database.updateUser(userId, { role: role })
+      break
+    case 'ApproveOrganization':
+      wasSuccess = await database.updateOrganization(orgId, { isApproved: true })
+      break
+    case 'UnapproveOrganization':
+      wasSuccess = await database.updateOrganization(orgId, { isApproved: false })
+      break
+    case 'DeleteUser':
+      wasSuccess = await database.deleteUser(authId)
+      break
+    case 'DeleteOrganization':
+      wasSuccess = await database.deleteOrganization(authId)
+      break
     default:
-      return res.status(400).json({ message: "Invalid moderation request" });
+      return res.status(400).json({ message: 'Invalid moderation request' })
   }
   if (wasSuccess) {
-    return res.status(201).json({ message: "Moderation request processed successfully" });
+    return res.status(201).json({ message: 'Moderation request processed successfully' })
   } else {
-    return res.status(401).json({ message: "Moderation request failed to process" });
+    return res.status(401).json({ message: 'Moderation request failed to process' })
   }
 });
 
@@ -401,40 +417,40 @@ app.get('/api/admin/analytics', async (req, res) => {
   try {
     // In a production app, you'd verify the user is an admin via token/session
     // For now, we'll return the data (frontend checks admin status)
-    const analytics = await database.getAdminAnalytics();
-    return res.status(200).json(analytics);
+    const analytics = await database.getAdminAnalytics()
+    return res.status(200).json(analytics)
   } catch (err) {
-    console.error('Error fetching analytics:', err);
-    return res.status(500).json({ error: 'Failed to fetch analytics data' });
+    console.error('Error fetching analytics:', err)
+    return res.status(500).json({ error: 'Failed to fetch analytics data' })
   }
-});
+})
 
 // Event Analytics endpoint - for organizers to view stats for their event
 app.get('/api/events/:eventId/analytics', async (req, res) => {
   try {
-    const { eventId } = req.params;
+    const { eventId } = req.params
 
     if (!eventId || isNaN(eventId)) {
-      return res.status(400).json({ error: 'Valid event ID is required' });
+      return res.status(400).json({ error: 'Valid event ID is required' })
     }
 
-    const analytics = await database.getEventAnalytics(Number(eventId));
-    return res.status(200).json(analytics);
+    const analytics = await database.getEventAnalytics(Number(eventId))
+    return res.status(200).json(analytics)
   } catch (err) {
-    console.error('Error fetching event analytics:', err);
+    console.error('Error fetching event analytics:', err)
 
     if (err.message === 'Event not found') {
-      return res.status(404).json({ error: 'Event not found' });
+      return res.status(404).json({ error: 'Event not found' })
     }
 
-    return res.status(500).json({ error: 'Failed to fetch event analytics data' });
+    return res.status(500).json({ error: 'Failed to fetch event analytics data' })
   }
-});
+})
 
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+    console.log(`Server running on http://localhost:${PORT}`)
+  })
 }
 
 // Export app for Jest tests

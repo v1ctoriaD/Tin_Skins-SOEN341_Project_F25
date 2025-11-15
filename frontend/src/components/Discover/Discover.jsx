@@ -1,179 +1,197 @@
-import { useEffect, useState, useMemo } from "react";
-import EventCard from "./EventCard";
-import "../../styles/Discover.css";
-import "../../styles/qr.css";
-import Filters from "./Filters";
-import usePageTitle from "../../hooks/usePageTitle";
-import { useNavigate, useParams } from "react-router-dom";
-import QRCode from "react-qr-code";
+import { useEffect, useState, useMemo } from 'react'
+import EventCard from './EventCard'
+import '../../styles/Discover.css'
+import '../../styles/qr.css'
+import Filters from './Filters'
+import usePageTitle from '../../hooks/usePageTitle'
+import { useNavigate, useParams } from 'react-router-dom'
+import QRCode from 'react-qr-code'
 
-function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) {
-  usePageTitle();
-  const navigate = useNavigate();
-  const notNullEvents = useMemo(() => events || [], [events]);
-  const { id } = useParams();
-  const [selectedTag, setSelectedTag] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedOrganization, setSelectedOrganization] = useState("");
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [token, setToken] = useState("");
+function Discover({ events, user, org, isRegistrations, isMyEvent }) {
+  usePageTitle()
+  const navigate = useNavigate()
+  const notNullEvents = useMemo(() => events || [], [events])
+  const { id } = useParams()
+  const [selectedTag, setSelectedTag] = useState('')
+  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedOrganization, setSelectedOrganization] = useState('')
+  const [selectedEvent, setSelectedEvent] = useState(null)
+  const [token, setToken] = useState('')
 
   useEffect(() => {
     if (isRegistrations && !user) {
-      navigate('/');
-      return;
+      navigate('/')
+      return
     }
     if (isMyEvent && !org) {
-      navigate('/');
-      return;
+      navigate('/')
+      return
     }
-  }, [isRegistrations, user, navigate, isMyEvent, org]);
+  }, [isRegistrations, user, navigate, isMyEvent, org])
 
   useEffect(() => {
     if (id && notNullEvents.length > 0) {
-      const matched = notNullEvents.find(e => e.id === Number(id));
+      const matched = notNullEvents.find(e => e.id === Number(id))
       if (matched) {
-        setSelectedEvent(matched);
+        setSelectedEvent(matched)
       }
     }
-  }, [id, notNullEvents]);
+  }, [id, notNullEvents])
 
-  const tags = notNullEvents.length > 0
-    ? [...new Set(notNullEvents.flatMap(event => event.tags || []))]
-    : [];
+  // fetch tags and organizations from events
+  const tags =
+    notNullEvents.length > 0 ? [...new Set(notNullEvents.flatMap(event => event.tags || []))] : []
 
-  const organizations = notNullEvents.length > 0
-    ? [...new Set(notNullEvents.map(event => event.eventOwner?.orgName || event.orgName || "Admin-created"))]
-    : [];
+  const organizations =
+    notNullEvents.length > 0
+      ? [
+          ...new Set(
+            notNullEvents.map(event => event.eventOwner?.orgName || event.orgName || 'Unknown'),
+          ),
+        ]
+      : []
 
-  const handleCardClick = (event) => setSelectedEvent(event);
+  const handleCardClick = event => setSelectedEvent(event)
 
-  const handleTagChange = (tag) => {
-    setSelectedTag(tag);
-    setSelectedEvent(null);
-  };
+  const handleTagChange = tag => {
+    setSelectedTag(tag)
+    setSelectedEvent(null)
+  }
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setSelectedEvent(null);
-  };
+  const handleDateChange = date => {
+    setSelectedDate(date)
+    setSelectedEvent(null)
+  }
 
-  const handleOrganizationChange = (orgName) => {
-    setSelectedOrganization(orgName);
-    setSelectedEvent(null);
-  };
+  const handleOrganizationChange = orgName => {
+    setSelectedOrganization(orgName)
+    setSelectedEvent(null)
+  }
 
-  const handleRegister = (selectedEvent) => {
+  const handleRegister = selectedEvent => {
     if (!user) {
-      navigate("/login");
-      return;
+      navigate('/login')
+      return
     }
-    navigate("/register", { state: { selectedEvent } });
-  };
+    navigate('/register', { state: { selectedEvent } })
+    return
+  }
 
-  const handleGenerateQr = (selectedEvent) => {
-    const ticket = selectedEvent.tickets?.find(t => t.userId === user?.id);
-    if (ticket?.qrToken) setToken(ticket.qrToken);
-  };
+  //for events registered to
+  const handleGenerateQr = selectedEvent => {
+    const ticket = selectedEvent.tickets.find(t => t.userId === user.id)
+    setToken(ticket.qrToken)
+    return
+  }
 
-  const handleSeeRegistration = (selectedEvent) => {
-    const ticket = selectedEvent.tickets?.find(t => t.userId === user?.id);
-    if (ticket?.qrToken) setToken(ticket.qrToken);
-  };
+  const handleSeeRegistration = selectedEvent => {
+    const ticket = selectedEvent.tickets.find(t => t.userId === user.id)
+    setToken(ticket.qrToken)
+    return
+  }
 
-  const handleEditEvent = (selectedEvent) => {
-    const eventId = selectedEvent.id;
-    navigate(`/edit/${eventId}`);
-  };
+  const handleEditEvent = selectedEvent => {
+    const eventId = selectedEvent.id
+    navigate(`/edit/${eventId}`)
+    return
+  }
 
-  const handleDeleteEvent = async (ev) => {
-    if (!ev?.id) return;
-    const ok = window.confirm(`Delete "${ev.title}"? This can’t be undone.`);
-    if (!ok) return;
-  
-    try {
-      const res = await fetch(`/api/events/${ev.id}`, { method: "DELETE" });
-      if (!(res.ok || res.status === 204)) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Delete failed");
-      }
-  
-      // Update UI without reloading (prevents “logout”)
-      setSelectedEvent(null);
-      if (typeof onDeleted === "function") onDeleted(ev.id);
-    } catch (e) {
-      console.error(e);
-      alert(e.message || "Could not delete event.");
-    }
-  };
+  const handleBack = () => {
+    setToken('')
+    return
+  }
 
-  const handleBack = () => setToken("");
   const handleClose = () => {
-    setSelectedEvent(null);
-    setToken("");
+    setSelectedEvent(null)
+    setToken('')
 
     if (isMyEvent) {
-      navigate("/myEvents");
+      navigate('/myEvents')
     } else if (isRegistrations) {
-      navigate("/registrations");
+      navigate('/registrations')
     } else {
-      navigate("/discover");
+      navigate('/discover')
     }
-  };
+  }
 
   // format functions
-  const formattedCost = (cost) => {
-    if (cost === 0 || !cost) return "FREE";
-    return `$${cost}`;
-  };
+  const formattedCost = cost => {
+    if (cost === 0 || !cost) return 'FREE'
+    return `$${cost}`
+  }
 
-  const formattedDate = (date) => new Date(date).toLocaleDateString();
-  const formattedTime = (date) =>
-    new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formattedDate = date => {
+    const eventDate = new Date(date)
+    return eventDate.toLocaleDateString()
+  }
+
+  const formattedTime = date => {
+    const eventDate = new Date(date)
+    return eventDate.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
 
   const filteredEvents = notNullEvents.filter(event => {
-    if (selectedTag && (!event.tags || !event.tags.includes(selectedTag))) return false;
+    // filter by category/tag
+    if (selectedTag && (!event.tags || !event.tags.includes(selectedTag))) {
+      return false
+    }
+
+    // filter by org name
     if (selectedOrganization) {
-      const eventOrg = event.eventOwner?.orgName || event.orgName || "Admin-created";
-      if (eventOrg !== selectedOrganization) return false;
+      const eventOrg = event.eventOwner?.orgName || event.orgName || 'Unknown'
+      if (eventOrg !== selectedOrganization) {
+        return false
+      }
     }
     if (selectedDate) {
-      const eventDate = new Date(event.date);
-      const filterDate = new Date(selectedDate + 'T00:00:00');
-      if (eventDate.toDateString() !== filterDate.toDateString()) return false;
-    }
-    if (isRegistrations && !event.eventAttendees?.some(a => a.id === user?.id)) return false;
-    if (isMyEvent) {
-      const ownerId = event.eventOwner?.id ?? event.eventOwnerId ?? null;
-      if (!org || ownerId !== Number(org.id)) return false;
-    }
-    return true;
-  });
+      const eventDate = new Date(event.date)
+      const filterDate = new Date(selectedDate + 'T00:00:00')
 
-  const qrValue = token ? JSON.stringify({ t: token }) : "";
-  const attendeesCount = selectedEvent?.eventAttendees?.length ?? 0;
-  const spotsLeft = selectedEvent ? Math.max(0, (selectedEvent.maxAttendees ?? 0) - attendeesCount) : 0;
-  const alreadyRegistered = selectedEvent && user
-    ? selectedEvent.eventAttendees?.some(a => a.id === user.id)
-    : false;
-  const byOrgName = selectedEvent?.eventOwner?.orgName || selectedEvent?.orgName || "Admin-created";
+      console.log({
+        selectedDate,
+        eventDate: eventDate.toDateString(),
+        filterDate: filterDate.toDateString(),
+        eventTitle: event.title,
+      })
+
+      if (eventDate.toDateString() !== filterDate.toDateString()) {
+        return false
+      }
+    }
+
+    //Filter for Registration page
+    if (isRegistrations && !event.eventAttendees.some(attendee => attendee.id === user?.id)) {
+      return false
+    }
+
+    //Filter for MyEvents page
+    if (isMyEvent && !(event.eventOwner.id === Number(org?.id))) {
+      return false
+    }
+
+    return true
+  })
+
+  const qrValue = token ? JSON.stringify({ t: token }) : ''
 
   return (
     <div className="discover-page">
       <h1>
-        {!isRegistrations ? (!isMyEvent ? "Discover Events" : "My Events") : "Events Registered To"} ({filteredEvents.length} events)
+        {!isRegistrations ? (!isMyEvent ? 'Discover Events' : 'My Events') : 'Events Registered To'}{' '}
+        ({filteredEvents.length} events)
       </h1>
 
-      {(!isRegistrations && !isMyEvent) && (
-        <div className="filters-card">
-          <Filters
-            tags={tags}
-            organizations={organizations}
-            onTagChange={handleTagChange}
-            onDateChange={handleDateChange}
-            onOrganizationChange={handleOrganizationChange}
-          />
-        </div>
+      {!isRegistrations && !isMyEvent && (
+        <Filters
+          tags={tags}
+          organizations={organizations}
+          onTagChange={handleTagChange}
+          onDateChange={handleDateChange}
+          onOrganizationChange={handleOrganizationChange}
+        />
       )}
 
       <div className="event-grid">
@@ -185,46 +203,47 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
       {selectedEvent && (
         <div className="event-details-modal">
           <div className="modal-content">
-            <img
-              src={selectedEvent.imageUrl || "https://rcsurqillaykjdtmzfed.supabase.co/storage/v1/object/public/event-images/default_event_image.png"}
-              alt={selectedEvent.title}
-              className="modal-image"
-            />
+            <img src={selectedEvent.imageUrl} alt={selectedEvent.title} className="modal-image" />
             <h2>{selectedEvent.title}</h2>
             {!token ? (
               <>
-                <p>{formattedDate(selectedEvent.date)} • {formattedTime(selectedEvent.date)}</p>
+                <p>
+                  {formattedDate(selectedEvent.date)} • {formattedTime(selectedEvent.date)}
+                </p>
                 <p>Location: {selectedEvent.locationName}</p>
-                <p>By: {byOrgName}</p>
+                <p>By: {selectedEvent.eventOwner.orgName}</p>
                 <p>{selectedEvent.description}</p>
                 <p>Max Attendees: {selectedEvent.maxAttendees}</p>
-                <p>Places Left: {spotsLeft}</p>
+                <p>
+                  Places Left: {selectedEvent.maxAttendees - selectedEvent.eventAttendees.length}
+                </p>
                 <p>Cost: {formattedCost(selectedEvent.cost)}</p>
-
                 {!isRegistrations ? (
-                  (!org && spotsLeft !== 0) && (
+                  !org &&
+                  selectedEvent.maxAttendees - selectedEvent.eventAttendees.length !== 0 && (
                     <button
                       className="register-btn"
-                      onClick={alreadyRegistered ? () => handleSeeRegistration(selectedEvent) : () => handleRegister(selectedEvent)}
+                      onClick={
+                        user &&
+                        selectedEvent.eventAttendees.some(attendee => attendee.id === user?.id)
+                          ? () => handleSeeRegistration(selectedEvent)
+                          : () => handleRegister(selectedEvent)
+                      }
                     >
-                      {alreadyRegistered ? "See Registration" : "Register"}
+                      {user &&
+                      selectedEvent.eventAttendees.some(attendee => attendee.id === user?.id)
+                        ? 'See Registration'
+                        : 'Register'}
                     </button>
                   )
                 ) : (
-                  <button
-                    className="register-btn"
-                    onClick={() => handleGenerateQr(selectedEvent)}
-                  >
+                  <button className="register-btn" onClick={() => handleGenerateQr(selectedEvent)}>
                     Get QR Code
                   </button>
                 )}
-
                 {isMyEvent && (
                   <>
-                    <button
-                      className="register-btn"
-                      onClick={() => handleEditEvent(selectedEvent)}
-                    >
+                    <button className="register-btn" onClick={() => handleEditEvent(selectedEvent)}>
                       Edit Event
                     </button>
                     <button
@@ -232,12 +251,6 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
                       onClick={() => navigate(`/events/${selectedEvent.id}/analytics`)}
                     >
                       View Analytics
-                    </button>
-                    <button
-                      className="register-btn danger"
-                      onClick={() => handleDeleteEvent(selectedEvent)}
-                    >
-                      Delete Event
                     </button>
                   </>
                 )}
@@ -250,7 +263,13 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
                 <div className="qr-preview">
                   <QRCode value={qrValue} size={220} />
                 </div>
-                <div style={{ width: '100%', height: '20px' }}></div>
+                <br />
+                <div
+                  style={{
+                    width: '100%',
+                    height: '20px',
+                  }}
+                ></div>
                 <button className="register-btn" onClick={handleBack}>
                   Details
                 </button>
@@ -263,7 +282,7 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default Discover;
+export default Discover
