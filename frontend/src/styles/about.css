@@ -9,7 +9,7 @@
 .about-hero {
   background:
     linear-gradient(to right, rgba(61, 82, 160, 0.8), rgba(237, 232, 245, 0.8)),
-    url("../assets/ConcordiaCampus0.jpg");
+    url('../assets/ConcordiaCampus0.jpg');
   background-size: cover;
   background-position: center;
   color: white;
@@ -26,7 +26,7 @@
   font-size: 20px;
   max-width: 700px;
   margin: 0 auto;
-  color: #EDE8F5;
+  color: #ede8f5;
 }
 
 /* Section layout */
@@ -56,10 +56,11 @@
   font-size: 32px;
 }
 
-.about-text p, .about-text ul {
+.about-text p,
+.about-text ul {
   color: var(--color-subtext);
   font-size: 18px;
-  list-style: none; 
+  list-style: none;
 }
 
 .about-image {

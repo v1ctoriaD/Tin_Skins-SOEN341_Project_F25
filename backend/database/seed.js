@@ -156,7 +156,7 @@
 //   }
 
 //   // --- 5. Registering users to events ---
-  
+
 //   console.log("Registering users to events...");
 
 //   const allEvents = await prisma.event.findMany();
