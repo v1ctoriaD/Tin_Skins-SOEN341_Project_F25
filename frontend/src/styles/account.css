@@ -5,10 +5,10 @@
   height: 100vh;
   background:
     linear-gradient(to right, rgba(61, 82, 160, 0.85), rgba(237, 232, 245, 0.7)),
-    url("../assets/ConcordiaCampus1.jpg");
+    url('../assets/ConcordiaCampus1.jpg');
   background-size: cover;
   background-position: center;
-  color: #3D52A0;
+  color: #3d52a0;
   padding: 20px;
 }
 
@@ -23,9 +23,9 @@
 }
 
 .login-container h1 {
-  font-family: "Oswald", sans-serif;
+  font-family: 'Oswald', sans-serif;
   font-size: 48px;
-  color: #3D52A0;
+  color: #3d52a0;
   margin-bottom: 0px;
   margin-top: 0;
 }
@@ -39,13 +39,13 @@
 }
 
 .login-subtext {
-  color: #8697C4;
+  color: #8697c4;
   margin-bottom: 20px;
   font-size: 16px;
 }
 
 .login-subtext-dark {
-  color: #3D52A0;
+  color: #3d52a0;
   margin-bottom: 20px;
   font-size: 16px;
 }
@@ -59,20 +59,20 @@
 .login-form input {
   padding: 12px 15px;
   border-radius: 8px;
-  border: 1px solid #ADBBDA;
+  border: 1px solid #adbbda;
   font-size: 16px;
-  color: #3D52A0;
-  background-color: #EDE8F5;
+  color: #3d52a0;
+  background-color: #ede8f5;
   transition: border 0.2s ease;
 }
 
 .login-form input:focus {
-  border-color: #7091E6;
+  border-color: #7091e6;
   outline: none;
 }
 
 .login-buttons .button {
-  background-color: #3D52A0;
+  background-color: #3d52a0;
   color: white;
   padding: 12px 20px;
   border: none;
@@ -80,13 +80,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .login-buttons .button:hover {
   transform: translateY(-3px);
-  background-color: #7091E6;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  background-color: #7091e6;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }
 
 .login-message {
@@ -109,9 +109,9 @@
 }
 
 .toggle-btn {
-  background-color: #EDE8F5;
-  color: #3D52A0;
-  border: 1px solid #ADBBDA;
+  background-color: #ede8f5;
+  color: #3d52a0;
+  border: 1px solid #adbbda;
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
@@ -120,11 +120,11 @@
 }
 
 .toggle-btn.active {
-  background-color: #3D52A0;
+  background-color: #3d52a0;
   color: white;
-  border-color: #3D52A0;
+  border-color: #3d52a0;
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .toggle-btn:hover:not(.active) {
@@ -133,17 +133,17 @@
 
 .signup-text {
   margin-top: 25px;
-  color: #3D52A0;
+  color: #3d52a0;
 }
 
 .signup-link {
-  color: #7091E6;
+  color: #7091e6;
   font-weight: 600;
   text-decoration: underline;
 }
 
 .signup-link:hover {
-  color: #3D52A0;
+  color: #3d52a0;
 }
 
 .check-icon {
