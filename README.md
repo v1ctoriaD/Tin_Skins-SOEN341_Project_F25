@@ -26,9 +26,10 @@ code frontend/.env
 ```
 Add API key for Google Maps API for React: REACT_APP_GOOGLE_MAPS_API_KEY
 
-Generate Prisma Client (from backend/)
+Generate Prisma Client (from the backend)
 
 ```bash
+cd backend/
 npx prisma generate
 ```
 
@@ -46,10 +47,20 @@ From root:
 cd frontend/
 npm test
 
-cd ..
-cd backend/
+cd ../backend/
 npm test
 ```
+
+# Tech Stack (Languages, Frameworks and Tools)
+
+Backend: Javascript, Node.js
+Frontend: React, CSS, HTML
+Database: Supabase, Prisma
+Testing: Jest
+Version Control: Git, Github
+
+# Code Style
+General Style done through Prettier
 
 # Objectives/Core Features
 
@@ -92,14 +103,15 @@ We identify three primary users: Students, Organizers, and Administrators.
 
 # Team Members :
 
-- Nicolas David Chacon Pabon ; 40302889 ; Arceton500
-- Alesia Kulagina; 40260096; lesyak1
-- Neil Bryan Moukam-Tchuangou; 40316930; shinehiro
-- Victoria Doan ; 40317044 ; v1ctoriaD
-- Basma Ennajimi ; 40314332 ; BasmaEnnajimi
-- Hiba Maifi ; 40289223 ; hibamai
-- Daniel Ganchev ; 40315755 ; dan-gan
-- Adrian Charbonneau ; 40310777 ; Alphabot54
+| Name                        | Sudent ID | Username      |
+|:----------------------------|:---------:|:--------------|
+| Alesia Kulagina             | 40260096  | lesyak1       |
+| Neil Bryan Moukam-Tchuangou | 40316930  | shinehiro     |
+| Victoria Doan               | 40317044  | v1ctoriaD     |
+| Basma Ennajimi              | 40314332  | BasmaEnnajimi |
+| Hiba Maifi                  | 40289223  | hibamai       |
+| Daniel Ganchev              | 40315755  | dan-gan       |
+| Adrian Charbonneau          | 40310777  | Alphabot54    |
 
 # Responsibilities :
 
