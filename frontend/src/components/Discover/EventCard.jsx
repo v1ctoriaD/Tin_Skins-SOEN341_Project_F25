@@ -1,4 +1,4 @@
-import { CalendarActions } from './CalendarActions';
+import { CalendarActions } from './CalendarActions'
 
 function EventCard({ event, onClick }) {
   //format date
@@ -11,7 +11,14 @@ function EventCard({ event, onClick }) {
 
   return (
     <div className="event-card" onClick={() => onClick(event)}>
-      <img src={event.imageUrl || "https://rcsurqillaykjdtmzfed.supabase.co/storage/v1/object/public/event-images/default_event_image.png"} alt={event.title} className="event-image" />
+      <img
+        src={
+          event.imageUrl ||
+          'https://rcsurqillaykjdtmzfed.supabase.co/storage/v1/object/public/event-images/default_event_image.png'
+        }
+        alt={event.title}
+        className="event-image"
+      />
       <div className="event-info">
         <h3>{event.title}</h3>
         <p>

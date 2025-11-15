@@ -1,130 +1,201 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useJsApiLoader, Autocomplete } from "@react-google-maps/api";
-import "../../styles/CreateEvent.css";
+import React, { useEffect, useState, useMemo, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useJsApiLoader, Autocomplete } from '@react-google-maps/api'
+import '../../styles/CreateEvent.css'
 
 /** Copy of your Prisma enum (frontend constant) */
 const TAGS = [
-  "WORKSHOP","SEMINAR","LECTURE","STUDY_SESSION","HACKATHON","BOOTCAMP","RESEARCH_SYMPOSIUM","COMPETITION","EXAM_PREP","TUTORING",
-  "CAREER_FAIR","INFO_SESSION","NETWORKING","RESUME_CLINIC","INTERVIEW_PREP","INTERNSHIP_FAIR","COMPANY_VISIT","PANEL_DISCUSSION","ALUMNI_MEETUP","ENTREPRENEURSHIP",
-  "PARTY","MIXER","CLUB_FAIR","GAME_NIGHT","MOVIE_NIGHT","CULTURAL_FESTIVAL","CONCERT","TALENT_SHOW","STUDENT_GALA","SPORTS_GAME",
-  "FUNDRAISER","CHARITY_EVENT","CLEANUP_DRIVE","BLOOD_DRIVE","VOLUNTEERING","AWARENESS_CAMPAIGN","DONATION_DRIVE","MENTORSHIP",
-  "MEDITATION","YOGA","FITNESS_CLASS","MENTAL_HEALTH","SELF_DEVELOPMENT","MINDFULNESS","NUTRITION_TALK","COUNSELING_SESSION",
-  "CODING_CHALLENGE","TECH_TALK","AI_ML_WORKSHOP","STARTUP_PITCH","ROBOTICS_DEMO","CYBERSECURITY","PRODUCT_SHOWCASE",
-  "CULTURAL_NIGHT","LANGUAGE_EXCHANGE","INTERNATIONAL_MEETUP","PRIDE_EVENT","HERITAGE_CELEBRATION","INCLUSION_WORKSHOP",
-  "ART_EXHIBIT","PHOTOGRAPHY_CONTEST","FILM_SCREENING","THEATER_PLAY","OPEN_MIC","DANCE_PERFORMANCE","MUSIC_JAM",
-  "ECO_WORKSHOP","RECYCLING_DRIVE","CLIMATE_TALK","GREEN_TECH","TREE_PLANTING","SUSTAINABILITY",
-  "FREE_ENTRY","PAID_EVENT","ON_CAMPUS","OFF_CAMPUS","VIRTUAL","HYBRID","FOOD_PROVIDED","CERTIFICATE_AVAILABLE","TEAM_EVENT","SOLO_EVENT"
-];
+  'WORKSHOP',
+  'SEMINAR',
+  'LECTURE',
+  'STUDY_SESSION',
+  'HACKATHON',
+  'BOOTCAMP',
+  'RESEARCH_SYMPOSIUM',
+  'COMPETITION',
+  'EXAM_PREP',
+  'TUTORING',
+  'CAREER_FAIR',
+  'INFO_SESSION',
+  'NETWORKING',
+  'RESUME_CLINIC',
+  'INTERVIEW_PREP',
+  'INTERNSHIP_FAIR',
+  'COMPANY_VISIT',
+  'PANEL_DISCUSSION',
+  'ALUMNI_MEETUP',
+  'ENTREPRENEURSHIP',
+  'PARTY',
+  'MIXER',
+  'CLUB_FAIR',
+  'GAME_NIGHT',
+  'MOVIE_NIGHT',
+  'CULTURAL_FESTIVAL',
+  'CONCERT',
+  'TALENT_SHOW',
+  'STUDENT_GALA',
+  'SPORTS_GAME',
+  'FUNDRAISER',
+  'CHARITY_EVENT',
+  'CLEANUP_DRIVE',
+  'BLOOD_DRIVE',
+  'VOLUNTEERING',
+  'AWARENESS_CAMPAIGN',
+  'DONATION_DRIVE',
+  'MENTORSHIP',
+  'MEDITATION',
+  'YOGA',
+  'FITNESS_CLASS',
+  'MENTAL_HEALTH',
+  'SELF_DEVELOPMENT',
+  'MINDFULNESS',
+  'NUTRITION_TALK',
+  'COUNSELING_SESSION',
+  'CODING_CHALLENGE',
+  'TECH_TALK',
+  'AI_ML_WORKSHOP',
+  'STARTUP_PITCH',
+  'ROBOTICS_DEMO',
+  'CYBERSECURITY',
+  'PRODUCT_SHOWCASE',
+  'CULTURAL_NIGHT',
+  'LANGUAGE_EXCHANGE',
+  'INTERNATIONAL_MEETUP',
+  'PRIDE_EVENT',
+  'HERITAGE_CELEBRATION',
+  'INCLUSION_WORKSHOP',
+  'ART_EXHIBIT',
+  'PHOTOGRAPHY_CONTEST',
+  'FILM_SCREENING',
+  'THEATER_PLAY',
+  'OPEN_MIC',
+  'DANCE_PERFORMANCE',
+  'MUSIC_JAM',
+  'ECO_WORKSHOP',
+  'RECYCLING_DRIVE',
+  'CLIMATE_TALK',
+  'GREEN_TECH',
+  'TREE_PLANTING',
+  'SUSTAINABILITY',
+  'FREE_ENTRY',
+  'PAID_EVENT',
+  'ON_CAMPUS',
+  'OFF_CAMPUS',
+  'VIRTUAL',
+  'HYBRID',
+  'FOOD_PROVIDED',
+  'CERTIFICATE_AVAILABLE',
+  'TEAM_EVENT',
+  'SOLO_EVENT',
+]
 
-const libraries = ["places"];
+const libraries = ['places']
 
 export default function CreateEvent({ user, org, onCreated }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const isAdmin = useMemo(() => user?.role === "ADMIN", [user]);
+  const isAdmin = useMemo(() => user?.role === 'ADMIN', [user])
 
   // load Google Maps JS w/ Places
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries,
-  });
+  })
 
   // Redirect non-admins who are not orgs
   useEffect(() => {
-    const isOrganizer = !!org;
-    if (!(isAdmin || isOrganizer)) navigate("/login");
-  }, [isAdmin, org, navigate]);
+    const isOrganizer = !!org
+    if (!(isAdmin || isOrganizer)) navigate('/login')
+  }, [isAdmin, org, navigate])
 
   // form state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(""); // yyyy-MM-ddTHH:mm (from input)
-  const [location, setLocation] = useState("");
-  const [latLng, setLatLng] = useState({ lat: null, lng: null }); // new
-  const [maxAttendees, setMaxAttendees] = useState(0);
-  const [cost, setCost] = useState(0);
-  const [imageUrl, setImageUrl] = useState("");
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [date, setDate] = useState('') // yyyy-MM-ddTHH:mm (from input)
+  const [location, setLocation] = useState('')
+  const [latLng, setLatLng] = useState({ lat: null, lng: null }) // new
+  const [maxAttendees, setMaxAttendees] = useState(0)
+  const [cost, setCost] = useState(0)
+  const [imageUrl, setImageUrl] = useState('')
 
   // tags
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [tagToAdd, setTagToAdd] = useState("");
+  const [selectedTags, setSelectedTags] = useState([])
+  const [tagToAdd, setTagToAdd] = useState('')
 
   // admin-only owner picker
-  const [ownerId, setOwnerId] = useState(""); // string for <select>
-  const [orgs, setOrgs] = useState([]);
+  const [ownerId, setOwnerId] = useState('') // string for <select>
+  const [orgs, setOrgs] = useState([])
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
 
   // Autocomplete ref
-  const autocompleteRef = useRef(null);
+  const autocompleteRef = useRef(null)
 
-  const onLoadAutocomplete = (autocomplete) => {
-    autocompleteRef.current = autocomplete;
-  };
+  const onLoadAutocomplete = autocomplete => {
+    autocompleteRef.current = autocomplete
+  }
 
   const onPlaceChanged = () => {
-    if (!autocompleteRef.current) return;
-    const place = autocompleteRef.current.getPlace();
+    if (!autocompleteRef.current) return
+    const place = autocompleteRef.current.getPlace()
 
-    const formatted =
-      place.formatted_address || place.name || location || "";
+    const formatted = place.formatted_address || place.name || location || ''
 
-    setLocation(formatted);
+    setLocation(formatted)
 
     if (place.geometry && place.geometry.location) {
-      const lat = place.geometry.location.lat();
-      const lng = place.geometry.location.lng();
-      setLatLng({ lat, lng });
+      const lat = place.geometry.location.lat()
+      const lng = place.geometry.location.lng()
+      setLatLng({ lat, lng })
       // console.log("Picked place:", formatted, lat, lng);
     }
-  };
+  }
 
   // load orgs for admin picker
   useEffect(() => {
-    if (!isAdmin) return;
-    (async () => {
+    if (!isAdmin) return
+    ;(async () => {
       try {
-        const res = await fetch("/api/getOrganizations");
-        const data = await res.json();
-        setOrgs(data.organizations || []);
+        const res = await fetch('/api/getOrganizations')
+        const data = await res.json()
+        setOrgs(data.organizations || [])
       } catch {
-        setOrgs([]);
+        setOrgs([])
       }
-    })();
-  }, [isAdmin]);
+    })()
+  }, [isAdmin])
 
   const onAddTag = () => {
-    if (!tagToAdd) return;
+    if (!tagToAdd) return
     if (!selectedTags.includes(tagToAdd)) {
-      setSelectedTags(prev => [...prev, tagToAdd]);
+      setSelectedTags(prev => [...prev, tagToAdd])
     }
-    setTagToAdd("");
-  };
+    setTagToAdd('')
+  }
 
-  const removeTag = (tag) => {
-    setSelectedTags(prev => prev.filter(t => t !== tag));
-  };
+  const removeTag = tag => {
+    setSelectedTags(prev => prev.filter(t => t !== tag))
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setLoading(true)
+    setMessage('')
 
     try {
       // Admin must choose an owner
-      const eventOwnerId = isAdmin ? Number(ownerId) : Number(org?.id ?? 0);
+      const eventOwnerId = isAdmin ? Number(ownerId) : Number(org?.id ?? 0)
       if (!eventOwnerId) {
-        setMessage("Please select an organization to own this event.");
-        setLoading(false);
-        return;
+        setMessage('Please select an organization to own this event.')
+        setLoading(false)
+        return
       }
 
       // Normalize numbers and date
-      const normalizedCost = Number(String(cost).replace(",", ".")) || 0;
-      const normalizedMax = Number(maxAttendees) || 0;
-      const whenISO = date ? new Date(date).toISOString() : "";
+      const normalizedCost = Number(String(cost).replace(',', '.')) || 0
+      const normalizedMax = Number(maxAttendees) || 0
+      const whenISO = date ? new Date(date).toISOString() : ''
 
       const payload = {
         title,
@@ -133,36 +204,36 @@ export default function CreateEvent({ user, org, onCreated }) {
         maxAttendees: normalizedMax,
         date: whenISO,
         locationName: location,
-        latitude: latLng.lat,    // <--- now using values from Places
-        longitude: latLng.lng,   // <---
+        latitude: latLng.lat, // <--- now using values from Places
+        longitude: latLng.lng, // <---
         tags: selectedTags,
         eventOwnerId,
-        imageUrl: imageUrl || null
-      };
-
-      const res = await fetch("/api/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to create event");
+        imageUrl: imageUrl || null,
       }
 
-      const { event } = await res.json();
-      if (onCreated && event) onCreated(event);
+      const res = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
 
-      setMessage("✅ Event created successfully!");
-      setTimeout(() => navigate("/myEvents"), 800);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || 'Failed to create event')
+      }
+
+      const { event } = await res.json()
+      if (onCreated && event) onCreated(event)
+
+      setMessage('✅ Event created successfully!')
+      setTimeout(() => navigate('/myEvents'), 800)
     } catch (err) {
-      console.error(err);
-      setMessage(`⚠️ ${err.message || "Error creating event."}`);
+      console.error(err)
+      setMessage(`⚠️ ${err.message || 'Error creating event.'}`)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   if (!isLoaded) {
     // don’t render form until Google Maps JS is ready
@@ -173,7 +244,7 @@ export default function CreateEvent({ user, org, onCreated }) {
           <p>Loading map services…</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -188,7 +259,7 @@ export default function CreateEvent({ user, org, onCreated }) {
               type="text"
               placeholder="Event title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               required
             />
           </div>
@@ -198,7 +269,7 @@ export default function CreateEvent({ user, org, onCreated }) {
             <textarea
               placeholder="What is this event about?"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               required
             />
           </div>
@@ -209,22 +280,19 @@ export default function CreateEvent({ user, org, onCreated }) {
               <input
                 type="datetime-local"
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={e => setDate(e.target.value)}
                 required
               />
             </div>
 
             <div className="form-row">
               <label>Location</label>
-              <Autocomplete
-                onLoad={onLoadAutocomplete}
-                onPlaceChanged={onPlaceChanged}
-              >
+              <Autocomplete onLoad={onLoadAutocomplete} onPlaceChanged={onPlaceChanged}>
                 <input
                   type="text"
                   placeholder="e.g., Hall Building H-210"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={e => setLocation(e.target.value)}
                   required
                 />
               </Autocomplete>
@@ -238,7 +306,7 @@ export default function CreateEvent({ user, org, onCreated }) {
                 type="number"
                 min="0"
                 value={maxAttendees}
-                onChange={(e) => setMaxAttendees(Number(e.target.value))}
+                onChange={e => setMaxAttendees(Number(e.target.value))}
                 required
               />
             </div>
@@ -250,7 +318,7 @@ export default function CreateEvent({ user, org, onCreated }) {
                 step="0.01"
                 min="0"
                 value={cost}
-                onChange={(e) => setCost(e.target.value)}
+                onChange={e => setCost(e.target.value)}
               />
             </div>
           </div>
@@ -259,13 +327,9 @@ export default function CreateEvent({ user, org, onCreated }) {
           {isAdmin && (
             <div className="form-row">
               <label>Event owner (organization)</label>
-              <select
-                value={ownerId}
-                onChange={(e) => setOwnerId(e.target.value)}
-                required
-              >
+              <select value={ownerId} onChange={e => setOwnerId(e.target.value)} required>
                 <option value="">Select an organization…</option>
-                {orgs.map((o) => (
+                {orgs.map(o => (
                   <option key={o.id} value={o.id}>
                     {o.orgName} ({o.email})
                   </option>
@@ -281,7 +345,7 @@ export default function CreateEvent({ user, org, onCreated }) {
               type="url"
               placeholder="https://..."
               value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+              onChange={e => setImageUrl(e.target.value)}
             />
           </div>
 
@@ -291,10 +355,10 @@ export default function CreateEvent({ user, org, onCreated }) {
             <select
               className="tag-select"
               value={tagToAdd}
-              onChange={(e) => setTagToAdd(e.target.value)}
+              onChange={e => setTagToAdd(e.target.value)}
             >
               <option value="">Add a tag…</option>
-              {TAGS.map((t) => (
+              {TAGS.map(t => (
                 <option key={t} value={t}>
                   {t}
                 </option>
@@ -309,12 +373,8 @@ export default function CreateEvent({ user, org, onCreated }) {
             </div>
 
             <div className="selected-tags">
-              {selectedTags.map((t) => (
-                <span
-                  key={t}
-                  className="tag-pill"
-                  onClick={() => removeTag(t)}
-                >
+              {selectedTags.map(t => (
+                <span key={t} className="tag-pill" onClick={() => removeTag(t)}>
                   {t} <span className="tag-x">×</span>
                 </span>
               ))}
@@ -323,13 +383,9 @@ export default function CreateEvent({ user, org, onCreated }) {
 
           <div className="form-actions">
             <button type="submit" disabled={loading}>
-              {loading ? "Creating…" : "Create Event"}
+              {loading ? 'Creating…' : 'Create Event'}
             </button>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => navigate("/myEvents")}
-            >
+            <button type="button" className="btn-secondary" onClick={() => navigate('/myEvents')}>
               Cancel
             </button>
           </div>
@@ -338,5 +394,5 @@ export default function CreateEvent({ user, org, onCreated }) {
         </form>
       </div>
     </div>
-  );
+  )
 }

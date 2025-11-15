@@ -118,11 +118,29 @@ export default function Navbar({
           Map
         </Link>
 
-        {org && <Link className="nav-option" to="/qr/scan">Scan Qr Code</Link>}
-        {(org || (user && user.role === "ADMIN")) && <Link to="/create" className="nav-option">Create Event</Link>}
-        {(user && user.role === "ADMIN") && <Link to="/moderate/users" className="nav-option">Moderate Users</Link>}
-        {(user && user.role === "ADMIN") && <Link to="/admin/analytics" className="nav-option">Analytics</Link>}
-        <Link to="/about" className="nav-option">About Us</Link>
+        {org && (
+          <Link className="nav-option" to="/qr/scan">
+            Scan Qr Code
+          </Link>
+        )}
+        {(org || (user && user.role === 'ADMIN')) && (
+          <Link to="/create" className="nav-option">
+            Create Event
+          </Link>
+        )}
+        {user && user.role === 'ADMIN' && (
+          <Link to="/moderate/users" className="nav-option">
+            Moderate Users
+          </Link>
+        )}
+        {user && user.role === 'ADMIN' && (
+          <Link to="/admin/analytics" className="nav-option">
+            Analytics
+          </Link>
+        )}
+        <Link to="/about" className="nav-option">
+          About Us
+        </Link>
       </nav>
     </header>
   )

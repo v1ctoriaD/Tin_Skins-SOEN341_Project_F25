@@ -15,13 +15,13 @@ import EventAnalytics from './components/Discover/EventAnalytics'
 import Signup from './components/Account/Signup'
 import Login from './components/Account/Login'
 
-import "./styles/tokens.css";
-import "./App.css";
-import "./styles/dropdown.css";
-import About from "./components/About";
+import './styles/tokens.css'
+import './App.css'
+import './styles/dropdown.css'
+import About from './components/About'
 
-import CreateEvent from "./components/CreateEvent/CreateEvent";
-import EditEvent from "./components/CreateEvent/EditEvent";
+import CreateEvent from './components/CreateEvent/CreateEvent'
+import EditEvent from './components/CreateEvent/EditEvent'
 
 function App() {
   const [events, setEvents] = useState(null) //all events
@@ -71,16 +71,15 @@ function App() {
     fethcUsers()
   }, [])
 
-  const handleLogin = (t) => setToken(t);
-  const handleLogout = () => setToken(null);
+  const handleLogin = t => setToken(t)
+  const handleLogout = () => setToken(null)
 
-
-  const handleEventUpdated = (updated) => {
-    setEvents((prev) => {
-      if (!prev || !Array.isArray(prev)) return [updated];
-      return prev.map(e => e.id === updated.id ? updated : e);
-    });
-  };
+  const handleEventUpdated = updated => {
+    setEvents(prev => {
+      if (!prev || !Array.isArray(prev)) return [updated]
+      return prev.map(e => (e.id === updated.id ? updated : e))
+    })
+  }
 
   return (
     <div className="App">
@@ -121,13 +120,48 @@ function App() {
             }
           />
           <Route path="/map" element={<MapView events={events} user={user} org={org} />} />
-          <Route path="/registrations" element={<Discover events={events} user={user} org={org} isRegistrations={true} isMyEvent={false} />} />
-          <Route path="/myEvents" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={true} onDeleted={(deletedId => {
-            setEvents((prev) => prev ? prev.filter(ev => ev.id !== deletedId) : null);
-          })}/>} />
-          <Route path="/myEvents/:id" element={<Discover events={events} user={user} org={org} isRegistrations={false} isMyEvent={true} onDeleted={(deletedId)=> {
-            setEvents((prev) => prev ? prev.filter(ev => ev.id !== deletedId) : null);
-          }}/>} />
+          <Route
+            path="/registrations"
+            element={
+              <Discover
+                events={events}
+                user={user}
+                org={org}
+                isRegistrations={true}
+                isMyEvent={false}
+              />
+            }
+          />
+          <Route
+            path="/myEvents"
+            element={
+              <Discover
+                events={events}
+                user={user}
+                org={org}
+                isRegistrations={false}
+                isMyEvent={true}
+                onDeleted={deletedId => {
+                  setEvents(prev => (prev ? prev.filter(ev => ev.id !== deletedId) : null))
+                }}
+              />
+            }
+          />
+          <Route
+            path="/myEvents/:id"
+            element={
+              <Discover
+                events={events}
+                user={user}
+                org={org}
+                isRegistrations={false}
+                isMyEvent={true}
+                onDeleted={deletedId => {
+                  setEvents(prev => (prev ? prev.filter(ev => ev.id !== deletedId) : null))
+                }}
+              />
+            }
+          />
           <Route path="/qr/scan" element={<QrScan />} />
           <Route
             path="/register"
@@ -146,10 +180,36 @@ function App() {
             }
           />
           <Route path="/admin/analytics" element={<Analytics token={token} user={user} />} />
-          <Route path="/events/:eventId/analytics" element={<EventAnalytics token={token} org={org} />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} setUser={setUser} org={org} setOrg={setOrg} setSession={setSession} />} />
-          <Route path="/create" element={<CreateEvent user={user} org={org} onCreated={(ev) => setEvents((prev) => (prev ? [ev, ...prev] : [ev]))}/>}/>
-          <Route path="/edit/:eventId" element={<EditEvent org={org} user={user} onUpdated={handleEventUpdated}/>} />
+          <Route
+            path="/events/:eventId/analytics"
+            element={<EventAnalytics token={token} org={org} />}
+          />
+          <Route
+            path="/login"
+            element={
+              <Login
+                onLogin={handleLogin}
+                setUser={setUser}
+                org={org}
+                setOrg={setOrg}
+                setSession={setSession}
+              />
+            }
+          />
+          <Route
+            path="/create"
+            element={
+              <CreateEvent
+                user={user}
+                org={org}
+                onCreated={ev => setEvents(prev => (prev ? [ev, ...prev] : [ev]))}
+              />
+            }
+          />
+          <Route
+            path="/edit/:eventId"
+            element={<EditEvent org={org} user={user} onUpdated={handleEventUpdated} />}
+          />
           <Route path="/signup" element={<Signup />} />
           <Route path="/about" element={<About />} />
         </Routes>
@@ -158,4 +218,4 @@ function App() {
   )
 }
 
-export default App;
+export default App

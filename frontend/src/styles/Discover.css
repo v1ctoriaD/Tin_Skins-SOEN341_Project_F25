@@ -46,7 +46,7 @@
 .event-info p {
   margin: 2px 0;
   font-size: 0.9rem;
-  color: #8697C4;
+  color: #8697c4;
 }
 
 .calendar-actions {
@@ -59,16 +59,16 @@
 .calendar-btn {
   padding: 6px 12px;
   font-size: 0.85rem;
-  border: 1px solid #3D52A0;
+  border: 1px solid #3d52a0;
   border-radius: 4px;
   background: transparent;
-  color: #3D52A0;
+  color: #3d52a0;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .calendar-btn:hover {
-  background: #3D52A0;
+  background: #3d52a0;
   color: white;
 }
 
@@ -200,7 +200,6 @@
   margin: 12px 0 18px;
 }
 
-
 .filters-card form,
 .filters-card .filters,
 .filters-card .filters-row {
@@ -210,7 +209,6 @@
   align-items: center;
 }
 
-
 .filters-card label {
   font-size: 0.82rem;
   font-weight: 600;
@@ -219,10 +217,9 @@
   display: block;
 }
 
-
 .filters-card select,
-.filters-card input[type="date"],
-.filters-card input[type="text"] {
+.filters-card input[type='date'],
+.filters-card input[type='text'] {
   width: 100%;
   height: 36px;
   border-radius: 8px;
@@ -234,20 +231,18 @@
 }
 
 .filters-card select:focus,
-.filters-card input[type="date"]:focus,
-.filters-card input[type="text"]:focus {
+.filters-card input[type='date']:focus,
+.filters-card input[type='text']:focus {
   border-color: #6b8cff;
   box-shadow: 0 0 0 3px rgba(107, 140, 255, 0.18);
   background: #ffffff;
 }
-
 
 .filters-card button {
   height: 36px;
   border-radius: 8px;
   padding: 0 12px;
 }
-
 
 @media (max-width: 720px) {
   .filters-card form,
