@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useJsApiLoader, Autocomplete } from "@react-google-maps/api";
 import "../../styles/CreateEvent.css";
 
@@ -21,6 +21,7 @@ const libraries = ["places"];
 
 export default function CreateEvent({ user, org, onCreated }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const isAdmin = useMemo(() => user?.role === "ADMIN", [user]);
 
@@ -94,6 +95,24 @@ export default function CreateEvent({ user, org, onCreated }) {
       }
     })();
   }, [isAdmin]);
+
+  useEffect(() => {
+    const latParam = searchParams.get("lat");
+    const lngParam = searchParams.get("lng");
+    const addressParam = searchParams.get("address");
+
+    if (latParam && lngParam) {
+      const latNum = Number(latParam);
+      const lngNum = Number(lngParam);
+      if (!Number.isNaN(latNum) && !Number.isNaN(lngNum)) {
+        setLatLng({ lat: latNum, lng: lngNum });
+      }
+    }
+
+    if (addressParam) {
+      setLocation(addressParam);
+    }
+  }, [searchParams]);
 
   const onAddTag = () => {
     if (!tagToAdd) return;

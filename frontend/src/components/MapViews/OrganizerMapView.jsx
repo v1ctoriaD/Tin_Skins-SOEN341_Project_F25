@@ -22,33 +22,58 @@ const OrganizerMapView = () => {
 
   // Fetch events owned by the logged-in org
   useEffect(() => {
-  const fetchEvents = async () => {
-    try {
-      const org = JSON.parse(localStorage.getItem("org"));
-      if (!org?.id) {
-        console.error("No organization found in localStorage");
-        return;
-      }
-      const res = await fetch(`http://localhost:5001/api/getEventsOwned/${org.id}`);
-      const data = await res.json();
+    const fetchEvents = async () => {
+      try {
+        const org = JSON.parse(localStorage.getItem("org"));
+        if (!org?.id) {
+          console.error("No organization found in localStorage");
+          return;
+        }
+        const res = await fetch(`http://localhost:5001/api/getEventsOwned/${org.id}`);
+        const data = await res.json();
 
-      if (data.events && data.events.length > 0) {
-        setEvents(data.events);
-      } else {
-        console.warn("No events found for this organization");
+        if (data.events && data.events.length > 0) {
+          setEvents(data.events);
+        } else {
+          console.warn("No events found for this organization");
+        }
+      } catch (err) {
+        console.error("Error fetching organization events:", err);
       }
-    } catch (err) {
-      console.error("Error fetching organization events:", err);
-    }
-  };
+    };
 
-  fetchEvents();
-}, []);
+    fetchEvents();
+  }, []);
 
   if (!isLoaded) return <p>Loading map...</p>;
 
+  const handleMapClick = (e) => {
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
+
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      let address = "";
+      if (status === "OK" && results && results[0]) {
+        address = results[0].formatted_address;
+      }
+
+      const params = new URLSearchParams();
+      params.set("lat", lat);
+      params.set("lng", lng);
+      if (address) params.set("address", address);
+
+      navigate(`/create?${params.toString()}`);
+    });
+  };
+
   return (
-    <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={13}>
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={13}
+      onClick={handleMapClick} 
+    >
       {events.length > 0 ? (
         events.map((event, i) => (
           <Marker
