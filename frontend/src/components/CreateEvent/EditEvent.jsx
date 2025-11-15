@@ -18,15 +18,15 @@ const TAGS = [
 const libraries = ["places"];
 
 export default function EditEvent({ org, user, onUpdated }) {
-  const navigate = useNavigate();
-  const { eventId } = useParams();
+  const navigate = useNavigate()
+  const { eventId } = useParams()
 
-  const isAdmin = useMemo(() => user?.role === "ADMIN", [user]);
-  const isOrganizer = !!org;
+  const isAdmin = useMemo(() => user?.role === 'ADMIN', [user])
+  const isOrganizer = !!org
 
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [msg, setMsg] = useState('')
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -74,33 +74,33 @@ export default function EditEvent({ org, user, onUpdated }) {
   // Auth guard
   useEffect(() => {
     if (!(isAdmin || isOrganizer)) {
-      navigate("/login");
+      navigate('/login')
     }
-  }, [isAdmin, isOrganizer, navigate]);
+  }, [isAdmin, isOrganizer, navigate])
 
   // Load current event
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       try {
-        const res = await fetch("/api/getEvents");
-        if (!res.ok) throw new Error("Failed to fetch events");
-        const data = await res.json();
+        const res = await fetch('/api/getEvents')
+        if (!res.ok) throw new Error('Failed to fetch events')
+        const data = await res.json()
 
-        const evt = (data.events || []).find((e) => e.id === Number(eventId));
+        const evt = (data.events || []).find(e => e.id === Number(eventId))
         if (!evt) {
-          setMsg("Event not found");
-          setLoading(false);
-          return;
+          setMsg('Event not found')
+          setLoading(false)
+          return
         }
 
-        setTitle(evt.title || "");
-        setDescription(evt.description || "");
+        setTitle(evt.title || '')
+        setDescription(evt.description || '')
 
-        const d = new Date(evt.date);
+        const d = new Date(evt.date)
         const isoLocal = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
           .toISOString()
-          .slice(0, 16);
-        setDate(isoLocal);
+          .slice(0, 16)
+        setDate(isoLocal)
 
         setLocation(evt.locationName || "");
         setLatLng({
@@ -113,34 +113,34 @@ export default function EditEvent({ org, user, onUpdated }) {
         setImageUrl(evt.imageUrl || "");
         setSelectedTags(Array.isArray(evt.tags) ? evt.tags : []);
       } catch (e) {
-        setMsg("Failed to load event");
+        setMsg('Failed to load event')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    })();
-  }, [eventId]);
+    })()
+  }, [eventId])
 
   const onAddTag = () => {
-    if (!tagToAdd) return;
+    if (!tagToAdd) return
     if (!selectedTags.includes(tagToAdd)) {
-      setSelectedTags((prev) => [...prev, tagToAdd]);
+      setSelectedTags(prev => [...prev, tagToAdd])
     }
-    setTagToAdd("");
-  };
+    setTagToAdd('')
+  }
 
-  const removeTag = (tag) => {
-    setSelectedTags((prev) => prev.filter((t) => t !== tag));
-  };
+  const removeTag = tag => {
+    setSelectedTags(prev => prev.filter(t => t !== tag))
+  }
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setMsg("");
+  const handleSave = async e => {
+    e.preventDefault()
+    setSaving(true)
+    setMsg('')
 
     try {
       const res = await fetch(`/api/events/${eventId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
           description,
@@ -156,8 +156,8 @@ export default function EditEvent({ org, user, onUpdated }) {
       });
 
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to update event");
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || 'Failed to update event')
       }
 
       const { event } = await res.json();
@@ -167,11 +167,11 @@ export default function EditEvent({ org, user, onUpdated }) {
         navigate("/myEvents");
       }, 600);
     } catch (e2) {
-      setMsg(`⚠️ ${e2.message}`);
+      setMsg(`⚠️ ${e2.message}`)
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   // Wait for both event data + Maps script
   if (loading || !isLoaded) return <div style={{ padding: 16 }}>Loading…</div>;
@@ -184,21 +184,12 @@ export default function EditEvent({ org, user, onUpdated }) {
         <form className="create-form" onSubmit={handleSave}>
           <div className="form-row">
             <label>Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
+            <input type="text" value={title} onChange={e => setTitle(e.target.value)} required />
           </div>
 
           <div className="form-row">
             <label>Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
+            <textarea value={description} onChange={e => setDescription(e.target.value)} required />
           </div>
 
           <div className="form-grid-2">
@@ -207,7 +198,7 @@ export default function EditEvent({ org, user, onUpdated }) {
               <input
                 type="datetime-local"
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={e => setDate(e.target.value)}
                 required
               />
             </div>
@@ -235,7 +226,7 @@ export default function EditEvent({ org, user, onUpdated }) {
                 type="number"
                 min="0"
                 value={maxAttendees}
-                onChange={(e) => setMaxAttendees(Number(e.target.value))}
+                onChange={e => setMaxAttendees(Number(e.target.value))}
                 required
               />
             </div>
@@ -247,7 +238,7 @@ export default function EditEvent({ org, user, onUpdated }) {
                 step="0.01"
                 min="0"
                 value={cost}
-                onChange={(e) => setCost(Number(e.target.value))}
+                onChange={e => setCost(Number(e.target.value))}
               />
             </div>
           </div>
@@ -258,7 +249,7 @@ export default function EditEvent({ org, user, onUpdated }) {
               type="url"
               placeholder="https://…"
               value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+              onChange={e => setImageUrl(e.target.value)}
             />
           </div>
 
@@ -268,10 +259,10 @@ export default function EditEvent({ org, user, onUpdated }) {
             <select
               className="tag-select"
               value={tagToAdd}
-              onChange={(e) => setTagToAdd(e.target.value)}
+              onChange={e => setTagToAdd(e.target.value)}
             >
               <option value="">Add a tag…</option>
-              {TAGS.map((t) => (
+              {TAGS.map(t => (
                 <option key={t} value={t}>
                   {t}
                 </option>
@@ -304,13 +295,9 @@ export default function EditEvent({ org, user, onUpdated }) {
 
           <div className="form-actions">
             <button type="submit" disabled={saving}>
-              {saving ? "Saving…" : "Save"}
+              {saving ? 'Saving…' : 'Save'}
             </button>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => navigate("/myEvents")}
-            >
+            <button type="button" className="btn-secondary" onClick={() => navigate('/myEvents')}>
               Cancel
             </button>
           </div>
@@ -319,5 +306,5 @@ export default function EditEvent({ org, user, onUpdated }) {
         </form>
       </div>
     </div>
-  );
+  )
 }

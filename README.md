@@ -20,10 +20,13 @@ Configure environment variables
 ```bash
 code backend/.env
 ```
+
 Add API keys for Supabase including: DATABASE_URL, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
+
 ```bash
 code frontend/.env
 ```
+
 Add API key for Google Maps API for React: REACT_APP_GOOGLE_MAPS_API_KEY
 
 Generate Prisma Client (from the backend)
@@ -42,7 +45,9 @@ npm start
 ```
 
 # Test the Project
+
 From root:
+
 ```bash
 cd frontend/
 npm test
@@ -60,7 +65,14 @@ Testing: Jest
 Version Control: Git, Github
 
 # Code Style
-General Style done through Prettier
+
+General Style done through Prettier (see .prettierrc file)
+Naming Convention:
+- Files -> camelCase (except React Components -> PascalCase)
+- Functions -> camelCase
+- Variables -> CamelCase
+- Constants -> UPPER_SNAKE_CASE
+- CSS styles -> kebab-case
 
 # Objectives/Core Features
 
@@ -104,7 +116,7 @@ We identify three primary users: Students, Organizers, and Administrators.
 # Team Members :
 
 | Name                        | Sudent ID | Username      |
-|:----------------------------|:---------:|:--------------|
+| :-------------------------- | :-------: | :------------ |
 | Alesia Kulagina             | 40260096  | lesyak1       |
 | Neil Bryan Moukam-Tchuangou | 40316930  | shinehiro     |
 | Victoria Doan               | 40317044  | v1ctoriaD     |

@@ -1,16 +1,14 @@
-import express from 'express';
-import cors from 'cors';
-import 'dotenv/config';
-import * as database from './database/database.js';
-import { generateQr, validateQr } from './database/qr.js';
-import { buildIcsForEvent } from './database/calendar.js';
+import express from 'express'
+import cors from 'cors'
+import 'dotenv/config'
+import * as database from './database/database.js'
+import { generateQr, validateQr } from './database/qr.js'
+import { buildIcsForEvent } from './database/calendar.js'
 
-const app = express();
+const app = express()
 
-
-app.use(express.json());
-const PORT = process.env.PORT || 5001;
-
+app.use(express.json())
+const PORT = process.env.PORT || 5001
 
 app.use(
   cors({
@@ -73,18 +71,18 @@ app.get('/api/getUsers', async (req, res) => {
 });
 
 // Get all users with their ticket information
-app.get("/api/admin/users-with-tickets", async (req, res) => {
+app.get('/api/admin/users-with-tickets', async (req, res) => {
   try {
-    const users = await database.getAllUsersWithTickets();
+    const users = await database.getAllUsersWithTickets()
     if (!users) {
-      return res.status(500).json({ error: "Failed to fetch users" });
+      return res.status(500).json({ error: 'Failed to fetch users' })
     }
-    res.json({ users });
+    res.json({ users })
   } catch (err) {
-    console.error("Error fetching users with tickets:", err);
-    res.status(500).json({ error: "Database error" });
+    console.error('Error fetching users with tickets:', err)
+    res.status(500).json({ error: 'Database error' })
   }
-});
+})
 
 // Signup endpoint
 app.post('/api/signup', async (req, res) => {
@@ -183,20 +181,20 @@ app.post("/api/checkin", validateQr);
 
 // Get tickets for an event
 app.get('/api/events/:eventId/tickets', async (req, res) => {
-  const { eventId } = req.params;
+  const { eventId } = req.params
 
   if (!eventId) {
-    return res.status(400).json({ error: 'Event ID is required' });
+    return res.status(400).json({ error: 'Event ID is required' })
   }
 
   try {
-    const tickets = await database.getTicketsByEventId(Number(eventId));
-    return res.status(200).json(tickets);
+    const tickets = await database.getTicketsByEventId(Number(eventId))
+    return res.status(200).json(tickets)
   } catch (err) {
-    console.error('Ticket fetch error:', err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error('Ticket fetch error:', err)
+    return res.status(500).json({ error: 'Server error' })
   }
-});
+})
 
 // Create tickets for an event (enforce capacity, support mock-paid)
 app.post('/api/events/:eventId/tickets', async (req, res) => {
@@ -208,39 +206,38 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
   }
 
   try {
-    await database.registerToEvent(userId, eventId);
-    const result = await database.createTicketForEvent(eventId, userId);
+    await database.registerToEvent(userId, eventId)
+    const result = await database.createTicketForEvent(eventId, userId)
 
     if (!result.success) {
       return res.status(400).json({ error: result.error })
     }
 
-    return res.status(201).json({ message: 'Ticket created', ticket: result.ticket });
+    return res.status(201).json({ message: 'Ticket created', ticket: result.ticket })
   } catch (err) {
     console.error('Ticket creation error:', err)
     return res.status(500).json({ error: 'Server error' })
   }
 });
 
-
-// Calendar endpoint 
-app.get("/api/events/:eventId/ics", async (req, res) => {
-  const { eventId } = req.params;
-  const event = await database.getEventById(eventId);
+// Calendar endpoint
+app.get('/api/events/:eventId/ics', async (req, res) => {
+  const { eventId } = req.params
+  const event = await database.getEventById(eventId)
 
   if (!event) {
-    return res.status(404).json({ error: "Event not found" });
+    return res.status(404).json({ error: 'Event not found' })
   }
 
-  const ics = buildIcsForEvent(event);
+  const ics = buildIcsForEvent(event)
   if (!ics) {
-    return res.status(500).json({ error: "Failed to generate calendar file" });
+    return res.status(500).json({ error: 'Failed to generate calendar file' })
   }
 
-  res.setHeader("Content-Type", "text/calendar; charset=utf-8");
-  res.setHeader("Content-Disposition", `attachment; filename=event-${event.id}.ics`);
-  res.send(ics);
-});
+  res.setHeader('Content-Type', 'text/calendar; charset=utf-8')
+  res.setHeader('Content-Disposition', `attachment; filename=event-${event.id}.ics`)
+  res.send(ics)
+})
 
 //Admin Moderation
 app.post('/api/moderate/user', async (req, res) => {
@@ -273,7 +270,7 @@ app.post('/api/moderate/user', async (req, res) => {
 });
 
 // Create event endpoint
-app.post("/api/events", async (req, res) => {
+app.post('/api/events', async (req, res) => {
   try {
     const {
       title,
@@ -286,11 +283,11 @@ app.post("/api/events", async (req, res) => {
       longitude = null,
       tags = [],
       eventOwnerId,
-      imageUrl = null
-    } = req.body;
+      imageUrl = null,
+    } = req.body
 
     if (!title || !description || !maxAttendees || !date || !eventOwnerId) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({ error: 'Missing required fields' })
     }
 
     const created = await database.createEvent({
@@ -304,58 +301,65 @@ app.post("/api/events", async (req, res) => {
       longitude,
       tags,
       eventOwnerId,
-      imageUrl
-    });
+      imageUrl,
+    })
 
-    return res.status(201).json({ event: created });
+    return res.status(201).json({ event: created })
   } catch (err) {
-    console.error("Create event error:", err);
-    return res.status(500).json({ error: "Server error creating event" });
+    console.error('Create event error:', err)
+    return res.status(500).json({ error: 'Server error creating event' })
   }
-});
+})
 
 // PUT
-app.put("/api/events/:eventId", async (req, res) => {
+app.put('/api/events/:eventId', async (req, res) => {
   try {
-    const { eventId } = req.params;
+    const { eventId } = req.params
     if (!eventId || isNaN(eventId)) {
-      return res.status(400).json({ error: "Valid event ID is required" });
+      return res.status(400).json({ error: 'Valid event ID is required' })
     }
 
     const {
-      title, description, cost, maxAttendees, date,
-      locationName, latitude = null, longitude = null,
-      tags, imageUrl
-    } = req.body;
+      title,
+      description,
+      cost,
+      maxAttendees,
+      date,
+      locationName,
+      latitude = null,
+      longitude = null,
+      tags,
+      imageUrl,
+    } = req.body
 
-    const updatedFields = {};
-    if (title !== undefined) updatedFields.title = title;
-    if (description !== undefined) updatedFields.description = description;
-    if (cost !== undefined) updatedFields.cost = Number(cost);
-    if (maxAttendees !== undefined) updatedFields.maxAttendees = Number(maxAttendees);
-    if (date !== undefined) updatedFields.date = date; // ISO string OK
-    if (locationName !== undefined) updatedFields.locationName = locationName;
-    if (latitude !== undefined) updatedFields.latitude = latitude;
-    if (longitude !== undefined) updatedFields.longitude = longitude;
-    if (Array.isArray(tags)) updatedFields.tags = tags;
-    if (imageUrl !== undefined) updatedFields.imageUrl = imageUrl;
+    const updatedFields = {}
+    if (title !== undefined) updatedFields.title = title
+    if (description !== undefined) updatedFields.description = description
+    if (cost !== undefined) updatedFields.cost = Number(cost)
+    if (maxAttendees !== undefined) updatedFields.maxAttendees = Number(maxAttendees)
+    if (date !== undefined) updatedFields.date = date // ISO string OK
+    if (locationName !== undefined) updatedFields.locationName = locationName
+    if (latitude !== undefined) updatedFields.latitude = latitude
+    if (longitude !== undefined) updatedFields.longitude = longitude
+    if (Array.isArray(tags)) updatedFields.tags = tags
+    if (imageUrl !== undefined) updatedFields.imageUrl = imageUrl
 
-    const updated = await database.updateEvent(Number(eventId), updatedFields);
-    if (!updated) return res.status(500).json({ error: "Failed to update event" });
+    const updated = await database.updateEvent(Number(eventId), updatedFields)
+    if (!updated) return res.status(500).json({ error: 'Failed to update event' })
 
-    return res.status(200).json({ event: updated });
+    return res.status(200).json({ event: updated })
   } catch (err) {
-    console.error("Update event error:", err);
-    return res.status(500).json({ error: "Server error updating event" });
+    console.error('Update event error:', err)
+    return res.status(500).json({ error: 'Server error updating event' })
   }
-});
+})
 
 // PATCH
-app.patch("/api/events/:eventId", async (req, res) => {
+app.patch('/api/events/:eventId', async (req, res) => {
   try {
-    const eventId = Number(req.params.eventId);
+    const eventId = Number(req.params.eventId)
     if (!eventId) {
-      return res.status(400).json({ error: "Valid event ID is required" });
+      return res.status(400).json({ error: 'Valid event ID is required' })
     }
 
     const {
@@ -369,48 +373,46 @@ app.patch("/api/events/:eventId", async (req, res) => {
       longitude,
       tags,
       imageUrl,
-    } = req.body;
+    } = req.body
 
-    const updatedFields = {};
-    if (title !== undefined) updatedFields.title = title;
-    if (description !== undefined) updatedFields.description = description;
-    if (cost !== undefined) updatedFields.cost = cost;
-    if (maxAttendees !== undefined) updatedFields.maxAttendees = maxAttendees;
-    if (date !== undefined) updatedFields.date = date;
-    if (locationName !== undefined) updatedFields.locationName = locationName;
-    if (latitude !== undefined) updatedFields.latitude = latitude;
-    if (longitude !== undefined) updatedFields.longitude = longitude;
-    if (Array.isArray(tags)) updatedFields.tags = tags;
-    if (imageUrl !== undefined) updatedFields.imageUrl = imageUrl;
+    const updatedFields = {}
+    if (title !== undefined) updatedFields.title = title
+    if (description !== undefined) updatedFields.description = description
+    if (cost !== undefined) updatedFields.cost = cost
+    if (maxAttendees !== undefined) updatedFields.maxAttendees = maxAttendees
+    if (date !== undefined) updatedFields.date = date
+    if (locationName !== undefined) updatedFields.locationName = locationName
+    if (latitude !== undefined) updatedFields.latitude = latitude
+    if (longitude !== undefined) updatedFields.longitude = longitude
+    if (Array.isArray(tags)) updatedFields.tags = tags
+    if (imageUrl !== undefined) updatedFields.imageUrl = imageUrl
 
-    const updatedEvent = await database.updateEvent(eventId, updatedFields);
-    if (!updatedEvent) return res.status(500).json({ error: "Failed to update event" });
+    const updatedEvent = await database.updateEvent(eventId, updatedFields)
+    if (!updatedEvent) return res.status(500).json({ error: 'Failed to update event' })
 
     // IMPORTANT: no supabase.auth.* calls here
-    return res.status(200).json({ event: updatedEvent });
+    return res.status(200).json({ event: updatedEvent })
   } catch (err) {
-    console.error("Update event error:", err);
-    return res.status(500).json({ error: "Server error updating event" });
+    console.error('Update event error:', err)
+    return res.status(500).json({ error: 'Server error updating event' })
   }
-});
+})
 
 // Delete event
-app.delete("/api/events/:eventId", async (req, res) => {
+app.delete('/api/events/:eventId', async (req, res) => {
   try {
-    const eventId = Number(req.params.eventId);
-    if (!eventId) return res.status(400).json({ error: "Valid event ID is required" });
+    const eventId = Number(req.params.eventId)
+    if (!eventId) return res.status(400).json({ error: 'Valid event ID is required' })
 
-    const ok = await database.deleteEvent(eventId);
-    if (!ok) return res.status(500).json({ error: "Failed to delete event" });
+    const ok = await database.deleteEvent(eventId)
+    if (!ok) return res.status(500).json({ error: 'Failed to delete event' })
 
-    return res.status(204).end();
+    return res.status(204).end()
   } catch (err) {
-    console.error("Delete event error:", err);
-    return res.status(500).json({ error: "Server error deleting event" });
+    console.error('Delete event error:', err)
+    return res.status(500).json({ error: 'Server error deleting event' })
   }
-});
-
-
+})
 
 // Admin Analytics endpoint
 app.get('/api/admin/analytics', async (req, res) => {
@@ -454,4 +456,4 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Export app for Jest tests
-export default app;
+export default app
