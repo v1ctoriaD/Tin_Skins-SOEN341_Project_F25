@@ -2,6 +2,7 @@
   padding: 20px;
   text-align: center;
   color: #3d52a0;
+  color: #3d52a0;
 }
 
 .event-grid {
@@ -17,6 +18,9 @@
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -47,6 +51,7 @@
   margin: 2px 0;
   font-size: 0.9rem;
   color: #8697c4;
+  color: #8697c4;
 }
 
 .calendar-actions {
@@ -60,14 +65,17 @@
   padding: 6px 12px;
   font-size: 0.85rem;
   border: 1px solid #3d52a0;
+  border: 1px solid #3d52a0;
   border-radius: 4px;
   background: transparent;
+  color: #3d52a0;
   color: #3d52a0;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .calendar-btn:hover {
+  background: #3d52a0;
   background: #3d52a0;
   color: white;
 }
@@ -91,6 +99,7 @@
 
 .register-btn {
   background-color: #7091e6;
+  background-color: #7091e6;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -102,14 +111,17 @@
 
 .register-btn:hover {
   background-color: #3d52a0;
+  background-color: #3d52a0;
   /* darker green on hover */
 }
 
 .analytics-btn {
   background: linear-gradient(135deg, #43a047, #66bb6a) !important;
+  background: linear-gradient(135deg, #43a047, #66bb6a) !important;
 }
 
 .analytics-btn:hover {
+  background: linear-gradient(135deg, #2e7d32, #43a047) !important;
   background: linear-gradient(135deg, #2e7d32, #43a047) !important;
 }
 
@@ -170,6 +182,7 @@
   color: #fff;
   margin-top: 5px;
   background-color: #adbbda;
+  background-color: #adbbda;
 }
 
 .filters-container {
@@ -189,3 +202,4 @@
   color: #3d52a0;
   background-color: #ede8f5;
 }
+

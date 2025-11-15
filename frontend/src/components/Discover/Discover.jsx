@@ -6,6 +6,14 @@ import Filters from './Filters'
 import usePageTitle from '../../hooks/usePageTitle'
 import { useNavigate, useParams } from 'react-router-dom'
 import QRCode from 'react-qr-code'
+import { useEffect, useState, useMemo } from 'react'
+import EventCard from './EventCard'
+import '../../styles/Discover.css'
+import '../../styles/qr.css'
+import Filters from './Filters'
+import usePageTitle from '../../hooks/usePageTitle'
+import { useNavigate, useParams } from 'react-router-dom'
+import QRCode from 'react-qr-code'
 
 function Discover({ events, user, org, isRegistrations, isMyEvent }) {
   usePageTitle()
@@ -22,20 +30,28 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
     if (isRegistrations && !user) {
       navigate('/')
       return
+      navigate('/')
+      return
     }
     if (isMyEvent && !org) {
       navigate('/')
       return
+      navigate('/')
+      return
     }
+  }, [isRegistrations, user, navigate, isMyEvent, org])
   }, [isRegistrations, user, navigate, isMyEvent, org])
 
   useEffect(() => {
     if (id && notNullEvents.length > 0) {
       const matched = notNullEvents.find(e => e.id === Number(id))
+      const matched = notNullEvents.find(e => e.id === Number(id))
       if (matched) {
+        setSelectedEvent(matched)
         setSelectedEvent(matched)
       }
     }
+  }, [id, notNullEvents])
   }, [id, notNullEvents])
 
   // fetch tags and organizations from events
@@ -52,7 +68,12 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
       : []
 
   const handleCardClick = event => setSelectedEvent(event)
+  const handleCardClick = event => setSelectedEvent(event)
 
+  const handleTagChange = tag => {
+    setSelectedTag(tag)
+    setSelectedEvent(null)
+  }
   const handleTagChange = tag => {
     setSelectedTag(tag)
     setSelectedEvent(null)
@@ -62,14 +83,25 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
     setSelectedDate(date)
     setSelectedEvent(null)
   }
+  const handleDateChange = date => {
+    setSelectedDate(date)
+    setSelectedEvent(null)
+  }
 
+  const handleOrganizationChange = orgName => {
+    setSelectedOrganization(orgName)
+    setSelectedEvent(null)
+  }
   const handleOrganizationChange = orgName => {
     setSelectedOrganization(orgName)
     setSelectedEvent(null)
   }
 
   const handleRegister = selectedEvent => {
+  const handleRegister = selectedEvent => {
     if (!user) {
+      navigate('/login')
+      return
       navigate('/login')
       return
     }
@@ -104,17 +136,27 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
   const handleClose = () => {
     setSelectedEvent(null)
     setToken('')
+    setSelectedEvent(null)
+    setToken('')
 
     if (isMyEvent) {
       navigate('/myEvents')
+      navigate('/myEvents')
     } else if (isRegistrations) {
+      navigate('/registrations')
       navigate('/registrations')
     } else {
       navigate('/discover')
+      navigate('/discover')
     }
+  }
   }
 
   // format functions
+  const formattedCost = cost => {
+    if (cost === 0 || !cost) return 'FREE'
+    return `$${cost}`
+  }
   const formattedCost = cost => {
     if (cost === 0 || !cost) return 'FREE'
     return `$${cost}`
@@ -182,6 +224,8 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
       <h1>
         {!isRegistrations ? (!isMyEvent ? 'Discover Events' : 'My Events') : 'Events Registered To'}{' '}
         ({filteredEvents.length} events)
+        {!isRegistrations ? (!isMyEvent ? 'Discover Events' : 'My Events') : 'Events Registered To'}{' '}
+        ({filteredEvents.length} events)
       </h1>
 
       {!isRegistrations && !isMyEvent && (
@@ -207,6 +251,9 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
             <h2>{selectedEvent.title}</h2>
             {!token ? (
               <>
+                <p>
+                  {formattedDate(selectedEvent.date)} • {formattedTime(selectedEvent.date)}
+                </p>
                 <p>
                   {formattedDate(selectedEvent.date)} • {formattedTime(selectedEvent.date)}
                 </p>
@@ -238,11 +285,13 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
                   )
                 ) : (
                   <button className="register-btn" onClick={() => handleGenerateQr(selectedEvent)}>
+                  <button className="register-btn" onClick={() => handleGenerateQr(selectedEvent)}>
                     Get QR Code
                   </button>
                 )}
                 {isMyEvent && (
                   <>
+                    <button className="register-btn" onClick={() => handleEditEvent(selectedEvent)}>
                     <button className="register-btn" onClick={() => handleEditEvent(selectedEvent)}>
                       Edit Event
                     </button>
@@ -283,6 +332,9 @@ function Discover({ events, user, org, isRegistrations, isMyEvent }) {
       )}
     </div>
   )
+  )
 }
+
+export default Discover
 
 export default Discover

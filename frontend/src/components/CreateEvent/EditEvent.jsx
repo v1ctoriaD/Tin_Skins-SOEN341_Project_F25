@@ -20,10 +20,17 @@ const libraries = ["places"];
 export default function EditEvent({ org, user, onUpdated }) {
   const navigate = useNavigate()
   const { eventId } = useParams()
+  const navigate = useNavigate()
+  const { eventId } = useParams()
 
   const isAdmin = useMemo(() => user?.role === 'ADMIN', [user])
   const isOrganizer = !!org
+  const isAdmin = useMemo(() => user?.role === 'ADMIN', [user])
+  const isOrganizer = !!org
 
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [msg, setMsg] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
@@ -75,19 +82,29 @@ export default function EditEvent({ org, user, onUpdated }) {
   useEffect(() => {
     if (!(isAdmin || isOrganizer)) {
       navigate('/login')
+      navigate('/login')
     }
+  }, [isAdmin, isOrganizer, navigate])
   }, [isAdmin, isOrganizer, navigate])
 
   // Load current event
   useEffect(() => {
     ;(async () => {
+    ;(async () => {
       try {
+        const res = await fetch('/api/getEvents')
+        if (!res.ok) throw new Error('Failed to fetch events')
+        const data = await res.json()
         const res = await fetch('/api/getEvents')
         if (!res.ok) throw new Error('Failed to fetch events')
         const data = await res.json()
 
         const evt = (data.events || []).find(e => e.id === Number(eventId))
+        const evt = (data.events || []).find(e => e.id === Number(eventId))
         if (!evt) {
+          setMsg('Event not found')
+          setLoading(false)
+          return
           setMsg('Event not found')
           setLoading(false)
           return
@@ -95,10 +112,15 @@ export default function EditEvent({ org, user, onUpdated }) {
 
         setTitle(evt.title || '')
         setDescription(evt.description || '')
+        setTitle(evt.title || '')
+        setDescription(evt.description || '')
 
+        const d = new Date(evt.date)
         const d = new Date(evt.date)
         const isoLocal = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
           .toISOString()
+          .slice(0, 16)
+        setDate(isoLocal)
           .slice(0, 16)
         setDate(isoLocal)
 
@@ -114,20 +136,31 @@ export default function EditEvent({ org, user, onUpdated }) {
         setSelectedTags(Array.isArray(evt.tags) ? evt.tags : []);
       } catch (e) {
         setMsg('Failed to load event')
+        setMsg('Failed to load event')
       } finally {
         setLoading(false)
+        setLoading(false)
       }
+    })()
+  }, [eventId])
     })()
   }, [eventId])
 
   const onAddTag = () => {
     if (!tagToAdd) return
+    if (!tagToAdd) return
     if (!selectedTags.includes(tagToAdd)) {
+      setSelectedTags(prev => [...prev, tagToAdd])
       setSelectedTags(prev => [...prev, tagToAdd])
     }
     setTagToAdd('')
   }
+    setTagToAdd('')
+  }
 
+  const removeTag = tag => {
+    setSelectedTags(prev => prev.filter(t => t !== tag))
+  }
   const removeTag = tag => {
     setSelectedTags(prev => prev.filter(t => t !== tag))
   }
@@ -136,9 +169,15 @@ export default function EditEvent({ org, user, onUpdated }) {
     e.preventDefault()
     setSaving(true)
     setMsg('')
+  const handleSave = async e => {
+    e.preventDefault()
+    setSaving(true)
+    setMsg('')
 
     try {
       const res = await fetch(`/api/events/${eventId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -158,6 +197,8 @@ export default function EditEvent({ org, user, onUpdated }) {
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
         throw new Error(err.error || 'Failed to update event')
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || 'Failed to update event')
       }
 
       const { event } = await res.json();
@@ -168,9 +209,12 @@ export default function EditEvent({ org, user, onUpdated }) {
       }, 600);
     } catch (e2) {
       setMsg(`⚠️ ${e2.message}`)
+      setMsg(`⚠️ ${e2.message}`)
     } finally {
       setSaving(false)
+      setSaving(false)
     }
+  }
   }
 
   // Wait for both event data + Maps script
@@ -185,10 +229,12 @@ export default function EditEvent({ org, user, onUpdated }) {
           <div className="form-row">
             <label>Title</label>
             <input type="text" value={title} onChange={e => setTitle(e.target.value)} required />
+            <input type="text" value={title} onChange={e => setTitle(e.target.value)} required />
           </div>
 
           <div className="form-row">
             <label>Description</label>
+            <textarea value={description} onChange={e => setDescription(e.target.value)} required />
             <textarea value={description} onChange={e => setDescription(e.target.value)} required />
           </div>
 
@@ -198,6 +244,7 @@ export default function EditEvent({ org, user, onUpdated }) {
               <input
                 type="datetime-local"
                 value={date}
+                onChange={e => setDate(e.target.value)}
                 onChange={e => setDate(e.target.value)}
                 required
               />
@@ -227,6 +274,7 @@ export default function EditEvent({ org, user, onUpdated }) {
                 min="0"
                 value={maxAttendees}
                 onChange={e => setMaxAttendees(Number(e.target.value))}
+                onChange={e => setMaxAttendees(Number(e.target.value))}
                 required
               />
             </div>
@@ -239,6 +287,7 @@ export default function EditEvent({ org, user, onUpdated }) {
                 min="0"
                 value={cost}
                 onChange={e => setCost(Number(e.target.value))}
+                onChange={e => setCost(Number(e.target.value))}
               />
             </div>
           </div>
@@ -250,6 +299,7 @@ export default function EditEvent({ org, user, onUpdated }) {
               placeholder="https://…"
               value={imageUrl}
               onChange={e => setImageUrl(e.target.value)}
+              onChange={e => setImageUrl(e.target.value)}
             />
           </div>
 
@@ -260,8 +310,10 @@ export default function EditEvent({ org, user, onUpdated }) {
               className="tag-select"
               value={tagToAdd}
               onChange={e => setTagToAdd(e.target.value)}
+              onChange={e => setTagToAdd(e.target.value)}
             >
               <option value="">Add a tag…</option>
+              {TAGS.map(t => (
               {TAGS.map(t => (
                 <option key={t} value={t}>
                   {t}
@@ -296,7 +348,9 @@ export default function EditEvent({ org, user, onUpdated }) {
           <div className="form-actions">
             <button type="submit" disabled={saving}>
               {saving ? 'Saving…' : 'Save'}
+              {saving ? 'Saving…' : 'Save'}
             </button>
+            <button type="button" className="btn-secondary" onClick={() => navigate('/myEvents')}>
             <button type="button" className="btn-secondary" onClick={() => navigate('/myEvents')}>
               Cancel
             </button>
@@ -307,4 +361,6 @@ export default function EditEvent({ org, user, onUpdated }) {
       </div>
     </div>
   )
+  )
 }
+

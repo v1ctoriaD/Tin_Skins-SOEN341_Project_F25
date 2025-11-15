@@ -67,8 +67,8 @@ app.get('/api/getUsers', async (req, res) => {
   if (!users) {
     return res.status(500).json({ error: 'Either no users or database error' })
   }
-  res.json({ users });
-});
+  res.json({ users })
+})
 
 // Get all users with their ticket information
 app.get('/api/admin/users-with-tickets', async (req, res) => {
@@ -176,8 +176,8 @@ app.post('/api/resendEmail', async (req, res) => {
   }
 })
 
-app.post("/api/tickets/:ticketId/qr", generateQr);
-app.post("/api/checkin", validateQr);
+app.post('/api/tickets/:ticketId/qr', generateQr)
+app.post('/api/checkin', validateQr)
 
 // Get tickets for an event
 app.get('/api/events/:eventId/tickets', async (req, res) => {
@@ -218,7 +218,7 @@ app.post('/api/events/:eventId/tickets', async (req, res) => {
     console.error('Ticket creation error:', err)
     return res.status(500).json({ error: 'Server error' })
   }
-});
+})
 
 // Calendar endpoint
 app.get('/api/events/:eventId/ics', async (req, res) => {
@@ -267,7 +267,7 @@ app.post('/api/moderate/user', async (req, res) => {
   } else {
     return res.status(401).json({ message: 'Moderation request failed to process' })
   }
-});
+})
 
 // Create event endpoint
 app.post('/api/events', async (req, res) => {
