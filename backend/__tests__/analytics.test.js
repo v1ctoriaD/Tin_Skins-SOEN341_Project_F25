@@ -1,3 +1,4 @@
+jest.mock('../database/supabase.js');
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 import { PrismaClient } from '@prisma/client';
 import * as database from '../database/database.js';
