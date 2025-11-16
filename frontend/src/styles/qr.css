@@ -1,108 +1,110 @@
 /* page wrapper */
 .qr-page {
-    padding: 32px 16px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-  }
+  padding: 32px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
 
-  /* Page Title (outside the box) */
+/* Page Title (outside the box) */
 .qr-page-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 32px;
-    font-weight: 600;
-    color: var(--color-primary2);
-    text-align: center;
-    margin-bottom: 12px;
-  }
-  
-  .qr-page-subtitle {
-    text-align: center;
-    color: var(--color-primary2);
-    font-size: 15px;
-    margin-bottom: 24px;
-  }
-    /*card container */
-  .qr-card {
-    width: 100%;
-    max-width: 680px;
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    box-shadow: var(--shadow-card);
-    padding: 24px;
-  }
-  
-  /*inputs */
-  .qr-input,
-  .qr-file {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    background: white;
-    color: var(--color-text);
-    font-size: 16px;
-  }
-  
-  /*button row */
-  .qr-actions {
-    margin-top: 14px;
-  }
-  
-  /* Primary button with lift + shadow on hover */
-  .qr-btn {
-    appearance: none;
-    border: none;
-    border-radius: 10px;
-    background: var(--color-primary);
-    color: white;
-    padding: 10px 18px;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    display: inline-block;
-  }
-  
-  .qr-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 22px rgba(0,0,0,0.22);
-  }
-  
-  .qr-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-    transform: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  }
-  
-  /* Result/status */
-  .qr-status {
-    margin-top: 12px;
-    font-weight: 700;
-  }
-  
-  .qr-decoded {
-    margin-top: 12px;
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    padding: 10px 12px;
-  }
-  
-  .qr-preview {
-    margin-top: 20px;
-    background: white;
-    display: inline-block;
-    padding: 12px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  }
-  
-  /*@media (max-width: 560px) {
+  font-family: 'Oswald', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--color-primary2);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.qr-page-subtitle {
+  text-align: center;
+  color: var(--color-primary2);
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+/*card container */
+.qr-card {
+  width: 100%;
+  max-width: 680px;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+
+/*inputs */
+.qr-input,
+.qr-file {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: white;
+  color: var(--color-text);
+  font-size: 16px;
+}
+
+/*button row */
+.qr-actions {
+  margin-top: 14px;
+}
+
+/* Primary button with lift + shadow on hover */
+.qr-btn {
+  appearance: none;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: white;
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  display: inline-block;
+}
+
+.qr-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+}
+
+.qr-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Result/status */
+.qr-status {
+  margin-top: 12px;
+  font-weight: 700;
+}
+
+.qr-decoded {
+  margin-top: 12px;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.qr-preview {
+  margin-top: 20px;
+  background: white;
+  display: inline-block;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/*@media (max-width: 560px) {
     .qr-card { padding: 18px; }
     .qr-title { font-size: 24px; }
   }*/
-  

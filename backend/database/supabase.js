@@ -1,24 +1,12 @@
-// import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'
 
-// const supabase = createClient(
-//   process.env.SUPABASE_URL,
-//   process.env.SUPABASE_SERVICE_ROLE_KEY
-// );
-
-// export default supabase;
-
-import { createClient } from '@supabase/supabase-js';
-
-let supabase;
+let supabase
 
 if (process.env.NODE_ENV === 'test') {
   // Jest will automatically use __mocks__/supabase.js
-  supabase = {};
+  supabase = {}
 } else {
-  supabase = createClient(
-    process.env.SUPABASE_URL, 
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
+  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
 }
 
-export default supabase;
+export default supabase

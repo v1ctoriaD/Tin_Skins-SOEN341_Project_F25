@@ -6,7 +6,9 @@
   "scripts": {
     "start": "concurrently -k --success=first --raw \"npm run server\" \"npm run client\"",
     "server": "npm --prefix backend run dev",
-    "client": "npm --prefix frontend start"
+    "client": "npm --prefix frontend start",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -20,7 +22,8 @@
   },
   "homepage": "https://github.com/v1ctoriaD/Tin_Skins-SOEN341_Project_F25#readme",
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "prettier": "^3.6.2"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

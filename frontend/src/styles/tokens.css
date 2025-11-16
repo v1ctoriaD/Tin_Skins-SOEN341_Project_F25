@@ -1,30 +1,32 @@
 :root {
   --color-primary: #141d3f;
-  --color-primary2: #3D52A0;
-  --color-secondary: #7091E6;
-  --color-accent: #8697C4;
-  --color-bg: #ADBBDA;
+  --color-primary2: #3d52a0;
+  --color-secondary: #7091e6;
+  --color-accent: #8697c4;
+  --color-bg: #adbbda;
   --color-bg-light: rgba(255, 255, 255, 0.95);
-  --color-surface: #EDE8F5;
+  --color-surface: #ede8f5;
 
   --color-text: #111827;
-  --color-subtext: #4B5563;
-  --color-border: #E5E7EB;
-  --color-border-accent: #ADBBDA;
+  --color-subtext: #4b5563;
+  --color-border: #e5e7eb;
+  --color-border-accent: #adbbda;
 
-  --color-extra-green: #43A047;
-  --color-extra-yellow: #F4B400;
+  --color-extra-green: #43a047;
+  --color-extra-yellow: #f4b400;
   --color-extra-red: #f44336;
   --color-extra-red-dark: #d32f2f;
 
   --radius-outer: 12px;
   --shadow-card: 0 6px 24px rgba(17, 24, 39, 0.08);
-  --shadow-card-hover: 0 6px 24px rgba(17, 24, 39, 0.20);
+  --shadow-card-hover: 0 6px 24px rgba(17, 24, 39, 0.2);
   --font: 'Oswald', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
 /* Global */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
   background: var(--color-bg);
@@ -49,7 +51,8 @@ body {
   box-shadow: var(--shadow-card);
   padding: 16px;
 }
-.input, .select {
+.input,
+.select {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--color-border);
@@ -76,7 +79,9 @@ body {
 }
 
 /* Keep banner under navbar */
-.banner::after { z-index: 1; }
+.banner::after {
+  z-index: 1;
+}
 
 /* Align top row */
 .navbar-header > div {
@@ -97,7 +102,6 @@ body {
   color: var(--color-accent);
 }
 
-
 /*social/nav icons*/
 .nav-logo {
   color: var(--color-border);
@@ -110,11 +114,10 @@ body {
   line-height: 1 !important;
 }
 
-
 .nav-logo svg {
   display: block;
   position: relative;
-  top: -30px;  
+  top: -30px;
 }
 
 .nav-logo:hover {
@@ -132,6 +135,6 @@ body {
   display: block;
 }
 
-nav[style*="text-align: center"] {
+nav[style*='text-align: center'] {
   margin-top: 6px !important;
 }
