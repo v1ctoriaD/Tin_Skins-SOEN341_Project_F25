@@ -552,8 +552,11 @@ export default function EventAnalytics({ token, org }) {
                 </div>
               )}
             </div>
-            <div className="event-modal-footer">
-              <div className="event-ticket-count">Total Tickets: {ticketsList.length}</div>
+            <div className="analytics-modal-footer">
+              <div className="analytics-user-count">Total Tickets: {ticketsList.length}</div>
+                            <button 
+                                className="analytics-export-btn" 
+                                onClick={() => exportToCSV(ticketsList, 'registered-users')}>Export List to CSV</button>
             </div>
           </div>
         </div>

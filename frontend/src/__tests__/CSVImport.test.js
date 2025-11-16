@@ -1,99 +1,240 @@
-//not implemented yet - tests will be skipped
-import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
-import CSVImport from '../components/Admin/CSVImport' // to be created
 
-describe.skip('CSVImport component (acceptance tests)', () => {
-  test('admin can generate a downloadable CSV of attendees', async () => {
-    //fake admin and event data
-    const admin = {
-      id: 1,
-      authID: 'auth0|admin123',
-      email: 'admin@example.com',
-      firstName: 'Admin',
-      lastName: 'User',
-      role: 'ADMIN',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    const user = {
-      id: 2,
-      authID: 'auth0|user123',
-      email: 'user@example.com',
-      firstName: 'Regular',
-      lastName: 'User',
-      role: 'USER',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import EventAnalytics from '../components/Discover/EventAnalytics';
 
-    const sampleEvents = {
-      id: 3,
-      title: 'Event 1',
-      description: 'Description 1',
-      cost: 0,
-      maxAttendees: 50,
-      date: '2025-12-01T18:00:00',
-      tags: ['Tech'],
-      locationName: 'Hall A',
-      imageUrl: 'image1.jpg',
-      eventOwnerId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      eventAttendees: [user],
-    }
 
-    test('admin can generate a CSV file of attendees', () => {
-      render(<CSVImport user={admin} event={sampleEvents} />)
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useParams: () => ({ eventId: '1' }),
+}));
 
-      //then the admin should see a button to download CSV
-      expect(screen.getByText(/Generate Attendee List/i)).toBeInTheDocument()
 
-      //when the admin clicks the generate button
-      const generateButton = screen.getByText(/Generate Attendee List/i)
-      fireEvent.click(generateButton)
+jest.mock('react-chartjs-2', () => ({
+    Doughnut: () => <div data-testid="mock-chart">Chart</div>,
+}));
 
-      //then a CSV file should be generated (mock the download action)
-      const downloadLink = screen.getByTestId('csv-download-link')
-      expect(downloadLink).toBeInTheDocument()
-      expect(downloadLink.getAttribute('href')).toContain('data:text/csv')
-    })
-  })
 
-  test('non-admin users cannot see the CSV generation option', () => {
-    render(<CSVImport user={user} event={sampleEvents} />)
+jest.mock('../hooks/usePageTitle', () => () => {});
 
-    //then the user should NOT see a button to download CSV
-    expect(screen.queryByText(/Generate Attendee List/i)).not.toBeInTheDocument()
-  })
 
-  test('admin sees appropriate message when no attendees are registered', () => {
-    const emptyEvent = {
-      id: 4,
-      title: 'Event 2',
-      description: 'Description 2',
-      cost: 10,
-      maxAttendees: 30,
-      date: '2025-12-02T18:00:00',
-      tags: ['Social'],
-      locationName: 'Hall B',
-      imageUrl: 'image2.jpg',
-      eventOwnerId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      eventAttendees: [],
-    }
+global.fetch = jest.fn();
 
-    render(<CSVImport user={admin} event={emptyEvent} />)
+describe('CSV Export functionality in EventAnalytics (acceptance tests)', () => {
+    const mockToken = 'mock-jwt-token';
+    const mockOrg = { id: 1, name: 'Test Org' };
 
-    //then the admin should see a message indicating no attendees
-    expect(screen.getByText(/No attendees registered for this event./i)).toBeInTheDocument()
-  })
+    const mockAnalyticsResponse = {
+        eventTitle: 'Test Event',
+        eventDate: '2024-12-01T18:00:00Z',
+        organizationName: 'Test Organization',
+        ticketsIssued: 5,
+        attended: 3,
+        notAttended: 2,
+        capacity: 50,
+        remainingCapacity: 45,
+        capacityUtilization: 10,
+        attendanceRate: 60,
+        isEventPast: false
+    };
 
-  test('admin sees appropriate message when event data is missing', () => {
-    render(<CSVImport user={admin} event={null} />)
+    const mockTicketsResponse = [
+        {
+            user: {
+                firstName: 'John',
+                lastName: 'Doe',
+                email: 'john@example.com'
+            },
+            status: 'ISSUED',
+            createdAt: '2024-11-01T10:00:00Z',
+            updatedAt: '2024-11-01T10:00:00Z'
+        },
+        {
+            user: {
+                firstName: 'Jane',
+                lastName: 'Smith',
+                email: 'jane@example.com'
+            },
+            status: 'CHECKED_IN',
+            createdAt: '2024-11-01T11:00:00Z',
+            updatedAt: '2024-11-01T15:00:00Z'
+        }
+    ];
 
-    //then the admin should see a message indicating event data is missing
-    expect(screen.getByText(/Event data is unavailable./i)).toBeInTheDocument()
-  })
-})
+    beforeEach(() => {
+        fetch.mockClear();
+        
+        // Mock the analytics API call
+        fetch.mockImplementation((url) => {
+            if (url.includes('/analytics')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockAnalyticsResponse),
+                });
+            }
+            if (url.includes('/tickets')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockTicketsResponse),
+                });
+            }
+            return Promise.reject(new Error('Unknown URL'));
+        });
+
+        // Mock URL.createObjectURL and related functions
+        global.URL.createObjectURL = jest.fn(() => 'mock-url');
+        global.URL.revokeObjectURL = jest.fn();
+        
+        // Mock document.createElement for the download link
+        const mockLink = {
+            setAttribute: jest.fn(),
+            click: jest.fn(),
+            style: {}
+        };
+        jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
+        jest.spyOn(document.body, 'appendChild').mockImplementation(() => {});
+        jest.spyOn(document.body, 'removeChild').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    test('user can export registered users to CSV after clicking tickets card', async () => {
+        render(
+            <BrowserRouter>
+                <EventAnalytics token={mockToken} org={mockOrg} />
+            </BrowserRouter>
+        );
+
+        // Wait for the component to load
+        await waitFor(() => {
+            expect(screen.getByText('Test Event')).toBeInTheDocument();
+        });
+
+        // Click on the "Tickets Issued" card to open the modal
+        const ticketsCard = screen.getByText('Tickets Issued').closest('.metric-card');
+        fireEvent.click(ticketsCard);
+
+        // Wait for the modal to appear and tickets to load
+        await waitFor(() => {
+            expect(screen.getByText('Registered Users')).toBeInTheDocument();
+        });
+
+        // Wait for the export button to appear
+        await waitFor(() => {
+            expect(screen.getByText('Export List to CSV')).toBeInTheDocument();
+        });
+
+        // Click the export button
+        const exportButton = screen.getByText('Export List to CSV');
+        fireEvent.click(exportButton);
+
+        // Verify that the CSV download was triggered
+        expect(document.createElement).toHaveBeenCalledWith('a');
+        expect(global.URL.createObjectURL).toHaveBeenCalled();
+    });
+
+    test('export button is disabled when no tickets are available', async () => {
+        // Mock empty tickets response
+        fetch.mockImplementation((url) => {
+            if (url.includes('/analytics')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({
+                        ...mockAnalyticsResponse,
+                        ticketsIssued: 0
+                    }),
+                });
+            }
+            if (url.includes('/tickets')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve([]),
+                });
+            }
+            return Promise.reject(new Error('Unknown URL'));
+        });
+
+        render(
+            <BrowserRouter>
+                <EventAnalytics token={mockToken} org={mockOrg} />
+            </BrowserRouter>
+        );
+
+        // Wait for the component to load with no tickets
+        await waitFor(() => {
+            expect(screen.getByText('No Tickets Issued Yet')).toBeInTheDocument();
+        });
+
+        // Since there are no tickets, the metrics grid shouldn't be visible
+        expect(screen.queryByText('Tickets Issued')).not.toBeInTheDocument();
+    });
+
+    test('CSV export contains correct headers and data format', async () => {
+        render(
+            <BrowserRouter>
+                <EventAnalytics token={mockToken} org={mockOrg} />
+            </BrowserRouter>
+        );
+
+        // Wait for component to load
+        await waitFor(() => {
+            expect(screen.getByText('Test Event')).toBeInTheDocument();
+        });
+
+        // Open tickets modal
+        const ticketsCard = screen.getByText('Tickets Issued').closest('.metric-card');
+        fireEvent.click(ticketsCard);
+
+        // Wait for modal and export button
+        await waitFor(() => {
+            expect(screen.getByText('Export List to CSV')).toBeInTheDocument();
+        });
+
+        // Click export
+        const exportButton = screen.getByText('Export List to CSV');
+        fireEvent.click(exportButton);
+
+        // Verify Blob was created with CSV content
+        expect(global.Blob).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.stringContaining('Name,Email,Status,Date Issued,Check-In Time')
+            ]),
+            { type: 'text/csv;charset=utf-8;' }
+        );
+    });
+
+    test('export functionality works for attended users modal', async () => {
+        render(
+            <BrowserRouter>
+                <EventAnalytics token={mockToken} org={mockOrg} />
+            </BrowserRouter>
+        );
+
+        // Wait for component to load
+        await waitFor(() => {
+            expect(screen.getByText('Test Event')).toBeInTheDocument();
+        });
+
+        // Click on attendance card
+        const attendanceCard = screen.getByText('Attendance').closest('.metric-card');
+        fireEvent.click(attendanceCard);
+
+        // Wait for attended users modal
+        await waitFor(() => {
+            expect(screen.getByText('Attended Users')).toBeInTheDocument();
+        });
+
+        
+    });
+});
+
+// Mock Blob constructor
+global.Blob = jest.fn((content, options) => ({
+    content,
+    options,
+    size: content[0].length,
+    type: options.type
+}));

@@ -602,6 +602,10 @@ export default function Analytics({ token, user }) {
             </div>
             <div className="analytics-modal-footer">
               <div className="analytics-user-count">Total Tickets: {registeredUsers.length}</div>
+                            <button 
+                                className="analytics-export-btn" 
+                                onClick={() => exportToCSV(registeredUsers, 'registered-users')} 
+                               >Export List to CSV</button>
             </div>
           </div>
         </div>
