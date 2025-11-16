@@ -8,8 +8,8 @@ export const supabase = {
     select: () => ({ data: [], error: null }),
     insert: () => ({ data: [], error: null }),
     update: () => ({ data: [], error: null }),
-    delete: () => ({ data: [], error: null })
-  })
-};
+    delete: () => ({ data: [], error: null }),
+  }),
+}
 
-export default supabase;
+export default supabase

@@ -223,12 +223,14 @@ export default function CreateEvent({ user, org, onCreated }) {
 
       // Check if date is in the past
       if (date) {
-        const selectedDate = new Date(date);
-        const now = new Date();
+        const selectedDate = new Date(date)
+        const now = new Date()
         if (selectedDate < now) {
-          setMessage("Cannot create an event with a date in the past. Please select a present or future date.");
-          setLoading(false);
-          return;
+          setMessage(
+            'Cannot create an event with a date in the past. Please select a present or future date.',
+          )
+          setLoading(false)
+          return
         }
       }
 

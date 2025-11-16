@@ -211,12 +211,14 @@ export default function EditEvent({ org, user, onUpdated }) {
     try {
       // Check if date is in the past
       if (date) {
-        const selectedDate = new Date(date);
-        const now = new Date();
+        const selectedDate = new Date(date)
+        const now = new Date()
         if (selectedDate < now) {
-          setMsg("Cannot update event with a date in the past. Please select a present or future date.");
-          setSaving(false);
-          return;
+          setMsg(
+            'Cannot update event with a date in the past. Please select a present or future date.',
+          )
+          setSaving(false)
+          return
         }
       }
 
