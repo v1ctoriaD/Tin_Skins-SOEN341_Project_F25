@@ -633,49 +633,49 @@
   color: #ef4444;
 }
 .analytics-export-btn {
-    background: linear-gradient(135deg, #43A047, #388E3C);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(67, 160, 71, 0.2);
-    display: inline-block;
-    min-width: 150px;
-    text-align: center;
+  background: linear-gradient(135deg, #43a047, #388e3c);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(67, 160, 71, 0.2);
+  display: inline-block;
+  min-width: 150px;
+  text-align: center;
 }
 
 .analytics-export-btn:hover {
-    background: linear-gradient(135deg, #388E3C, #2E7D32);
-    box-shadow: 0 4px 8px rgba(67, 160, 71, 0.3);
-    transform: translateY(-1px);
+  background: linear-gradient(135deg, #388e3c, #2e7d32);
+  box-shadow: 0 4px 8px rgba(67, 160, 71, 0.3);
+  transform: translateY(-1px);
 }
 
 .analytics-export-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(67, 160, 71, 0.2);
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(67, 160, 71, 0.2);
 }
 /* Modal Footer Styling */
 .analytics-modal-footer {
-    display: flex !important;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 24px;
-    border-top: 1px solid #e0e0e0;
-    background-color: #f8f9fa;
-    border-radius: 0 0 12px 12px;
-    min-height: 60px;
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+  border-radius: 0 0 12px 12px;
+  min-height: 60px;
 }
 
 .analytics-user-count {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 500;
-    color: #3D52A0;
-    font-size: 14px;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 500;
+  color: #3d52a0;
+  font-size: 14px;
 }
 /* Modal Responsive */
 @media (max-width: 768px) {

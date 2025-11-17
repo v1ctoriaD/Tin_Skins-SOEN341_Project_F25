@@ -2,18 +2,18 @@ import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Line } from 'react-chartjs-2'
 import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
-import "../../styles/Analytics.css";
-import usePageTitle from "../../hooks/usePageTitle";
-import { exportRegisteredUsers } from "../CSVImport";
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import '../../styles/Analytics.css'
+import usePageTitle from '../../hooks/usePageTitle'
+import { exportRegisteredUsers } from '../CSVImport'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -603,10 +603,12 @@ export default function Analytics({ token, user }) {
             </div>
             <div className="analytics-modal-footer">
               <div className="analytics-user-count">Total Tickets: {registeredUsers.length}</div>
-                            <button 
-                                className="analytics-export-btn" 
-                                onClick={() => exportRegisteredUsers(registeredUsers, 'registered-users')} 
-                               >Export List to CSV</button>
+              <button
+                className="analytics-export-btn"
+                onClick={() => exportRegisteredUsers(registeredUsers, 'registered-users')}
+              >
+                Export List to CSV
+              </button>
             </div>
           </div>
         </div>
