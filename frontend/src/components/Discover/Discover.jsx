@@ -23,7 +23,7 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
       navigate('/')
       return
     }
-    if (isMyEvent && !org) {
+    if (isMyEvent && !org && user?.role !== 'ADMIN') {
       navigate('/')
       return
     }
@@ -52,7 +52,17 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
         ]
       : []
 
-  const handleCardClick = event => setSelectedEvent(event)
+  const handleCardClick = event => {
+    // Admin in "My Events" mode: go straight to EditEvent
+    if (isMyEvent && user?.role === 'ADMIN') {
+      navigate(`/edit/${event.id}`)
+      return
+    }
+
+    // Default: open details modal
+    setSelectedEvent(event)
+  }
+
 
   const handleTagChange = tag => {
     setSelectedTag(tag)
@@ -150,8 +160,11 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
     }
     if (isRegistrations && !event.eventAttendees?.some(a => a.id === user?.id)) return false
     if (isMyEvent) {
-      const ownerId = event.eventOwner?.id ?? event.eventOwnerId ?? null
-      if (!org || ownerId !== Number(org.id)) return false
+      if (user?.role === 'ADMIN') {
+      } else {
+        const ownerId = event.eventOwner?.id ?? event.eventOwnerId ?? null
+        if (!org || ownerId !== Number(org.id)) return false
+      }
     }
     return true
   })
