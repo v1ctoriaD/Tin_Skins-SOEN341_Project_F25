@@ -230,18 +230,16 @@ export default function CreateEvent({ user, org, onCreated }) {
         return
       }
 
-
       // Normalize numbers and date
       const normalizedCost = Number(String(cost).replace(',', '.')) || 0
       const normalizedMax = Number(maxAttendees) || 0
       const whenISO = date ? new Date(date).toISOString() : ''
-      const eventTime = new Date(date);
-      
+      const eventTime = new Date(date)
 
       if (eventTime <= now) {
-        setMessage("⚠️ Event date/time must be in the future.");
-        setLoading(false);
-        return;
+        setMessage('⚠️ Event date/time must be in the future.')
+        setLoading(false)
+        return
       }
 
       const payload = {

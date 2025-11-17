@@ -128,7 +128,7 @@ export default function Navbar({
             Create Event
           </Link>
         )}
-        {user?.role === "ADMIN" && (
+        {user?.role === 'ADMIN' && (
           <Link to="/myEvents" className="nav-option">
             Edit Events
           </Link>

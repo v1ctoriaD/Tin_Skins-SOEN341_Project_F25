@@ -170,9 +170,9 @@ function App() {
                 <Discover
                   events={events}
                   user={user}
-                  org={null}              // no org, admin sees all
+                  org={null} // no org, admin sees all
                   isRegistrations={false}
-                  isMyEvent={true}        // reuse "My Events" layout
+                  isMyEvent={true} // reuse "My Events" layout
                   onDeleted={deletedId => {
                     setEvents(prev => (prev ? prev.filter(ev => ev.id !== deletedId) : null))
                   }}

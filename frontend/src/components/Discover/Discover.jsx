@@ -63,7 +63,6 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
     setSelectedEvent(event)
   }
 
-
   const handleTagChange = tag => {
     setSelectedTag(tag)
     setSelectedEvent(null)

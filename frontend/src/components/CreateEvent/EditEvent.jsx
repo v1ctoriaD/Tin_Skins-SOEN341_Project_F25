@@ -207,15 +207,15 @@ export default function EditEvent({ org, user, onUpdated }) {
     e.preventDefault()
     setSaving(true)
     setMsg('')
-  
-  const eventTime = new Date(date);
-  const now = new Date();
 
-  if (eventTime <= now) {
-    setMsg("⚠️ Event date/time must be in the future.");
-    setSaving(false);
-    return;
-  }
+    const eventTime = new Date(date)
+    const now = new Date()
+
+    if (eventTime <= now) {
+      setMsg('⚠️ Event date/time must be in the future.')
+      setSaving(false)
+      return
+    }
 
     try {
       const res = await fetch(`/api/events/${eventId}`, {
@@ -240,16 +240,15 @@ export default function EditEvent({ org, user, onUpdated }) {
         throw new Error(err.error || 'Failed to update event')
       }
 
-    const { event } = await res.json()
-    if (onUpdated) onUpdated(event)
-    setMsg('✅ Event updated successfully!')
+      const { event } = await res.json()
+      if (onUpdated) onUpdated(event)
+      setMsg('✅ Event updated successfully!')
 
-    const backPath = isAdmin ? '/admin/events' : '/myEvents'
+      const backPath = isAdmin ? '/admin/events' : '/myEvents'
 
-    setTimeout(() => {
-      navigate(backPath)
-    }, 600)
-
+      setTimeout(() => {
+        navigate(backPath)
+      }, 600)
     } catch (e2) {
       setMsg(`⚠️ ${e2.message}`)
     } finally {
