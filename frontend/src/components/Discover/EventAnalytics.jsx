@@ -4,6 +4,7 @@ import { Doughnut } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import '../../styles/EventAnalytics.css'
 import usePageTitle from '../../hooks/usePageTitle'
+import { exportEventTickets } from '../CSVImport'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -552,8 +553,16 @@ export default function EventAnalytics({ token, org }) {
                 </div>
               )}
             </div>
-            <div className="event-modal-footer">
-              <div className="event-ticket-count">Total Tickets: {ticketsList.length}</div>
+            <div className="analytics-modal-footer">
+              <div className="analytics-user-count">Total Tickets: {ticketsList.length}</div>
+              <button
+                className="analytics-export-btn"
+                onClick={() => exportEventTickets(ticketsList, 'registered-users')}
+                aria-label="Export registered users to CSV"
+                disabled={ticketsList.length === 0}
+              >
+                Export List to CSV
+              </button>
             </div>
           </div>
         </div>
