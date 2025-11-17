@@ -1,3 +1,4 @@
+jest.mock('../database/supabase.js')
 import { jest } from '@jest/globals'
 import request from 'supertest'
 

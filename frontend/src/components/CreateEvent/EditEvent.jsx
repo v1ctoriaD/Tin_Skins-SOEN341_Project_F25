@@ -209,6 +209,19 @@ export default function EditEvent({ org, user, onUpdated }) {
     setMsg('')
 
     try {
+      // Check if date is in the past
+      if (date) {
+        const selectedDate = new Date(date)
+        const now = new Date()
+        if (selectedDate < now) {
+          setMsg(
+            'Cannot update event with a date in the past. Please select a present or future date.',
+          )
+          setSaving(false)
+          return
+        }
+      }
+
       const res = await fetch(`/api/events/${eventId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
