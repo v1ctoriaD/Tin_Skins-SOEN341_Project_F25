@@ -215,11 +215,32 @@ export default function CreateEvent({ user, org, onCreated }) {
         setLoading(false)
         return
       }
+      const selectedDate = date ? new Date(date) : null
+
+      if (!selectedDate || Number.isNaN(selectedDate.getTime())) {
+        setMessage('Please choose a valid date and time.')
+        setLoading(false)
+        return
+      }
+
+      const now = new Date()
+      if (selectedDate <= now) {
+        setMessage('Event date must be in the future.')
+        setLoading(false)
+        return
+      }
 
       // Normalize numbers and date
       const normalizedCost = Number(String(cost).replace(',', '.')) || 0
       const normalizedMax = Number(maxAttendees) || 0
       const whenISO = date ? new Date(date).toISOString() : ''
+      const eventTime = new Date(date)
+
+      if (eventTime <= now) {
+        setMessage('⚠️ Event date/time must be in the future.')
+        setLoading(false)
+        return
+      }
 
       // Check if date is in the past
       if (date) {

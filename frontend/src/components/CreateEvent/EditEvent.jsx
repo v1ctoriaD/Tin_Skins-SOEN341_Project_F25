@@ -208,6 +208,15 @@ export default function EditEvent({ org, user, onUpdated }) {
     setSaving(true)
     setMsg('')
 
+    const eventTime = new Date(date)
+    const now = new Date()
+
+    if (eventTime <= now) {
+      setMsg('⚠️ Event date/time must be in the future.')
+      setSaving(false)
+      return
+    }
+
     try {
       // Check if date is in the past
       if (date) {
@@ -247,8 +256,11 @@ export default function EditEvent({ org, user, onUpdated }) {
       const { event } = await res.json()
       if (onUpdated) onUpdated(event)
       setMsg('✅ Event updated successfully!')
+
+      const backPath = isAdmin ? '/admin/events' : '/myEvents'
+
       setTimeout(() => {
-        navigate('/myEvents')
+        navigate(backPath)
       }, 600)
     } catch (e2) {
       setMsg(`⚠️ ${e2.message}`)

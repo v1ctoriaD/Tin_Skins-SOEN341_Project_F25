@@ -162,6 +162,25 @@ function App() {
               />
             }
           />
+
+          {user?.role === 'ADMIN' && (
+            <Route
+              path="/admin/events"
+              element={
+                <Discover
+                  events={events}
+                  user={user}
+                  org={null} // no org, admin sees all
+                  isRegistrations={false}
+                  isMyEvent={true} // reuse "My Events" layout
+                  onDeleted={deletedId => {
+                    setEvents(prev => (prev ? prev.filter(ev => ev.id !== deletedId) : null))
+                  }}
+                />
+              }
+            />
+          )}
+
           <Route path="/qr/scan" element={<QrScan />} />
           <Route
             path="/register"
