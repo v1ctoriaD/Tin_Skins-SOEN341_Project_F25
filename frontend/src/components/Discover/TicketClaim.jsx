@@ -141,7 +141,7 @@ export default function TicketClaim({ setEvents, user = null, setUser }) {
           {!token && (
             <div className="qr-actions">
               <button className="qr-btn" onClick={onPay}>
-                Pay (mock)
+                Pay
               </button>
             </div>
           )}
