@@ -1,5 +1,3 @@
-import { CalendarActions } from './CalendarActions'
-
 function EventCard({ event, onClick }) {
   //format date
   const eventDate = new Date(event.date)
@@ -34,7 +32,6 @@ function EventCard({ event, onClick }) {
             ))}
           </div>
         )}
-        <CalendarActions event={event} />
       </div>
     </div>
   )

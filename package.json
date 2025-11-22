@@ -8,7 +8,9 @@
     "server": "npm --prefix backend run dev",
     "client": "npm --prefix frontend start",
     "format": "prettier --check .",
-    "format:fix": "prettier --write ."
+    "format:fix": "prettier --write .",
+    "lint": "eslint \"{backend,frontend}/**/*.{js,ts,jsx,tsx}\"",
+    "lint:report": "eslint \"{backend,frontend}/**/*.{js,ts,jsx,tsx}\" -f table -o eslint-report.txt"
   },
   "repository": {
     "type": "git",
@@ -22,8 +24,13 @@
   },
   "homepage": "https://github.com/v1ctoriaD/Tin_Skins-SOEN341_Project_F25#readme",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
     "concurrently": "^9.2.1",
-    "prettier": "^3.6.2"
+    "eslint": "^9.39.1",
+    "eslint-formatter-table": "^7.32.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

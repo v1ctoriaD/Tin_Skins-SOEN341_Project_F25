@@ -54,6 +54,7 @@
   gap: 8px;
   margin-top: 12px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .calendar-btn {
@@ -61,7 +62,7 @@
   font-size: 0.85rem;
   border: 1px solid #3d52a0;
   border-radius: 4px;
-  background: transparent;
+  background: #ede8f5;
   color: #3d52a0;
   cursor: pointer;
   transition: all 0.2s;
