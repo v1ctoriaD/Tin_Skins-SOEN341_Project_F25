@@ -16,7 +16,7 @@ const setup = (props = {}) =>
         setSession={props.setSession || jest.fn()}
         org={props.org || null}
       />
-    </BrowserRouter>
+    </BrowserRouter>,
   )
 
 describe('Login Component', () => {
@@ -51,9 +51,7 @@ describe('Login Component', () => {
 
     fireEvent.click(screen.getByText('Login'))
 
-    expect(
-      await screen.findByText('Password must contain uppercase letter')
-    ).toBeInTheDocument()
+    expect(await screen.findByText('Password must contain uppercase letter')).toBeInTheDocument()
   })
 
   test('shows error for password missing lowercase', async () => {
@@ -68,9 +66,7 @@ describe('Login Component', () => {
 
     fireEvent.click(screen.getByText('Login'))
 
-    expect(
-      await screen.findByText('Password must contain lowercase letter')
-    ).toBeInTheDocument()
+    expect(await screen.findByText('Password must contain lowercase letter')).toBeInTheDocument()
   })
 
   test('shows error for password missing digit', async () => {
@@ -85,9 +81,7 @@ describe('Login Component', () => {
 
     fireEvent.click(screen.getByText('Login'))
 
-    expect(
-      await screen.findByText('Password must contain digit')
-    ).toBeInTheDocument()
+    expect(await screen.findByText('Password must contain digit')).toBeInTheDocument()
   })
 
   test('successful user login', async () => {

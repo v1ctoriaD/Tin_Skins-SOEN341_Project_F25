@@ -47,9 +47,7 @@ describe('Signup Component', () => {
 
     fireEvent.click(screen.getByText('Sign Up'))
 
-    await waitFor(() =>
-      expect(screen.getByText('Passwords must match')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(screen.getByText('Passwords must match')).toBeInTheDocument())
   })
 
   test('shows error when password has no uppercase', async () => {
@@ -65,9 +63,7 @@ describe('Signup Component', () => {
     fireEvent.click(screen.getByText('Sign Up'))
 
     await waitFor(() =>
-      expect(
-        screen.getByText('Password must contain uppercase letter')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Password must contain uppercase letter')).toBeInTheDocument(),
     )
   })
 
@@ -144,8 +140,6 @@ describe('Signup Component', () => {
 
     fireEvent.click(screen.getByText('Resend Email'))
 
-    await waitFor(() =>
-      expect(screen.getByText('Email sent again')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(screen.getByText('Email sent again')).toBeInTheDocument())
   })
 })

@@ -35,7 +35,7 @@ describe('Logout Component', () => {
         setOrg={mockSetOrg}
         setSession={mockSetSession}
         className="logout-btn"
-      />
+      />,
     )
 
     fireEvent.click(screen.getByText('Logout'))
@@ -66,12 +66,7 @@ describe('Logout Component', () => {
     })
 
     render(
-      <Logout
-        onLogout={jest.fn()}
-        setUser={jest.fn()}
-        setOrg={jest.fn()}
-        setSession={jest.fn()}
-      />
+      <Logout onLogout={jest.fn()} setUser={jest.fn()} setOrg={jest.fn()} setSession={jest.fn()} />,
     )
 
     fireEvent.click(screen.getByText('Logout'))
@@ -91,13 +86,7 @@ describe('Logout Component', () => {
     const mockSetOrg = jest.fn()
     const mockSetSession = jest.fn()
 
-    render(
-      <Logout
-        setUser={mockSetUser}
-        setOrg={mockSetOrg}
-        setSession={mockSetSession}
-      />
-    )
+    render(<Logout setUser={mockSetUser} setOrg={mockSetOrg} setSession={mockSetSession} />)
 
     fireEvent.click(screen.getByText('Logout'))
 
