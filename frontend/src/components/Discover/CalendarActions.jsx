@@ -27,7 +27,7 @@ export function CalendarActions({ event }) {
 
   const googleUrl = `https://calendar.google.com/calendar/render?${googleParams.toString()}`
 
-   return (
+  return (
     <div className="calendar-actions">
       <div className="dropdown">
         <button
@@ -42,24 +42,15 @@ export function CalendarActions({ event }) {
 
         {open && (
           <div className="dropdown-menu" onClick={e => e.stopPropagation()}>
-            <div
-              className="dropdown-item"
-              onClick={() => window.open(icsUrl, '_blank')}
-            >
+            <div className="dropdown-item" onClick={() => window.open(icsUrl, '_blank')}>
               Download .ics
             </div>
 
-            <div
-              className="dropdown-item"
-              onClick={() => window.open(googleUrl, '_blank')}
-            >
+            <div className="dropdown-item" onClick={() => window.open(googleUrl, '_blank')}>
               Google Calendar
             </div>
 
-            <div
-              className="dropdown-item"
-              onClick={() => window.open(webcalUrl, '_blank')}
-            >
+            <div className="dropdown-item" onClick={() => window.open(webcalUrl, '_blank')}>
               Apple Calendar
             </div>
           </div>
