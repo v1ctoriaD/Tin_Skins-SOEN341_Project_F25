@@ -575,7 +575,7 @@ export default function EventAnalytics({ token, org }) {
             <div className="event-modal-header">
               <h2 className="event-modal-title">Attended Users</h2>
               <button
-                className="event-modal-close"
+                className="event-modal-close-btn"
                 onClick={() => setShowAttendedModal(false)}
                 aria-label="Close modal"
               >
@@ -624,7 +624,7 @@ export default function EventAnalytics({ token, org }) {
             <div className="event-modal-header">
               <h2 className="event-modal-title">Capacity Breakdown</h2>
               <button
-                className="event-modal-close"
+                className="event-modal-close-btn"
                 onClick={() => setShowCapacityModal(false)}
                 aria-label="Close modal"
               >

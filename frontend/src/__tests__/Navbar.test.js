@@ -29,7 +29,6 @@ describe('Navbar component', () => {
     // Basic nav options
     expect(screen.getByText(/home/i)).toBeInTheDocument()
     expect(screen.getByText(/discover/i)).toBeInTheDocument()
-    expect(screen.getByText(/map/i)).toBeInTheDocument()
     expect(screen.getByText(/about us/i)).toBeInTheDocument()
   })
 
@@ -67,5 +66,6 @@ describe('Navbar component', () => {
     expect(screen.getByText(/scan qr code/i)).toBeInTheDocument()
     expect(screen.getByText(/create event/i)).toBeInTheDocument()
     expect(screen.getByText(/moderate users/i)).toBeInTheDocument()
+    expect(screen.getByText(/map/i)).toBeInTheDocument()
   })
 })

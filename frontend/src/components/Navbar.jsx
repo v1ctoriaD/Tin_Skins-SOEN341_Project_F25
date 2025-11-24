@@ -114,9 +114,11 @@ export default function Navbar({
             My Events
           </Link>
         )}
-        <Link to="/map" className="nav-option">
-          Map
-        </Link>
+        {(org || user) && (
+          <Link to="/map" className="nav-option">
+            Map
+          </Link>
+        )}
 
         {org && (
           <Link className="nav-option" to="/qr/scan">
@@ -130,7 +132,7 @@ export default function Navbar({
         )}
         {user?.role === 'ADMIN' && (
           <Link to="/myEvents" className="nav-option">
-            Edit Events
+            Moderate Events
           </Link>
         )}
         {user && user.role === 'ADMIN' && (

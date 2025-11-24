@@ -141,7 +141,7 @@ export default function TicketClaim({ setEvents, user = null, setUser }) {
           {!token && (
             <div className="qr-actions">
               <button className="qr-btn" onClick={onPay}>
-                Pay (mock)
+                Pay
               </button>
             </div>
           )}
@@ -159,11 +159,13 @@ export default function TicketClaim({ setEvents, user = null, setUser }) {
 
           <div className="qr-status">{result}</div>
 
-          <div className="qr-actions">
-            <button className="qr-btn" onClick={() => navigate('/registrations')}>
-              See Registrations
-            </button>
-          </div>
+          {token && (
+            <div className="qr-actions">
+              <button className="qr-btn" onClick={() => navigate('/registrations')}>
+                See Registrations
+              </button>
+            </div>
+          )}
         </section>
       </div>
     </main>

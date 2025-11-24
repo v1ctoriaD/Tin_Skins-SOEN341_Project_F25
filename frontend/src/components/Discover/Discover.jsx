@@ -6,6 +6,7 @@ import Filters from './Filters'
 import usePageTitle from '../../hooks/usePageTitle'
 import { useNavigate, useParams } from 'react-router-dom'
 import QRCode from 'react-qr-code'
+import { CalendarActions } from './CalendarActions'
 
 function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) {
   usePageTitle()
@@ -53,13 +54,7 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
       : []
 
   const handleCardClick = event => {
-    // Admin in "My Events" mode: go straight to EditEvent
-    if (isMyEvent && user?.role === 'ADMIN') {
-      navigate(`/edit/${event.id}`)
-      return
-    }
-
-    // Default: open details modal
+    //open details modal
     setSelectedEvent(event)
   }
 
@@ -220,6 +215,7 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
                   {formattedDate(selectedEvent.date)} • {formattedTime(selectedEvent.date)}
                 </p>
                 <p>Location: {selectedEvent.locationName}</p>
+                <CalendarActions event={selectedEvent} />
                 <p>By: {byOrgName}</p>
                 <p>{selectedEvent.description}</p>
                 <p>Max Attendees: {selectedEvent.maxAttendees}</p>
@@ -228,7 +224,9 @@ function Discover({ events, user, org, isRegistrations, isMyEvent, onDeleted }) 
 
                 {!isRegistrations ? (
                   !org &&
-                  spotsLeft !== 0 && (
+                  spotsLeft !== 0 &&
+                  !isMyEvent &&
+                  !user?.role !== 'ADMIN' && (
                     <button
                       className="register-btn"
                       onClick={
