@@ -6,7 +6,7 @@ import prisma from './prisma.js'
 export async function generateQr(req, res) {
   try {
     const ticketId = Number(req.params.ticketId)
-    console.log(ticketId)
+    //console.log(ticketId)
     if (!Number.isInteger(ticketId)) {
       return res.status(400).json({ ok: false, reason: 'Invalid ticket id' })
     }

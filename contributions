@@ -1,22 +1,39 @@
-●	Detailed log of each team member's contribution including time spent on each activity 
-Format : Activity / HoursTaken
-# Nicolas David Chacon Pabon ; 40302889 ; Arceton500
-- Making the ReadMe / 1.5
+Detailed log of each team member's contribution including time spent on each activity 
 
 # Alesia Kulagina; 40260096; lesyak1
-- Making ReadMe / 1
-- Meeting Minutes #1 / 45min
+Sprint 1: worked on the project description, framework selection  
+Sprint 2: discover page and filtering logic backend
+Sprint 3: discover page fixes and csv export feature acceptance tests
+Sprint 4: implemented csv export feature and added additional tests
+
 # Neil Bryan Moukam-Tchuangou; 40316930; shinehiro
+Sprint 1: added stories and tasks
+Sprint 2: login/logout and signup implementation
+Sprint 3: Calendar implementation (saving to calendar)
+Sprint 4: Wiki writing and calendar button fixes
 
 # Victoria Doan ; 40317044 ; v1ctoriaD
 
 # Hiba Maifi ; 40289223 ; hibamai
-- Creating some user stories and their corresponding subtasks / 1
+Sprint 1: added stories and tasks
+Sprint 2: discover page and filters front end
+Sprint 3: maps feature for students, admin and organizers
+Sprint 4: added geolocation and more functions for the map feature for organizers
 
 # Basma Ennajimi ; 40314332 ; BasmaEnnajimi
+Sprint 1: worked on the UI, added stories and tasks
+Sprint 2: worked on QR code generation and scanning, improved UI, created CSS templates for consistent UI
+Sprint 3: added the create, edit, and remove event features
+Sprint 4: helped remove bugs related to event creation and tested functionality
 
 # Daniel Ganchev ; 40315755 ; dan-gan
+Sprint 1: I created the initial user stories and subtasks for Event Discovery/Management. I also participated in the first project meeting and made sure the requirements were clearly written for later sprints.
+Sprint 2: I built the Claim Tickets flow, including both the backend logic for issuing tickets and enforcing capacity, and the frontend UI for claiming tickets. 
+Sprint 3: I worked on Admin and Event Analytics. I built the backend analytics calculations and the frontend dashboards, including charts, tiles, and clickable metrics. This sprint involved my biggest PR and required coordinating data between frontend and backend. I fixed a bug where an admin user could log in as organization and vice versa.
+Sprint 4: I wrote unit and integration tests for both Admin Dashboard Analytics and Organizer Event Analytics. I validated the metrics, charts, and UI behavior. I also fixed a bug preventing users from creating past events/editing event date to a past date, and solved CI issues related to missing secret variables. I added scrolling feature when clicking on events (couldn't close event description).
 
 # Adrian Charbonneau ; 40310777 ; Alphabot54
-- Creating user stories and corresponding tasks / 1
-- Assigning tasks to team members / 1
+Sprint 1: Write User stories and tasks, Assigned tasks to all team members
+Sprint 2: Database connection, datbase seeding and wrote main database query functions, fixed logIn and logOut backend and improved UI, fixed event registation flow, Added About page
+Sprint 3: Added create account feature, Administrator account moderation and organization approval, Testing environment set up
+Sprint 4: Code formatting, added some tests
