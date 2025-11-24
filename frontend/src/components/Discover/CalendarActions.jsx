@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../../styles/Discover.css'
 
 export function CalendarActions({ event }) {
+  const [open, setOpen] = useState(false)
   if (!event) return null
 
   const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001'
@@ -28,33 +29,33 @@ export function CalendarActions({ event }) {
 
   return (
     <div className="calendar-actions">
-      <button
-        className="calendar-btn"
-        onClick={e => {
-          e.stopPropagation()
-          window.open(icsUrl, '_blank')
-        }}
-      >
-        Download .ics
-      </button>
-      <button
-        className="calendar-btn"
-        onClick={e => {
-          e.stopPropagation()
-          window.open(googleUrl, '_blank')
-        }}
-      >
-        Add to Google
-      </button>
-      <button
-        className="calendar-btn"
-        onClick={e => {
-          e.stopPropagation()
-          window.open(webcalUrl, '_blank')
-        }}
-      >
-        Add to Apple
-      </button>
+      <div className="dropdown">
+        <button
+          className="calendar-btn"
+          onClick={e => {
+            e.stopPropagation()
+            setOpen(!open)
+          }}
+        >
+          Add to Calendar ▾
+        </button>
+
+        {open && (
+          <div className="dropdown-menu" onClick={e => e.stopPropagation()}>
+            <div className="dropdown-item" onClick={() => window.open(icsUrl, '_blank')}>
+              Download .ics
+            </div>
+
+            <div className="dropdown-item" onClick={() => window.open(googleUrl, '_blank')}>
+              Google Calendar
+            </div>
+
+            <div className="dropdown-item" onClick={() => window.open(webcalUrl, '_blank')}>
+              Apple Calendar
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

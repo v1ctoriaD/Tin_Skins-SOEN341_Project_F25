@@ -14,7 +14,7 @@
 .event-card {
   border: 1px solid #ddd;
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition:
@@ -74,6 +74,40 @@
 
 .calendar-btn:active {
   transform: scale(0.98);
+}
+
+/* Dropdown wrapper */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown menu container */
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: white;
+  border: 1px solid #3d52a0;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 50;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+/* Dropdown items */
+.dropdown-item {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #3d52a0;
+  background: white;
+}
+
+.dropdown-item:hover {
+  background: #3d52a0;
+  color: white;
 }
 
 .event-details-modal {
