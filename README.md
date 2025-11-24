@@ -1,4 +1,4 @@
-# SOEN-341-Project
+# SOEN-341-Project - Campus Connect
 
 Tin Skins' version of the SOEN 341 Project.
 
