@@ -33,6 +33,10 @@ Sprint 3: Calendar implementation (saving to calendar)
 Sprint 4: Wiki writing and calendar button fixes
 
 # Victoria Doan ; 40317044 ; v1ctoriaD
+Sprint 1: Worked on the UI design (overall layout, navigation, and organizer views) and helped break down the UI work into stories and tasks (with Basma).
+Sprint 2: Implemented the organizer event creation form UI and collaborated on QR code upload and validation for tickets (with Basma)
+Sprint 3: Connected the create/edit/remove event UI to the backend (with Basma).
+Sprint 4: Added event date validation for Create and Edit, added the admin-only “Edit Events” navigation and access. (with Basma)
 
 # Hiba Maifi ; 40289223 ; hibamai
 Sprint 1: added stories and tasks
